@@ -1,0 +1,4 @@
+.topbar { position: sticky; top: 0; z-index: 1000; }
+.brand { font-weight: 700; }
+.spacer { flex: 1; }
+.name { margin-right: 10px; opacity: 0.85; }

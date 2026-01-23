@@ -1,0 +1,6 @@
+[
+  { "label": "Dashboard", "icon": "dashboard", "route": "/app/dashboard" },
+  { "label": "Finance", "icon": "paid", "route": "/app/finance" },
+  { "label": "Invoices", "icon": "receipt_long", "route": "/app/invoices" },
+  { "label": "Clients", "icon": "groups", "route": "/app/clients" }
+]

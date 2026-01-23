@@ -1,0 +1,45 @@
+<h2>{{ isEdit ? 'Edit Entry' : 'Add Entry' }}</h2>
+
+<form [formGroup]="form" class="grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Date</mat-label>
+    <input matInput type="date" formControlName="date" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="type">
+      <mat-option value="INCOME">INCOME</mat-option>
+      <mat-option value="EXPENSE">EXPENSE</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Category</mat-label>
+    <input matInput formControlName="category" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Amount</mat-label>
+    <input matInput type="number" formControlName="amount" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Payment Mode</mat-label>
+    <mat-select formControlName="paymentMode">
+      <mat-option value="CASH">CASH</mat-option>
+      <mat-option value="UPI">UPI</mat-option>
+      <mat-option value="BANK">BANK</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="span2">
+    <mat-label>Description</mat-label>
+    <input matInput formControlName="description" />
+  </mat-form-field>
+</form>
+
+<div class="actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>

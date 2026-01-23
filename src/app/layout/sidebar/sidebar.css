@@ -1,0 +1,19 @@
+.sidebar {
+  height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+  overflow: auto;
+  border-right: 1px solid rgba(0,0,0,0.08);
+  width: 56px;              /* match app-shell column */
+}
+
+
+.row { display: inline-flex; align-items: center; }
+.icon { margin-right: 10px; }
+.active { background: rgba(0,0,0,0.06); }
+
+@media (max-width: 900px) {
+  .label { display: none; }
+}
+
+

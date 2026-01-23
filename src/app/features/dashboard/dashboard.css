@@ -1,0 +1,18 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card { padding: 14px; }
+.kpi-title { opacity: 0.7; font-size: 13px; }
+.kpi-value { font-size: 22px; font-weight: 700; margin-top: 8px; }
+
+.charts { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }
+.chart-card { padding: 14px; }
+
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .charts { grid-template-columns: 1fr; }
+}

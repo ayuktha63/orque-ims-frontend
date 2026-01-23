@@ -1,0 +1,45 @@
+<div class="grid">
+  <mat-card class="card">
+    <div class="kpi-title">Income</div>
+    <div class="kpi-value">₹ {{ summary.income }}</div>
+  </mat-card>
+
+  <mat-card class="card">
+    <div class="kpi-title">Expense</div>
+    <div class="kpi-value">₹ {{ summary.expense }}</div>
+  </mat-card>
+
+  <mat-card class="card">
+    <div class="kpi-title">Profit</div>
+    <div class="kpi-value">₹ {{ summary.profit }}</div>
+  </mat-card>
+
+  <mat-card class="card">
+    <div class="kpi-title">Entries</div>
+    <div class="kpi-value">{{ summary.count }}</div>
+  </mat-card>
+</div>
+
+<div class="charts">
+  <mat-card class="chart-card">
+    <h3>Income vs Expense (Day-wise)</h3>
+
+    <apx-chart
+      *ngIf="incomeExpenseChart"
+      [series]="incomeExpenseChart.series"
+      [chart]="incomeExpenseChart.chart"
+      [xaxis]="incomeExpenseChart.xaxis">
+    </apx-chart>
+  </mat-card>
+
+  <mat-card class="chart-card">
+    <h3>Expense by Category</h3>
+
+    <apx-chart
+      *ngIf="categoryChart"
+      [series]="categoryChart.series"
+      [chart]="categoryChart.chart"
+      [labels]="categoryChart.labels">
+    </apx-chart>
+  </mat-card>
+</div>

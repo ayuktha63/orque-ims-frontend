@@ -1,0 +1,9 @@
+<mat-toolbar class="topbar">
+  <div class="brand">Orque IMS</div>
+  <span class="spacer"></span>
+
+  <div class="user" *ngIf="auth.getUser() as u">
+    <span class="name">{{ u.name }}</span>
+    <button mat-button (click)="logout()">Logout</button>
+  </div>
+</mat-toolbar>

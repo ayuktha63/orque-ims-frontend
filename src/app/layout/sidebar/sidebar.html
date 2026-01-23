@@ -1,0 +1,13 @@
+<nav class="sidebar">
+  <mat-nav-list class="nav">
+    <a mat-list-item
+       class="item"
+       *ngFor="let item of (menu$ | async)"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       [attr.aria-label]="item.label"
+       [attr.title]="item.label">
+      <mat-icon class="icon">{{ item.icon }}</mat-icon>
+    </a>
+  </mat-nav-list>
+</nav>

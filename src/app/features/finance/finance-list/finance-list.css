@@ -1,0 +1,5 @@
+.card { padding: 14px; }
+.header { display: flex; align-items: center; justify-content: space-between; }
+.full { width: 100%; margin-top: 10px; }
+.actions { white-space: nowrap; }
+h2 { margin: 0; }
