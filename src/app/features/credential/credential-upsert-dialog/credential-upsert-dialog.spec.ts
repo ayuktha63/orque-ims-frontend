@@ -1,20 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CredentialUpsertDialogComponent } from './credential-upsert-dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { CredentialUpsertDialog } from './credential-upsert-dialog';
-
-describe('CredentialUpsertDialog', () => {
-  let component: CredentialUpsertDialog;
-  let fixture: ComponentFixture<CredentialUpsertDialog>;
+describe('CredentialUpsertDialogComponent', () => {
+  let component: CredentialUpsertDialogComponent;
+  let fixture: ComponentFixture<CredentialUpsertDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CredentialUpsertDialog]
-    })
-    .compileComponents();
+      imports: [CredentialUpsertDialogComponent, HttpClientTestingModule],
+      providers: [
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: { employee: {} } }
+      ]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(CredentialUpsertDialog);
+    fixture = TestBed.createComponent(CredentialUpsertDialogComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

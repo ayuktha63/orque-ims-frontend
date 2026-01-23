@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, switchMap } from 'rxjs';
-import { CredentialService } from '../../../core/services/credential'; // Use CredentialService
+import { CredentialService } from '../../../core/services/credential';
 import { CredentialUpsertDialogComponent } from '../credential-upsert-dialog/credential-upsert-dialog';
 
 @Component({
@@ -20,13 +20,12 @@ export class CredentialsComponent implements OnInit {
   displayedColumns = ['employeeCode', 'name', 'username', 'role', 'actions'];
   private refresh$ = new BehaviorSubject<void>(undefined);
 
-  // Use credentialService.getAll() to get EVERY employee from the DTO
   authorizedEmployees$ = this.refresh$.pipe(
     switchMap(() => this.credentialService.getAll())
   );
 
   constructor(
-    private credentialService: CredentialService, // Inject CredentialService
+    private credentialService: CredentialService, 
     private dialog: MatDialog
   ) {}
 
@@ -49,6 +48,7 @@ export class CredentialsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      // result is 'true' if the dialog saved successfully
       if (result) this.fetchData();
     });
   }

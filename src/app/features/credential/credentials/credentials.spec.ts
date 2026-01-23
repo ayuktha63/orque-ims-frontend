@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CredentialsComponent } from './credentials';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 
-import { Credentials } from './credentials';
-
-describe('Credentials', () => {
-  let component: Credentials;
-  let fixture: ComponentFixture<Credentials>;
+describe('CredentialsComponent', () => {
+  let component: CredentialsComponent;
+  let fixture: ComponentFixture<CredentialsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Credentials]
-    })
-    .compileComponents();
+      imports: [CredentialsComponent, HttpClientTestingModule, MatDialogModule]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Credentials);
+    fixture = TestBed.createComponent(CredentialsComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
