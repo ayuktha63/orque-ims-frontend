@@ -31,6 +31,45 @@ export class PayrollListComponent {
       deductions: 2000,
       netPay: 28000,
       notes: ''
+    },
+    {
+      id: '1',
+      payrollCode: 'PAY0001',
+      month: '2026-01',
+      employeeId: 'e1',
+      employeeCode: 'EMP0001',
+      employeeName: 'Arun Kumar',
+      basic: 25000,
+      allowances: 5000,
+      deductions: 2000,
+      netPay: 28000,
+      notes: ''
+    },
+    {
+      id: '1',
+      payrollCode: 'PAY0001',
+      month: '2026-01',
+      employeeId: 'e1',
+      employeeCode: 'EMP0001',
+      employeeName: 'Arun Kumar',
+      basic: 25000,
+      allowances: 5000,
+      deductions: 2000,
+      netPay: 28000,
+      notes: ''
+    },
+    {
+      id: '1',
+      payrollCode: 'PAY0001',
+      month: '2026-01',
+      employeeId: 'e1',
+      employeeCode: 'EMP0001',
+      employeeName: 'Arun Kumar',
+      basic: 25000,
+      allowances: 5000,
+      deductions: 2000,
+      netPay: 28000,
+      notes: ''
     }
   ];
 

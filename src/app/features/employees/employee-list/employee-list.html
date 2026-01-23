@@ -4,7 +4,7 @@
     <button mat-raised-button color="primary" (click)="add()">Add Employee</button>
   </div>
 
-  <table mat-table [dataSource]="rows" class="full">
+  <table mat-table [dataSource]="(rows$ | async) || []" class="full">
 
     <ng-container matColumnDef="employeeCode">
       <th mat-header-cell *matHeaderCellDef>Code</th>
@@ -42,4 +42,8 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+
+  <div *ngIf="(rows$ | async)?.length === 0" class="empty-state">
+    No employees found.
+  </div>
 </mat-card>

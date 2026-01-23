@@ -8,31 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
-export type Employee = {
-  id: string;
-  employeeCode: string; // set by list during Add
-  name: string;
-  department?: string;
-  role?: string;
-  joinDate: string;
-  status: 'ACTIVE' | 'INACTIVE';
-};
-
-type EmployeeForm = {
-  name: any;
-  department: any;
-  role: any;
-  joinDate: any;
-  status: any;
-};
-
-function uid(): string {
-  return crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
-}
-
-function yyyyMmDd(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
+import { EmployeeService } from '../../../core/services/employees';
+import { Employee } from '../../../core/models/employee.model';
 
 @Component({
   selector: 'app-employee-upsert-dialog',
@@ -54,39 +31,57 @@ export class EmployeeUpsertDialogComponent {
 
   constructor(
     private fb: FormBuilder,
+    private service: EmployeeService,
     private ref: MatDialogRef<EmployeeUpsertDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Employee | null
   ) {
     this.isEdit = !!this.data;
 
+    // Initialize form with existing data or defaults
     this.form = this.fb.group({
       name: [this.data?.name ?? '', [Validators.required]],
       department: [this.data?.department ?? ''],
       role: [this.data?.role ?? ''],
-      joinDate: [this.data?.joinDate ?? yyyyMmDd(new Date()), [Validators.required]],
+      // Standardizes the date to YYYY-MM-DD for the HTML date input
+      joinDate: [this.data?.joinDate ?? new Date().toISOString().split('T')[0], [Validators.required]],
       status: [this.data?.status ?? 'ACTIVE', [Validators.required]]
-    } as EmployeeForm);
+    });
   }
 
   save(): void {
     if (this.form.invalid) return;
 
-    const v = this.form.value as any;
+    // The form value is combined with the original ID if editing
+    const payload: Employee = this.form.value;
 
-    const result: Employee = {
-      id: this.data?.id ?? uid(),
-      employeeCode: this.data?.employeeCode ?? 'AUTO',
-      name: v.name,
-      department: v.department || '',
-      role: v.role || '',
-      joinDate: v.joinDate,
-      status: v.status
-    };
-
-    this.ref.close(result);
+    if (this.isEdit && this.data?.id) {
+      // Logic for PUT (Update)
+      this.service.update(this.data.id, payload).subscribe({
+        next: () => {
+          // Send 'true' to trigger refresh in the list component
+          this.ref.close(true);
+        },
+        error: (err) => {
+          console.error('Update failed:', err);
+          // You could add a snackbar/toast error message here
+        }
+      });
+    } else {
+      // Logic for POST (Create)
+      this.service.create(payload).subscribe({
+        next: () => {
+          // Send 'true' to trigger refresh in the list component
+          this.ref.close(true);
+        },
+        error: (err) => {
+          console.error('Creation failed:', err);
+        }
+      });
+    }
   }
 
   close(): void {
-    this.ref.close(null);
+    // Send 'false' so the list component knows NOT to trigger a refresh
+    this.ref.close(false);
   }
 }

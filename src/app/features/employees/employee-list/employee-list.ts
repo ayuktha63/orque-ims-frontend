@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Observable } from 'rxjs'; // Import Observable
 
-import { EmployeeUpsertDialogComponent, Employee } from '../employee-upsert-dialog/employee-upsert-dialog';
+import { EmployeeService } from '../../../core/services/employees';
+import { Employee } from '../../../core/models/employee.model';
+import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employee-upsert-dialog';
 
 @Component({
   selector: 'app-employee-list',
@@ -15,39 +17,24 @@ import { EmployeeUpsertDialogComponent, Employee } from '../employee-upsert-dial
   templateUrl: './employee-list.html',
   styleUrls: ['./employee-list.css']
 })
-export class EmployeeListComponent {
+export class EmployeeListComponent implements OnInit {
   displayedColumns = ['employeeCode', 'name', 'department', 'role', 'status', 'actions'];
+  
+  // Use an Observable instead of a raw array to fix the NG0100 error
+  rows$!: Observable<Employee[]>;
 
-  rows: Employee[] = [
-    {
-      id: 'e1',
-      employeeCode: 'EMP0001',
-      name: 'Arun Kumar',
-      department: 'Sales',
-      role: 'Executive',
-      status: 'ACTIVE',
-      joinDate: '2025-06-10'
-    },
-    {
-      id: 'e2',
-      employeeCode: 'EMP0002',
-      name: 'Meera Nair',
-      department: 'Accounts',
-      role: 'Accountant',
-      status: 'ACTIVE',
-      joinDate: '2025-08-01'
-    }
-  ];
+  constructor(
+    private dialog: MatDialog,
+    private service: EmployeeService
+  ) {}
 
-  constructor(private dialog: MatDialog) {}
+  ngOnInit(): void {
+    this.fetchData();
+  }
 
-  private nextEmployeeCode(): string {
-    const max = this.rows.reduce((m, e) => {
-      const n = Number((e.employeeCode || '').replace('EMP', ''));
-      return Number.isFinite(n) ? Math.max(m, n) : m;
-    }, 0);
-
-    return `EMP${String(max + 1).padStart(4, '0')}`;
+  fetchData(): void {
+    // Assign the stream directly. The 'async' pipe in HTML handles the rest.
+    this.rows$ = this.service.list();
   }
 
   private openDrawer(data: Employee | null): void {
@@ -57,22 +44,13 @@ export class EmployeeListComponent {
       position: { right: '0', top: '0' },
       height: '100vh',
       width: '50vw',
-      maxWidth: '100vw',
       autoFocus: false
     });
 
-    ref.afterClosed().subscribe((result: Employee | null) => {
-      if (!result) return;
-
-      // ADD
-      if (!data) {
-        result.employeeCode = this.nextEmployeeCode();
-        this.rows = [result, ...this.rows];
-        return;
+    ref.afterClosed().subscribe((didSave: boolean) => {
+      if (didSave) {
+        this.fetchData(); 
       }
-
-      // EDIT
-      this.rows = this.rows.map(x => (x.id === result.id ? result : x));
     });
   }
 
@@ -85,6 +63,11 @@ export class EmployeeListComponent {
   }
 
   remove(row: Employee): void {
-    this.rows = this.rows.filter(x => x.id !== row.id);
+    if (confirm(`Are you sure you want to delete ${row.name}?`) && row.id) {
+      this.service.delete(row.id).subscribe({
+        next: () => this.fetchData(),
+        error: (err) => console.error('Delete failed', err)
+      });
+    }
   }
 }
