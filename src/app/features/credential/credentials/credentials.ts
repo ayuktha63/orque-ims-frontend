@@ -17,7 +17,7 @@ import { CredentialUpsertDialogComponent } from '../credential-upsert-dialog/cre
   styleUrls: ['./credentials.css']
 })
 export class CredentialsComponent implements OnInit {
-  displayedColumns = ['employeeCode', 'name', 'username', 'role', 'actions'];
+  displayedColumns = ['employeeCode', 'name', 'username', 'password', 'role', 'actions'];
   private refresh$ = new BehaviorSubject<void>(undefined);
 
   authorizedEmployees$ = this.refresh$.pipe(

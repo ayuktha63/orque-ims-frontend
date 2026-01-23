@@ -32,36 +32,26 @@ export class CredentialUpsertDialogComponent {
 
     this.form = this.fb.group({
       username: [data.employee.username || '', [Validators.required]],
-      // Password mandatory only for new setup
-      password: ['', this.isEdit ? [] : [Validators.required, Validators.minLength(4)]],
+      // Password field pre-fills with data.employee.password
+      password: [data.employee.password || '', this.isEdit ? [] : [Validators.required, Validators.minLength(4)]],
       role: [data.employee.role || 'USER', [Validators.required]]
     });
   }
 
-save(): void {
-  if (this.form.invalid) return;
+  save(): void {
+    if (this.form.invalid) return;
 
-  const val = this.form.value;
-  const payload: any = {
-    employeeId: this.data.employee.employeeId, 
-    username: val.username,
-    role: val.role
-  };
+    const val = this.form.value;
+    const payload = {
+      employeeId: this.data.employee.employeeId, 
+      username: val.username,
+      role: val.role,
+      password: val.password
+    };
 
-  if (val.password && val.password.trim() !== '') {
-    payload.password = val.password;
+    this.service.upsert(payload).subscribe({
+      next: () => this.ref.close(true),
+      error: (err) => console.error('Save failed', err)
+    });
   }
-
-  this.service.upsert(payload).subscribe({
-    next: (response) => {
-      console.log('Update Success:', response);
-      // Passing 'true' triggers the fetchData() in the main component
-      this.ref.close(true); 
-    },
-    error: (err) => {
-      console.error('Save failed', err);
-      // The error ID ada55747... was likely caused by the JSON parsing failure
-    }
-  });
-}
 }
