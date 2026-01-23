@@ -19,7 +19,7 @@ h2 { margin: 0; }
 }
 
 /* Delete (red X) */
-.delete-btn {
+.delete-btn,.x {
   color: #d32f2f;
   size: 10px;
 }
