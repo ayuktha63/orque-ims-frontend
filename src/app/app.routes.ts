@@ -24,23 +24,52 @@ export const routes: Routes = [
     path: 'app',
     component: AppShellComponent,
     canActivate: [authGuard],
+    data: { breadcrumb: 'Home' }, 
     children: [
       // Default child redirect
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       
-      // Feature Routes
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'employees', component: EmployeeListComponent },
-      { path: 'finance', component: FinanceListComponent },
-      { path: 'payroll', component: PayrollListComponent },
-      { path: 'invoices', component: InvoicesComponent },
-      { path: 'clients', component: ClientsComponent },
+      // Feature Routes with Breadcrumb Labels
+      { 
+        path: 'dashboard', 
+        component: DashboardComponent, 
+        data: { breadcrumb: 'Dashboard' } 
+      },
+      { 
+        path: 'employees', 
+        component: EmployeeListComponent, 
+        data: { breadcrumb: 'Employees' } 
+      },
+      { 
+        path: 'finance', 
+        component: FinanceListComponent, 
+        data: { breadcrumb: 'Finance' } 
+      },
+      { 
+        path: 'payroll', 
+        component: PayrollListComponent, 
+        data: { breadcrumb: 'Payroll' } 
+      },
+      { 
+        path: 'invoices', 
+        component: InvoicesComponent, 
+        data: { breadcrumb: 'Invoices' } 
+      },
+      { 
+        path: 'clients', 
+        component: ClientsComponent, 
+        data: { breadcrumb: 'Clients' } 
+      },
       
       // Admin Only Route
-      { path: 'credentials', component: CredentialsComponent }
+      { 
+        path: 'credentials', 
+        component: CredentialsComponent, 
+        data: { breadcrumb: 'System Access' } 
+      }
     ]
   },
 
-  // 4. Wildcard Catch-all (Redirects to login if route doesn't exist)
+  // 4. Wildcard Catch-all
   { path: '**', redirectTo: 'login' }
 ];
