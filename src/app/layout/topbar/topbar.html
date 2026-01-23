@@ -7,6 +7,14 @@
 
   <div class="user" *ngIf="auth.getUser() as u">
     <span class="name">{{ u.name }}</span>
-    <button mat-button (click)="logout()">Logout</button>
+
+    <button
+      mat-icon-button
+      class="logout-btn"
+      aria-label="Logout"
+      title="Logout"
+      (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
   </div>
 </mat-toolbar>

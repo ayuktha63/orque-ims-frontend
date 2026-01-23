@@ -1,7 +1,15 @@
-.shell { display: grid; grid-template-columns: 72px 1fr; }
-.left { min-width: 260px; background: #fff; }
-.content { padding: 16px; min-height: calc(100vh - 64px); }
+.app-shell {
+  display: flex;
+  height: calc(100vh - 64px); /* 64px = toolbar height */
+}
 
-@media (max-width: 900px) {
-  .shell { grid-template-columns: 260px 1fr; } /* keep it visible for now */
+app-sidebar {
+  width: 56px; /* your sidebar width */
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;      /* ONLY THIS SCROLLS */
+  padding: 16px;
 }
