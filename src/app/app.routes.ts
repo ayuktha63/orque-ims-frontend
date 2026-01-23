@@ -6,6 +6,8 @@ import { DashboardComponent } from './features/dashboard/dashboard';
 import { FinanceListComponent } from './features/finance/finance-list/finance-list';
 import { InvoicesComponent } from './features/invoices/invoices/invoices';
 import { ClientsComponent } from './features/clients/clients/clients';
+import { EmployeeListComponent } from './features/employees/employee-list/employee-list';
+import { PayrollListComponent } from './features/payroll/payroll-list/payroll-list';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -19,7 +21,8 @@ export const routes: Routes = [
     data: { breadcrumb: 'Home' },          // optional label for app root
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-
+      { path: 'employees', component: EmployeeListComponent, data: { breadcrumb: 'Employees' } },
+      { path: 'payroll', component: PayrollListComponent, data: { breadcrumb: 'Payroll' } },
       { path: 'dashboard', component: DashboardComponent, data: { breadcrumb: 'Dashboard' } },
       { path: 'finance', component: FinanceListComponent, data: { breadcrumb: 'Finance' } },
       { path: 'invoices', component: InvoicesComponent, data: { breadcrumb: 'Invoices' } },

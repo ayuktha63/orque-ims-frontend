@@ -1,0 +1,40 @@
+<h2>{{ isEdit ? 'Edit Employee' : 'Add Employee' }}</h2>
+
+<div class="meta">
+  <div class="pill">Code: <b>{{ data?.employeeCode || 'Auto' }}</b></div>
+</div>
+
+<form [formGroup]="form" class="grid">
+  <mat-form-field appearance="outline" class="span2">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Department</mat-label>
+    <input matInput formControlName="department" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Role</mat-label>
+    <input matInput formControlName="role" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Join Date</mat-label>
+    <input matInput type="date" formControlName="joinDate" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option value="ACTIVE">ACTIVE</mat-option>
+      <mat-option value="INACTIVE">INACTIVE</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+
+<div class="actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>

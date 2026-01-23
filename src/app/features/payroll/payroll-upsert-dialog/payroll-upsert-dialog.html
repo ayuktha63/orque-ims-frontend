@@ -1,0 +1,47 @@
+<h2>{{ isEdit ? 'Edit Payroll' : 'Add Payroll' }}</h2>
+
+<div class="meta" *ngIf="selectedEmployee">
+  <div class="pill">Employee: <b>{{ selectedEmployee.name }}</b> ({{ selectedEmployee.employeeCode }})</div>
+  <div class="pill">Net Preview: <b>₹ {{ netPreview }}</b></div>
+</div>
+
+<form [formGroup]="form" class="grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Month</mat-label>
+    <input matInput type="month" formControlName="month" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Employee</mat-label>
+    <mat-select formControlName="employeeId">
+      <mat-option *ngFor="let e of employees" [value]="e.id">
+        {{ e.name }} ({{ e.employeeCode }})
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Basic</mat-label>
+    <input matInput type="number" formControlName="basic" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Allowances</mat-label>
+    <input matInput type="number" formControlName="allowances" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Deductions</mat-label>
+    <input matInput type="number" formControlName="deductions" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="span2">
+    <mat-label>Notes</mat-label>
+    <input matInput formControlName="notes" />
+  </mat-form-field>
+</form>
+
+<div class="actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>
