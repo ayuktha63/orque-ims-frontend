@@ -1,10 +1,13 @@
 export interface Employee {
-  id?: number;           // Backend Generated
-  employeeCode?: string; // Backend Generated (EMP0001)
+  id: number;
+  employeeCode: string;
   name: string;
   department?: string;
-  role?: string;
+  role?: string;         // e.g., 'ADMIN' | 'USER'
   status: 'ACTIVE' | 'INACTIVE';
-  joinDate: string;      // YYYY-MM-DD
-  createdAt?: string;    // Backend Generated
+  joinDate: string;
+  
+  // ADD THESE TWO FIELDS
+  hasAccess: boolean;    // This fixes your filter error
+  username?: string;     // Needed for the credentials table display
 }

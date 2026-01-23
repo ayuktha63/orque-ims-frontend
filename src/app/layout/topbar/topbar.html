@@ -6,6 +6,8 @@
   <span class="spacer"></span>
 
   <div class="user" *ngIf="auth.getUser() as u">
+    
+    <span class="role-badge">{{ u.role }}</span>
 
     <button
       mat-icon-button

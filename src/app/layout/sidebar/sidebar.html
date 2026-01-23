@@ -2,7 +2,7 @@
   <mat-nav-list class="nav">
     <a mat-list-item
        class="item"
-       *ngFor="let item of (menu$ | async)"
+       *ngFor="let item of filteredMenu"
        [routerLink]="item.route"
        routerLinkActive="active"
        [attr.aria-label]="item.label"

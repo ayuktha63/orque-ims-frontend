@@ -1,16 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { catchError, of, Observable } from 'rxjs';
-
-interface MenuItem {
-  label: string;
-  icon: string;
-  route: string;
-}
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,18 +13,20 @@ interface MenuItem {
   styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent {
-  menu$: Observable<MenuItem[]>;
+  private auth = inject(AuthService);
 
-  constructor(private http: HttpClient) {
-    this.menu$ = this.http.get<MenuItem[]>('assets/config/menu.json').pipe(
-      catchError(() =>
-        of<MenuItem[]>([
-          { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
-          { label: 'Finance', icon: 'paid', route: '/app/finance' },
-          { label: 'Invoices', icon: 'receipt_long', route: '/app/invoices' },
-          { label: 'Clients', icon: 'groups', route: '/app/clients' }
-        ])
-      )
-    );
+  menuItems = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
+    { label: 'Employees', icon: 'people', route: '/app/employees' },
+    { label: 'Finance', icon: 'paid', route: '/app/finance' },
+    { label: 'Payroll', icon: 'payments', route: '/app/payroll' },
+    { label: 'Invoices', icon: 'receipt_long', route: '/app/invoices' },
+    { label: 'Clients', icon: 'groups', route: '/app/clients' },
+    { label: 'Credentials', icon: 'admin_panel_settings', route: '/app/credentials', adminOnly: true }
+  ];
+
+  // This is what the HTML is looking for
+  get filteredMenu() {
+    return this.menuItems.filter(item => !item.adminOnly || this.auth.canEdit());
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,29 +14,45 @@ import { AuthService } from '../../core/services/auth';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule
+    CommonModule, 
+    ReactiveFormsModule, 
+    MatCardModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatButtonModule
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-  form;
+  // Use inject() to ensure these are available for property initialization
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router
-  ) {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(4)]]
-    });
-  }
+  // Now 'this.fb' is defined and safe to use here
+  form = this.fb.group({
+    username: ['', [Validators.required]], 
+    password: ['', [Validators.required, Validators.minLength(4)]]
+  });
+
+  // Constructor is no longer needed for injection
+  constructor() {}
 
   submit(): void {
     if (this.form.invalid) return;
-    const ok = this.auth.login(this.form.value.email!, this.form.value.password!);
-    if (ok) this.router.navigateByUrl('/app/dashboard');
+
+    const { username, password } = this.form.value;
+
+    // username! and password! tell TS these won't be null due to Validators.required
+    this.auth.login(username!, password!).subscribe({
+      next: () => {
+        this.router.navigateByUrl('/app/dashboard');
+      },
+      error: (err) => {
+        alert('Access Denied: Please check your username or password.');
+        console.error('Login error', err);
+      }
+    });
   }
 }

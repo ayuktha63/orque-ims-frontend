@@ -4,10 +4,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Observable } from 'rxjs'; // Import Observable
+import { BehaviorSubject, switchMap } from 'rxjs';
 
 import { EmployeeService } from '../../../core/services/employees';
 import { Employee } from '../../../core/models/employee.model';
+import { AuthService } from '../../../core/services/auth'; // 1. Import Auth
 import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employee-upsert-dialog';
 
 @Component({
@@ -20,21 +21,20 @@ import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employe
 export class EmployeeListComponent implements OnInit {
   displayedColumns = ['employeeCode', 'name', 'department', 'role', 'status', 'actions'];
   
-  // Use an Observable instead of a raw array to fix the NG0100 error
-  rows$!: Observable<Employee[]>;
+  // 2. Use a BehaviorSubject trigger for more robust data refreshing
+  private refresh$ = new BehaviorSubject<void>(undefined);
+  rows$ = this.refresh$.pipe(switchMap(() => this.service.list()));
 
   constructor(
     private dialog: MatDialog,
-    private service: EmployeeService
+    private service: EmployeeService,
+    public auth: AuthService // 3. Inject as public for HTML access
   ) {}
 
-  ngOnInit(): void {
-    this.fetchData();
-  }
+  ngOnInit(): void {}
 
   fetchData(): void {
-    // Assign the stream directly. The 'async' pipe in HTML handles the rest.
-    this.rows$ = this.service.list();
+    this.refresh$.next();
   }
 
   private openDrawer(data: Employee | null): void {
@@ -55,15 +55,20 @@ export class EmployeeListComponent implements OnInit {
   }
 
   add(): void {
-    this.openDrawer(null);
+    // 4. Guard the Add action
+    if (this.auth.canEdit()) {
+      this.openDrawer(null);
+    }
   }
 
   edit(row: Employee): void {
+    // Admins "Edit", Employees "View" - the same dialog handles both
     this.openDrawer(row);
   }
 
   remove(row: Employee): void {
-    if (confirm(`Are you sure you want to delete ${row.name}?`) && row.id) {
+    // 5. Strictly guard the Delete action
+    if (this.auth.canEdit() && confirm(`Are you sure you want to delete ${row.name}?`) && row.id) {
       this.service.delete(row.id).subscribe({
         next: () => this.fetchData(),
         error: (err) => console.error('Delete failed', err)

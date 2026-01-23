@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,10 +14,17 @@ import { AuthService } from '../../core/services/auth';
   styleUrls: ['./topbar.css']
 })
 export class TopbarComponent {
-  constructor(public auth: AuthService, private router: Router) {}
+  // Using inject() for cleaner initialization in standalone components
+  public auth = inject(AuthService);
+  private router = inject(Router);
 
   logout(): void {
+    // Clear local data via service
     this.auth.logout();
+    
+    // Use the router to navigate back to login
+    // Note: If your AuthService already uses window.location.href, 
+    // this line might be redundant, but it's safe to keep for SPA navigation.
     this.router.navigateByUrl('/login');
   }
 }
