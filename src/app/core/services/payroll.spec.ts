@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PayrollService } from './payroll';
 
-import { Payroll } from './payroll';
-
-describe('Payroll', () => {
-  let service: Payroll;
+describe('PayrollService', () => {
+  let service: PayrollService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Payroll);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [PayrollService]
+    });
+    service = TestBed.inject(PayrollService);
   });
 
   it('should be created', () => {
