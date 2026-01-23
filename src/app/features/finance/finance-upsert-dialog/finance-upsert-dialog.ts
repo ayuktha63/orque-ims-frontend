@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +10,15 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { FinanceEntry } from '../../../core/services/models';
 import { FinanceService } from '../../../core/services/finance';
+
+type FinanceUpsertForm = {
+  date: any;
+  type: any;
+  category: any;
+  amount: any;
+  paymentMode: any;
+  description: any;
+};
 
 @Component({
   selector: 'app-finance-upsert-dialog',
@@ -27,7 +36,7 @@ import { FinanceService } from '../../../core/services/finance';
 })
 export class FinanceUpsertDialogComponent {
   isEdit: boolean;
-  form: any;
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -44,7 +53,7 @@ export class FinanceUpsertDialogComponent {
       amount: [this.data?.amount ?? 0, [Validators.required, Validators.min(1)]],
       paymentMode: [this.data?.paymentMode ?? 'UPI', [Validators.required]],
       description: [this.data?.description ?? '']
-    });
+    } as FinanceUpsertForm);
   }
 
   save(): void {

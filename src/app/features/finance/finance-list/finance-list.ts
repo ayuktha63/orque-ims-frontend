@@ -27,12 +27,30 @@ export class FinanceListComponent implements OnInit {
     this.finance.list().subscribe(items => (this.rows = items));
   }
 
+  private openDrawer(data: FinanceEntry | null): void {
+    this.dialog.open(FinanceUpsertDialogComponent, {
+      data,
+      panelClass: 'right-drawer-dialog',
+      hasBackdrop: true,
+      autoFocus: false,
+      restoreFocus: false,
+      position: { right: '0', top: '0' },
+      height: '100vh',
+
+      // choose ONE width style:
+      width: '50vw',       // drawer up to mid screen
+      maxWidth: '100vw'
+      // OR fixed:
+      // width: '520px',
+    });
+  }
+
   add(): void {
-    this.dialog.open(FinanceUpsertDialogComponent, { width: '520px', data: null });
+    this.openDrawer(null);
   }
 
   edit(row: FinanceEntry): void {
-    this.dialog.open(FinanceUpsertDialogComponent, { width: '520px', data: row });
+    this.openDrawer(row);
   }
 
   remove(row: FinanceEntry): void {

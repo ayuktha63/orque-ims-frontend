@@ -1,5 +1,37 @@
 .card { padding: 14px; }
-.header { display: flex; align-items: center; justify-content: space-between; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .full { width: 100%; margin-top: 10px; }
-.actions { white-space: nowrap; }
+
 h2 { margin: 0; }
+
+/* actions column layout */
+.actions {
+  white-space: nowrap;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Delete (red X) */
+.delete-btn {
+  color: #d32f2f;
+  size: 10px;
+}
+
+.delete-btn:hover {
+  background: rgba(211, 47, 47, 0.10);
+}
+
+.delete-btn .x {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 700;
+  display: inline-block;
+  transform: translateY(-1px);
+}

@@ -5,3 +5,21 @@ html, body {
 body {
   margin: 0;
 }
+.cdk-overlay-pane.right-drawer-dialog {
+  position: fixed !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+.right-drawer-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+}
+
+.right-drawer-dialog .mat-mdc-dialog-surface {
+  border-radius: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
