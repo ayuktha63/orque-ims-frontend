@@ -2,7 +2,6 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,26 +10,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { FinanceEntry } from '../../../core/services/models';
 import { FinanceService } from '../../../core/services/finance';
 
-type FinanceUpsertForm = {
-  date: any;
-  type: any;
-  category: any;
-  amount: any;
-  paymentMode: any;
-  description: any;
-};
-
 @Component({
   selector: 'app-finance-upsert-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
   templateUrl: './finance-upsert-dialog.html',
   styleUrls: ['./finance-upsert-dialog.css']
 })
@@ -53,24 +36,27 @@ export class FinanceUpsertDialogComponent {
       amount: [this.data?.amount ?? 0, [Validators.required, Validators.min(1)]],
       paymentMode: [this.data?.paymentMode ?? 'UPI', [Validators.required]],
       description: [this.data?.description ?? '']
-    } as FinanceUpsertForm);
+    });
   }
 
   save(): void {
     if (this.form.invalid) return;
-
     const v = this.form.value;
 
-    if (this.isEdit && this.data) {
-      this.finance.update(this.data.id, v as any);
+    if (this.isEdit && this.data && typeof this.data.id === 'number') {
+      this.finance.update(this.data.id, v).subscribe({
+        next: () => this.ref.close(true),
+        error: (err) => console.error(err)
+      });
     } else {
-      this.finance.add(v as any);
+      this.finance.add(v).subscribe({
+        next: () => this.ref.close(true),
+        error: (err) => console.error(err)
+      });
     }
-
-    this.ref.close();
   }
 
   close(): void {
-    this.ref.close();
+    this.ref.close(false);
   }
 }

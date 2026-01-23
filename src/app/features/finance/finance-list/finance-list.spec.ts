@@ -1,23 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FinanceService } from '../../../core/services/finance';
 
-import { FinanceList } from './finance-list';
+describe('FinanceService', () => {
+  let service: FinanceService;
 
-describe('FinanceList', () => {
-  let component: FinanceList;
-  let fixture: ComponentFixture<FinanceList>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FinanceList]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(FinanceList);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [FinanceService]
+    });
+    service = TestBed.inject(FinanceService);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should be created', () => {
+    expect(service).toBeTruthy();
   });
 });

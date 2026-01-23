@@ -1,10 +1,12 @@
 <mat-card class="card">
   <div class="header">
-    <h2>Finance</h2>
-    <button mat-raised-button color="primary" (click)="add()">Add Entry</button>
+    <h2>Finance Transactions</h2>
+    <button mat-raised-button color="primary" (click)="add()">
+      Add Entry
+    </button>
   </div>
 
-  <table mat-table [dataSource]="rows" class="full">
+  <table mat-table [dataSource]="(rows$ | async) || []" class="full">
 
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef>Date</th>
@@ -13,7 +15,11 @@
 
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef>Type</th>
-      <td mat-cell *matCellDef="let r">{{ r.type }}</td>
+      <td mat-cell *matCellDef="let r">
+        <span [ngClass]="r.type === 'INCOME' ? 'text-success' : 'text-danger'">
+          {{ r.type }}
+        </span>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="category">
@@ -23,7 +29,7 @@
 
     <ng-container matColumnDef="amount">
       <th mat-header-cell *matHeaderCellDef>Amount</th>
-      <td mat-cell *matCellDef="let r">₹ {{ r.amount }}</td>
+      <td mat-cell *matCellDef="let r">₹ {{ r.amount | number:'1.2-2' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="paymentMode">
@@ -33,24 +39,26 @@
 
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef>Description</th>
-      <td mat-cell *matCellDef="let r">{{ r.description }}</td>
+      <td mat-cell *matCellDef="let r">{{ r.description || '-' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let r" class="actions">
-  <button mat-stroked-button color="primary" (click)="edit(r)">
-    Edit
-  </button>
-
-  <button mat-stroked-button class="delete-btn" (click)="remove(r)">
-    <span class="x">X</span>
-  </button>
-</td>
-
+        <button mat-stroked-button color="primary" (click)="edit(r)">
+          Edit
+        </button>
+        <button mat-stroked-button class="delete-btn" (click)="remove(r)">
+          <span class="x">X</span>
+        </button>
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+
+  <div *ngIf="((rows$ | async)?.length === 0)" class="empty-state">
+    <p>No transactions found for this period.</p>
+  </div>
 </mat-card>
