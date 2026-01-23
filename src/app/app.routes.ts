@@ -16,12 +16,14 @@ export const routes: Routes = [
     path: 'app',
     component: AppShellComponent,
     canActivate: [authGuard],
+    data: { breadcrumb: 'Home' },          // optional label for app root
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'finance', component: FinanceListComponent },
-      { path: 'invoices', component: InvoicesComponent },
-      { path: 'clients', component: ClientsComponent }
+
+      { path: 'dashboard', component: DashboardComponent, data: { breadcrumb: 'Dashboard' } },
+      { path: 'finance', component: FinanceListComponent, data: { breadcrumb: 'Finance' } },
+      { path: 'invoices', component: InvoicesComponent, data: { breadcrumb: 'Invoices' } },
+      { path: 'clients', component: ClientsComponent, data: { breadcrumb: 'Clients' } }
     ]
   },
 

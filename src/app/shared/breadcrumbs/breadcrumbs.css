@@ -1,0 +1,25 @@
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin: 6px 0 14px;
+  opacity: 0.9;
+}
+
+.crumb {
+  text-decoration: none;
+}
+
+.crumb:hover {
+  text-decoration: underline;
+}
+
+.sep {
+  opacity: 0.55;
+}
+
+.current {
+  font-weight: 600;
+  opacity: 0.9;
+}

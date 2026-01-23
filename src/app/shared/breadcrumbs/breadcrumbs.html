@@ -1,0 +1,14 @@
+<nav class="crumbs" *ngIf="crumbs.length">
+  <!-- Always provide a quick jump to Dashboard -->
+  <a class="crumb" [routerLink]="['/app/dashboard']">Dashboard</a>
+
+  <ng-container *ngFor="let c of crumbs; let last = last">
+    <!-- Skip repeating Dashboard if it already appears -->
+    <ng-container *ngIf="c.label !== 'Dashboard'">
+      <span class="sep">/</span>
+
+      <a class="crumb" *ngIf="!last" [routerLink]="c.url">{{ c.label }}</a>
+      <span class="crumb current" *ngIf="last">{{ c.label }}</span>
+    </ng-container>
+  </ng-container>
+</nav>
