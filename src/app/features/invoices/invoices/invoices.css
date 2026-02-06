@@ -1,2 +1,9 @@
-.card { padding: 14px; }
-h2 { margin: 0 0 8px; }
+body {
+  font-family: "Geist", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.mono {
+  font-family: "Geist Mono", monospace;
+}

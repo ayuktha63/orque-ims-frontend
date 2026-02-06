@@ -1,4 +1,270 @@
-<mat-card class="card">
-  <h2>Invoices</h2>
-  <p>Invoice module will be added next.</p>
-</mat-card>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice</title>
+
+<!-- Geist Fonts (OFFICIAL SOURCE) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;700&family=Geist+Mono:wght@400;500;700&display=block" rel="stylesheet">
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #1e1e1e;
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  /* ================= PAGE ================= */
+  .page {
+    width: 794px;
+    height: 1123px;
+    background: #f4f7fb;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ================= SAFE WHITE MARGINS ================= */
+  .frame {
+    margin: 0 15px;
+    height: 100%;
+    position: relative;
+  }
+
+  /* ================= HEADER ================= */
+  .header {
+    height: 350px;
+    padding: 48px;
+    background: linear-gradient(135deg,#0a1322,#020617);
+    clip-path: polygon(0 0, 100% 0, 100% 200px, 72% 350px, 0 350px);
+    color: #fff;
+    position: relative;
+  }
+
+  .invoice-id {
+    position: absolute;
+    top: 34px;
+    right: 48px;
+    font-family: "Geist Mono";
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .logo img {
+    width: 64px;
+  }
+
+  .title {
+    position: absolute;
+    bottom: 0px;
+    left: 48px;
+    font-family: "Geist";
+    font-size: 110px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* ================= CONTENT ================= */
+  .content {
+    padding: 36px 40px;
+    font-family: "Geist Mono";
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    font-size: 11px;
+    color: #6b7280;
+    letter-spacing: 1px;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  th:last-child { text-align: right; }
+
+  .dash {
+    border-top: 1px dashed #b6bbc6;
+    margin: 8px 0;
+  }
+
+  td {
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0f172a;
+  }
+
+  td:last-child {
+    text-align: right;
+    font-weight: 700; /* ALL PRICES BOLD */
+  }
+
+  .item td:first-child {
+    font-weight: 700; /* DESCRIPTION BOLD */
+  }
+
+  .paid td {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .remaining td {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* ================= FOOTER ================= */
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    padding: 32px 56px;
+    background: linear-gradient(135deg,#020617,#0a1322);
+    clip-path: polygon(0 32px, 100% 0, 100% 100%, 0 100%);
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    font-family: "Geist Mono";
+  }
+
+  .f-left {
+    width: 32%;
+    font-size: 10px;
+    line-height: 1.6;
+    opacity: .85;
+  }
+
+  .f-center {
+    width: 40%;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  .f-right {
+    width: 20%;
+    text-align: right;
+    font-size: 10px;
+  }
+
+  .qr {
+    width: 70px;
+    height: 70px;
+    background: #fff;
+    padding: 5px;
+    margin-top: 6px;
+    float: right;
+  }
+
+  .date {
+    position: absolute;
+    right: 56px;
+    bottom: 22px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: "Geist Mono";
+  }
+</style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="frame">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="invoice-id" id="inv">ORQ/2026/010</div>
+
+      <div class="logo">
+        <img src="assets/soloorque.png" alt="Logo">
+      </div>
+
+      <div class="title">Invoice</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <table>
+        <thead>
+          <tr>
+            <th>DESCRIPTION</th>
+            <th>COST</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+          <tr class="item">
+            <td>Digital Marketing 1 Month Plan + Ads</td>
+            <td>₹16,000</td>
+          </tr>
+
+          <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+          <tr class="paid">
+            <td>PAID <span style="float:right;">60%</span></td>
+            <td>-₹9,600</td>
+          </tr>
+
+          <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+          <tr class="remaining">
+            <td>REMAINING</td>
+            <td>₹6,400</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="f-left">
+        Thank you for your partnership! Please let us know if you need anything else to process this invoice.
+      </div>
+
+      <div class="f-center">
+        Bank: State Bank of India<br>
+        Account Name: Mr. Krishna Prasad S M<br>
+        Account Number: 41056846725<br>
+        IFSC: SBIN0070263<br>
+        Account Type: SAVINGS BANK ACCOUNT
+      </div>
+
+      <div class="f-right">
+        Or pay via:
+        <div class="qr">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=ORQ/2026/010" width="100%">
+        </div>
+      </div>
+
+      <div class="date" id="date"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // TODAY DATE (DD/MM/YYYY)
+  const d = new Date();
+  document.getElementById("date").innerText =
+    d.toLocaleDateString("en-GB");
+
+  // CHANGE ONLY NUMBER
+  const no = "010";
+  document.getElementById("inv").innerText = "ORQ/2026/" + no;
+</script>
+
+</body>
+</html>
