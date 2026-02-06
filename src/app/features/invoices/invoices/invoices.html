@@ -1,306 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Invoice</title>
+<div style="display:flex; gap:20px;">
 
-<!-- Geist Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;700&family=Geist+Mono:wght@400;500;700&display=block" rel="stylesheet">
+  <!-- ================= LEFT FORM ================= -->
+  <mat-card style="width:35%; padding:20px;">
+    <h3>Create Invoice</h3>
 
-<style>
-  * { box-sizing: border-box; }
+    <label>Invoice Number</label>
+    <input type="number" [(ngModel)]="invoiceNumber" />
 
-  body {
-    margin: 0;
-    background: #1e1e1e;
-    display: flex;
-    justify-content: center;
-    padding: 24px;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: geometricPrecision;
-  }
-
-  /* ================= PAGE ================= */
-  .page {
-    width: 794px;
-    height: 1123px;
-    background: #f4f7fb;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* ================= SAFE WHITE MARGINS ================= */
-  .frame {
-    margin: 0 15px;
-    height: 100%;
-    position: relative;
-  }
-
-  /* ================= HEADER ================= */
-  .header {
-    height: 350px;
-    padding: 48px;
-    background: linear-gradient(135deg,#0a1322,#020617);
-    clip-path: polygon(0 0, 100% 0, 100% 200px, 72% 350px, 0 350px);
-    color: #fff;
-    position: relative;
-  }
-
-  .invoice-id {
-    position: absolute;
-    top: 34px;
-    right: 48px;
-    font-family: "Geist Mono";
-    font-size: 11px;
-    letter-spacing: 1px;
-    font-weight: 500;
-  }
-
-  .logo img {
-    width: 64px;
-  }
-
-  .title {
-    position: absolute;
-    bottom: 0;
-    left: 48px;
-    font-family: "Geist";
-    font-size: 110px;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-  }
-
-  /* ================= CONTENT ================= */
-  .content {
-    padding: 36px 40px;
-    font-family: "Geist Mono";
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th {
-    font-size: 11px;
-    color: #6b7280;
-    letter-spacing: 1px;
-    text-align: left;
-    font-weight: 500;
-  }
-
-  th:last-child { text-align: right; }
-
-  .dash {
-    border-top: 1px dashed #b6bbc6;
-    margin: 8px 0;
-  }
-
-  td {
-    padding: 10px 0;
-    font-size: 15px;
-    font-weight: 500;
-    color: #0f172a;
-  }
-
-  td:last-child { text-align: right; }
-
-  /* Digital Marketing text */
-  .item-text {
-    color: #000;
-    font-family: "Geist";
-    font-size: 17px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 120%;
-    letter-spacing: -0.17px;
-  }
-
-  /* PAID + REMAINING labels (same style) */
-  .paid td:first-child,
-  .remaining td:first-child {
-    font-size: 13px;
-    font-weight: 500;
-    color: #6b7280;
-    font-family: "Geist Mono";
-  }
-
-  /* ================= UNIVERSAL PRICE STYLE ================= */
-  .price {
-    color: #000000;              /* same as PAID */
-    font-family: "Geist";
-    font-size: 17px;             /* SAME SIZE everywhere */
-    font-style: normal;
-    font-weight: 500;
-    line-height: 120%;
-    letter-spacing: -0.17px;
-    text-align: right;
-  }
-
-  /* ================= FOOTER SVG ================= */
-  .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 220px;
-  }
-
-  .footer svg {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .footer-content {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    padding: 36px 56px;
-    display: flex;
-    justify-content: space-between;
-    font-family: "Geist Mono";
-    color: #ffffff;
-  }
-
-  .f-left {
-    width: 32%;
-    font-size: 10px;
-    line-height: 1.6;
-    opacity: .85;
-  }
-
-  .f-center {
-    width: 40%;
-    font-size: 10px;
-    line-height: 1.6;
-  }
-
-  .f-right {
-    width: 20%;
-    text-align: right;
-    font-size: 10px;
-  }
-
-  .qr {
-    width: 70px;
-    height: 70px;
-    background: #fff;
-    padding: 5px;
-    margin-top: 6px;
-    float: right;
-  }
-
-  .date {
-    position: absolute;
-    right: 56px;
-    bottom: 24px;
-    font-size: 12px;
-    font-weight: 500;
-    font-family: "Geist Mono";
-  }
-</style>
-</head>
-
-<body>
-
-<div class="page">
-  <div class="frame">
-
-    <!-- HEADER -->
-    <div class="header">
-      <div class="invoice-id" id="inv">ORQ/2026/010</div>
-
-      <div class="logo">
-        <img src="assets/soloorque.png" alt="Logo">
-      </div>
-
-      <div class="title">Invoice</div>
+    <h4>Items</h4>
+    <div *ngFor="let item of invoice.items">
+      <input placeholder="Description" [(ngModel)]="item.description" />
+      <input type="number" placeholder="Cost" [(ngModel)]="item.cost" />
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-      <table>
-        <thead>
-          <tr>
-            <th>DESCRIPTION</th>
-            <th>COST</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td colspan="2"><div class="dash"></div></td></tr>
+    <button (click)="addItem()">+ Add Item</button>
 
-          <tr class="item">
-            <td class="item-text">Digital Marketing 1 Month Plan + Ads</td>
-            <td class="price">₹16,000</td>
-          </tr>
+    <h4>Paid Amount</h4>
+    <input type="number" [(ngModel)]="invoice.paid" />
 
-          <tr><td colspan="2"><div class="dash"></div></td></tr>
+    <p><strong>Remaining:</strong> ₹{{ remaining }}</p>
 
-          <tr class="paid">
-            <td>PAID <span style="float:right;">60%</span></td>
-            <td class="price">-₹9,600</td>
-          </tr>
+    <button (click)="downloadPDF()">⬇ Download PDF</button>
+  </mat-card>
 
-          <tr><td colspan="2"><div class="dash"></div></td></tr>
+  <!-- ================= RIGHT LIVE INVOICE ================= -->
+  <div id="invoice" style="width:65%;">
+    <!-- 🔥 YOUR EXISTING INVOICE HTML GOES HERE EXACTLY 🔥 -->
+    <!-- ONLY dynamic bindings changed -->
 
-          <tr class="remaining">
-            <td>REMAINING</td>
-            <td class="price">₹6,400</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="page">
+      <div class="frame">
 
-    <!-- FOOTER -->
-    <div class="footer">
+        <div class="header">
+          <div class="invoice-id">{{ invoiceId }}</div>
 
-      <!-- SVG SHAPE -->
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 588 298" preserveAspectRatio="none">
-        <path d="M588 298L0 298L0 21.5943L294 21.5942L441 21.5943L514.5 0L588 0L588 298Z" fill="#0A1420"/>
-      </svg>
+          <div class="logo">
+            <img src="assets/soloorque.png">
+          </div>
 
-      <!-- FOOTER CONTENT -->
-      <div class="footer-content">
-        <div class="f-left">
-          Thank you for your partnership! Please let us know if you need anything else to process this invoice.
+          <div class="title">Invoice</div>
         </div>
 
-        <div class="f-center">
-          Bank: State Bank of India<br>
-          Account Name: Mr. Krishna Prasad S M<br>
-          Account Number: 41056846725<br>
-          IFSC: SBIN0070263<br>
-          Account Type: SAVINGS BANK ACCOUNT
+        <div class="content">
+          <table>
+            <thead>
+              <tr>
+                <th>DESCRIPTION</th>
+                <th>COST</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+              <tr *ngFor="let item of invoice.items">
+                <td class="item-text">{{ item.description }}</td>
+                <td class="price">₹{{ item.cost }}</td>
+              </tr>
+
+              <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+              <tr class="paid">
+                <td>PAID</td>
+                <td class="price">-₹{{ invoice.paid }}</td>
+              </tr>
+
+              <tr><td colspan="2"><div class="dash"></div></td></tr>
+
+              <tr class="remaining">
+                <td>REMAINING</td>
+                <td class="price">₹{{ remaining }}</td>
+              </tr>
+
+            </tbody>
+          </table>
         </div>
 
-        <div class="f-right">
-          Or pay via:
-          <div class="qr">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=ORQ/2026/010" width="100%">
+        <!-- FOOTER -->
+        <div class="footer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 588 298" preserveAspectRatio="none">
+            <path d="M588 298L0 298L0 21.5943L294 21.5942L441 21.5943L514.5 0L588 0L588 298Z" fill="#0A1420"/>
+          </svg>
+
+          <div class="footer-content">
+            <div class="f-left">
+              Thank you for your partnership! Please let us know if you need anything else to process this invoice.
+            </div>
+
+            <div class="f-center">
+              Bank: {{ bank.name }}<br>
+              Account Name: {{ bank.accountName }}<br>
+              Account Number: {{ bank.accountNumber }}<br>
+              IFSC: {{ bank.ifsc }}<br>
+              Account Type: {{ bank.type }}
+            </div>
+
+            <div class="f-right">
+              Or pay via:
+              <div class="qr">
+                <img
+                  [src]="'https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=' + invoiceId"
+                  width="100%">
+              </div>
+            </div>
+
+            <div class="date">
+              {{ today | date:'dd/MM/yyyy' }}
+            </div>
           </div>
         </div>
 
-        <div class="date" id="date"></div>
       </div>
-
     </div>
-
   </div>
+
 </div>
-
-<script>
-  const d = new Date();
-  document.getElementById("date").innerText =
-    d.toLocaleDateString("en-GB");
-
-  const no = "010";
-  document.getElementById("inv").innerText = "ORQ/2026/" + no;
-</script>
-
-</body>
-</html>

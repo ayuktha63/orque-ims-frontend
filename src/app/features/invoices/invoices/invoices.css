@@ -1,9 +1,203 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: "Geist", system-ui, sans-serif;
+  margin: 0;
+  background: #1e1e1e;
+  display: flex;
+  justify-content: center;
+  padding: 24px;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
 }
 
-.mono {
-  font-family: "Geist Mono", monospace;
+/* ================= PAGE ================= */
+.page {
+  width: 794px;
+  height: 1123px;
+  background: #f4f7fb;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ================= SAFE WHITE MARGINS ================= */
+.frame {
+  margin: 0 15px;
+  height: 100%;
+  position: relative;
+}
+
+/* ================= HEADER ================= */
+.header {
+  height: 350px;
+  padding: 48px;
+  background: linear-gradient(135deg, #0a1322, #020617);
+  clip-path: polygon(0 0, 100% 0, 100% 200px, 72% 350px, 0 350px);
+  color: #ffffff;
+  position: relative;
+}
+
+.invoice-id {
+  position: absolute;
+  top: 34px;
+  right: 48px;
+  font-family: "Geist Mono";
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.logo img {
+  width: 64px;
+}
+
+.title {
+  position: absolute;
+  bottom: 0;
+  left: 48px;
+  font-family: "Geist";
+  font-size: 110px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* ================= CONTENT ================= */
+.content {
+  padding: 36px 40px;
+  font-family: "Geist Mono";
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  text-align: left;
+  font-weight: 500;
+}
+
+th:last-child {
+  text-align: right;
+}
+
+.dash {
+  border-top: 1px dashed #b6bbc6;
+  margin: 8px 0;
+}
+
+td {
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+td:last-child {
+  text-align: right;
+}
+
+/* ================= ITEM DESCRIPTION ================= */
+.item-text {
+  color: #000000;
+  font-family: "Geist";
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.17px;
+}
+
+/* ================= PAID & REMAINING LABELS ================= */
+.paid td:first-child,
+.remaining td:first-child {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  font-family: "Geist Mono";
+}
+
+/* ================= UNIVERSAL PRICE STYLE ================= */
+.price {
+  color: #000000;
+  font-family: "Geist";
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.17px;
+  text-align: right;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 220px;
+}
+
+.footer svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.footer-content {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  padding: 36px 56px;
+  display: flex;
+  justify-content: space-between;
+  font-family: "Geist Mono";
+  color: #ffffff;
+}
+
+/* Footer left text */
+.f-left {
+  width: 32%;
+  font-size: 10px;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+/* Bank details */
+.f-center {
+  width: 40%;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* QR section */
+.f-right {
+  width: 20%;
+  text-align: right;
+  font-size: 10px;
+}
+
+.qr {
+  width: 70px;
+  height: 70px;
+  background: #ffffff;
+  padding: 5px;
+  margin-top: 6px;
+  float: right;
+}
+
+/* Date */
+.date {
+  position: absolute;
+  right: 56px;
+  bottom: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Geist Mono";
 }
