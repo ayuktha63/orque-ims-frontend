@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Invoice</title>
 
-<!-- Geist Fonts (OFFICIAL SOURCE) -->
+<!-- Geist Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;700&family=Geist+Mono:wght@400;500;700&display=block" rel="stylesheet">
@@ -64,7 +64,7 @@
 
   .title {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     left: 48px;
     font-family: "Geist";
     font-size: 110px;
@@ -105,38 +105,66 @@
     color: #0f172a;
   }
 
-  td:last-child {
-    text-align: right;
-    font-weight: 700; /* ALL PRICES BOLD */
+  td:last-child { text-align: right; }
+
+  /* Digital Marketing text */
+  .item-text {
+    color: #000;
+    font-family: "Geist";
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.17px;
   }
 
-  .item td:first-child {
-    font-weight: 700; /* DESCRIPTION BOLD */
-  }
-
-  .paid td {
+  /* PAID + REMAINING labels (same style) */
+  .paid td:first-child,
+  .remaining td:first-child {
     font-size: 13px;
+    font-weight: 500;
     color: #6b7280;
+    font-family: "Geist Mono";
   }
 
-  .remaining td {
-    font-size: 18px;
-    font-weight: 700;
+  /* ================= UNIVERSAL PRICE STYLE ================= */
+  .price {
+    color: #000000;              /* same as PAID */
+    font-family: "Geist";
+    font-size: 17px;             /* SAME SIZE everywhere */
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.17px;
+    text-align: right;
   }
 
-  /* ================= FOOTER ================= */
+  /* ================= FOOTER SVG ================= */
   .footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 200px;
-    padding: 32px 56px;
-    background: linear-gradient(135deg,#020617,#0a1322);
-    clip-path: polygon(0 32px, 100% 0, 100% 100%, 0 100%);
-    color: #ffffff;
+    height: 220px;
+  }
+
+  .footer svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .footer-content {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    padding: 36px 56px;
     display: flex;
     justify-content: space-between;
     font-family: "Geist Mono";
+    color: #ffffff;
   }
 
   .f-left {
@@ -170,7 +198,7 @@
   .date {
     position: absolute;
     right: 56px;
-    bottom: 22px;
+    bottom: 24px;
     font-size: 12px;
     font-weight: 500;
     font-family: "Geist Mono";
@@ -207,22 +235,22 @@
           <tr><td colspan="2"><div class="dash"></div></td></tr>
 
           <tr class="item">
-            <td>Digital Marketing 1 Month Plan + Ads</td>
-            <td>₹16,000</td>
+            <td class="item-text">Digital Marketing 1 Month Plan + Ads</td>
+            <td class="price">₹16,000</td>
           </tr>
 
           <tr><td colspan="2"><div class="dash"></div></td></tr>
 
           <tr class="paid">
             <td>PAID <span style="float:right;">60%</span></td>
-            <td>-₹9,600</td>
+            <td class="price">-₹9,600</td>
           </tr>
 
           <tr><td colspan="2"><div class="dash"></div></td></tr>
 
           <tr class="remaining">
             <td>REMAINING</td>
-            <td>₹6,400</td>
+            <td class="price">₹6,400</td>
           </tr>
         </tbody>
       </table>
@@ -230,38 +258,46 @@
 
     <!-- FOOTER -->
     <div class="footer">
-      <div class="f-left">
-        Thank you for your partnership! Please let us know if you need anything else to process this invoice.
-      </div>
 
-      <div class="f-center">
-        Bank: State Bank of India<br>
-        Account Name: Mr. Krishna Prasad S M<br>
-        Account Number: 41056846725<br>
-        IFSC: SBIN0070263<br>
-        Account Type: SAVINGS BANK ACCOUNT
-      </div>
+      <!-- SVG SHAPE -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 588 298" preserveAspectRatio="none">
+        <path d="M588 298L0 298L0 21.5943L294 21.5942L441 21.5943L514.5 0L588 0L588 298Z" fill="#0A1420"/>
+      </svg>
 
-      <div class="f-right">
-        Or pay via:
-        <div class="qr">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=ORQ/2026/010" width="100%">
+      <!-- FOOTER CONTENT -->
+      <div class="footer-content">
+        <div class="f-left">
+          Thank you for your partnership! Please let us know if you need anything else to process this invoice.
         </div>
+
+        <div class="f-center">
+          Bank: State Bank of India<br>
+          Account Name: Mr. Krishna Prasad S M<br>
+          Account Number: 41056846725<br>
+          IFSC: SBIN0070263<br>
+          Account Type: SAVINGS BANK ACCOUNT
+        </div>
+
+        <div class="f-right">
+          Or pay via:
+          <div class="qr">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=ORQ/2026/010" width="100%">
+          </div>
+        </div>
+
+        <div class="date" id="date"></div>
       </div>
 
-      <div class="date" id="date"></div>
     </div>
 
   </div>
 </div>
 
 <script>
-  // TODAY DATE (DD/MM/YYYY)
   const d = new Date();
   document.getElementById("date").innerText =
     d.toLocaleDateString("en-GB");
 
-  // CHANGE ONLY NUMBER
   const no = "010";
   document.getElementById("inv").innerText = "ORQ/2026/" + no;
 </script>
