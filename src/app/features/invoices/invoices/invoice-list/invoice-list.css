@@ -1,0 +1,25 @@
+.invoice-list-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.search {
+  width: 260px;
+}
+
+table {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
