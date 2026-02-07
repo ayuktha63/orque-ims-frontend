@@ -1,13 +1,83 @@
 <nav class="sidebar">
   <mat-nav-list class="nav">
-    <a mat-list-item
-       class="item"
-       *ngFor="let item of filteredMenu"
-       [routerLink]="item.route"
-       routerLinkActive="active"
-       [attr.aria-label]="item.label"
-       [attr.title]="item.label">
-      <mat-icon class="icon">{{ item.icon }}</mat-icon>
+
+    <!-- Dashboard -->
+    <a mat-list-item class="item"
+       routerLink="/app/dashboard"
+       matTooltip="Dashboard"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">dashboard</mat-icon>
     </a>
+
+    <!-- Employees -->
+    <a mat-list-item class="item"
+       routerLink="/app/employees"
+       matTooltip="Employees"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">people</mat-icon>
+    </a>
+
+    <!-- Finance -->
+    <a mat-list-item class="item"
+       routerLink="/app/finance"
+       matTooltip="Finance"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">paid</mat-icon>
+    </a>
+
+    <!-- Payroll -->
+    <a mat-list-item class="item"
+       routerLink="/app/payroll"
+       matTooltip="Payroll"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">payments</mat-icon>
+    </a>
+
+    <!-- ========== INVOICE (CLICK TO TOGGLE) ========== -->
+    <div class="invoice-block">
+
+      <!-- Invoice main icon -->
+      <div class="item invoice-main"
+           matTooltip="Invoices"
+           (click)="toggleInvoice($event)">
+        <mat-icon class="icon">receipt_long</mat-icon>
+      </div>
+
+      <!-- Inline dropdown -->
+      <div class="invoice-inline" *ngIf="invoiceOpen">
+
+        <a mat-list-item class="item sub-item"
+           routerLink="/app/invoices"
+           matTooltip="Create Invoice"
+           (click)="closeInvoice()">
+          <mat-icon class="sub-icon">add</mat-icon>
+        </a>
+
+        <a mat-list-item class="item sub-item"
+           routerLink="/app/invoices/list"
+           matTooltip="Invoice List"
+           (click)="closeInvoice()">
+          <mat-icon class="sub-icon">visibility</mat-icon>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Clients -->
+    <a mat-list-item class="item"
+       routerLink="/app/clients"
+       matTooltip="Clients"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">groups</mat-icon>
+    </a>
+
+    <!-- Credentials -->
+    <a mat-list-item class="item"
+       routerLink="/app/credentials"
+       matTooltip="Credentials"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">admin_panel_settings</mat-icon>
+    </a>
+
   </mat-nav-list>
 </nav>

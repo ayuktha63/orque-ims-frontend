@@ -11,6 +11,7 @@ import { PayrollListComponent } from './features/payroll/payroll-list/payroll-li
 import { InvoicesComponent } from './features/invoices/invoices/invoices';
 import { ClientsComponent } from './features/clients/clients/clients';
 import { CredentialsComponent } from './features/credential/credentials/credentials';
+import { InvoiceListComponent } from './features/invoices/invoices/invoice-list/invoice-list';
 
 export const routes: Routes = [
   // 1. Root Redirect
@@ -51,9 +52,20 @@ export const routes: Routes = [
         data: { breadcrumb: 'Payroll' } 
       },
       { 
-        path: 'invoices', 
-        component: InvoicesComponent, 
-        data: { breadcrumb: 'Invoices' } 
+        path: 'invoices',
+        data:{breadcrumb: 'Invoices'},
+        children: [
+      {
+        path: '',
+        component: InvoicesComponent,
+        data:{ breadcrumb : 'Create' }   // Create Invoice (default)
+      },
+      {
+        path: 'list',
+        component: InvoiceListComponent, // Invoice List
+        data:{ breadcrumb : 'Search' }
+      }
+    ] 
       },
       { 
         path: 'clients', 
