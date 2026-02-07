@@ -1,32 +1,59 @@
 <div style="display:flex; gap:20px;">
 
-  <!-- ================= LEFT FORM ================= -->
-  <mat-card style="width:35%; padding:20px;">
-    <h3>Create Invoice</h3>
+  <!-- ================= LEFT PROFESSIONAL FORM ================= -->
+  <mat-card style="width:35%; padding:24px; border-radius:12px;">
 
-    <label>Invoice Number</label>
-    <input type="number" [(ngModel)]="invoiceNumber" />
+    <h2 style="margin-bottom:20px;">Create Invoice</h2>
 
-    <h4>Items</h4>
-    <div *ngFor="let item of invoice.items">
-      <input placeholder="Description" [(ngModel)]="item.description" />
-      <input type="number" placeholder="Cost" [(ngModel)]="item.cost" />
+    <!-- Invoice Number -->
+    <mat-form-field appearance="outline" style="width:100%; margin-bottom:20px;">
+      <mat-label>Invoice Number</mat-label>
+      <input matInput type="number" [(ngModel)]="invoiceNumber">
+    </mat-form-field>
+
+    <!-- Items -->
+    <h4 style="margin-bottom:10px;">Invoice Items</h4>
+
+    <div *ngFor="let item of invoice.items" style="display:flex; gap:10px; margin-bottom:12px;">
+      <mat-form-field appearance="outline" style="width:70%;">
+        <mat-label>Description</mat-label>
+        <input matInput [(ngModel)]="item.description">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width:30%;">
+        <mat-label>Cost (₹)</mat-label>
+        <input matInput type="number" [(ngModel)]="item.cost">
+      </mat-form-field>
     </div>
 
-    <button (click)="addItem()">+ Add Item</button>
+    <button mat-stroked-button color="primary" (click)="addItem()" style="margin-bottom:20px;">
+      + Add Item
+    </button>
 
-    <h4>Paid Amount</h4>
-    <input type="number" [(ngModel)]="invoice.paid" />
+    <!-- Paid -->
+    <mat-form-field appearance="outline" style="width:100%; margin-bottom:10px;">
+      <mat-label>Paid Amount (₹)</mat-label>
+      <input matInput type="number" [(ngModel)]="invoice.paid">
+    </mat-form-field>
 
-    <p><strong>Remaining:</strong> ₹{{ remaining }}</p>
+    <p style="margin-bottom:20px;">
+      <strong>Remaining:</strong> ₹{{ remaining }}
+    </p>
 
-    <button (click)="downloadPDF()">⬇ Download PDF</button>
+    <!-- Final Action -->
+    <button
+      mat-raised-button
+      color="primary"
+      style="width:100%; height:48px; font-size:16px;"
+      (click)="generateAndDownload()">
+
+      Generate & Download Invoice
+    </button>
+
   </mat-card>
 
-  <!-- ================= RIGHT LIVE INVOICE ================= -->
+  <!-- ================= RIGHT LIVE INVOICE (UNCHANGED) ================= -->
   <div id="invoice" style="width:65%;">
-    <!-- 🔥 YOUR EXISTING INVOICE HTML GOES HERE EXACTLY 🔥 -->
-    <!-- ONLY dynamic bindings changed -->
 
     <div class="page">
       <div class="frame">
@@ -112,6 +139,7 @@
 
       </div>
     </div>
+
   </div>
 
 </div>

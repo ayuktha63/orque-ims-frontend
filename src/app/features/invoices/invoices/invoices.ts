@@ -2,18 +2,27 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   templateUrl: './invoices.html',
   styleUrls: ['./invoices.css']
 })
 export class InvoicesComponent {
 
   invoiceNumber = 10; // change only this number
-
   today = new Date();
 
   invoice = {
@@ -48,18 +57,34 @@ export class InvoicesComponent {
     this.invoice.items.push({ description: '', cost: 0 });
   }
 
+  async generateAndDownload() {
+    if (!this.invoice.items.length) {
+      alert('Add at least one item');
+      return;
+    }
+
+    await this.downloadPDF();
+  }
+
   async downloadPDF() {
-    const el = document.getElementById('invoice');
-    if (!el) return;
+    const element = document.getElementById('invoice');
+    if (!element) return;
 
     const html2pdf = (await import('html2pdf.js')).default;
 
     html2pdf()
-      .from(el)
+      .from(element)
       .set({
         filename: `${this.invoiceId}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+          unit: 'pt',
+          orientation: 'portrait'
+        }
       })
       .save();
   }
