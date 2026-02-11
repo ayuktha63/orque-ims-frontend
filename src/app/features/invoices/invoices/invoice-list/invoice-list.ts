@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -15,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule, // Required for backend communication
     MatCardModule,
     MatTableModule,
     MatIconModule,
@@ -25,57 +27,53 @@ import { MatInputModule } from '@angular/material/input';
   templateUrl: './invoice-list.html',
   styleUrls: ['./invoice-list.css']
 })
-export class InvoiceListComponent {
+export class InvoiceListComponent implements OnInit {
+  searchText: string = '';
+  invoices: any[] = []; 
+  displayedColumns: string[] = ['invoiceNumber', 'date', 'total', 'paid', 'remaining', 'actions'];
 
-  searchText = '';
+  // Base API URL - ensure this matches your server.servlet.context-path if defined
+  private apiUrl = 'http://localhost:8080/api/invoices';
 
-  displayedColumns: string[] = [
-    'invoiceNumber',
-    'date',
-    'total',
-    'paid',
-    'remaining',
-    'actions'
-  ];
+  constructor(private http: HttpClient) {}
 
-  // 🔁 Temporary static data (replace with API later)
-  invoices = [
-    {
-      invoiceNumber: 'ORQ/2026/010',
-      date: '12/01/2026',
-      total: 15000,
-      paid: 5000,
-      remaining: 10000
-    },
-    {
-      invoiceNumber: 'ORQ/2026/011',
-      date: '18/01/2026',
-      total: 8000,
-      paid: 8000,
-      remaining: 0
-    },
-    {
-      invoiceNumber: 'ORQ/2026/012',
-      date: '25/01/2026',
-      total: 12000,
-      paid: 4000,
-      remaining: 8000
-    }
-  ];
+  ngOnInit(): void {
+    this.loadInvoices();
+  }
 
+  /**
+   * Fetches the list of invoices from the Spring Boot API.
+   */
+  loadInvoices(): void {
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.invoices = data;
+        console.log('Invoices loaded:', this.invoices);
+      },
+      error: (err) => {
+        console.error('Failed to load invoices. Check if Backend is running on 8080.', err);
+      }
+    });
+  }
+
+  /**
+   * Filters the table data based on the invoice number search input.
+   */
   get filteredInvoices() {
     return this.invoices.filter(inv =>
       inv.invoiceNumber.toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
 
-  viewInvoice(invoice: any) {
-    console.log('View invoice:', invoice);
-    // 🔮 Next step: open invoice preview dialog or route
+  viewInvoice(invoice: any): void {
+    alert(`Viewing Details for: ${invoice.invoiceNumber}\nTotal: ₹${invoice.total}`);
   }
 
-  downloadInvoice(invoice: any) {
-    console.log('Download invoice:', invoice);
-    // 🔮 Next step: regenerate PDF or fetch from server
+  /**
+   * Triggers a PDF download using the saved invoice data.
+   */
+  async downloadInvoice(invoice: any) {
+    console.log('Generating PDF for:', invoice.invoiceNumber);
+    // Note: To use html2pdf here, you'd need the same logic used in your creation component
   }
 }

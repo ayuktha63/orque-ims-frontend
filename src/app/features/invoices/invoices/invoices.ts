@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -21,18 +24,14 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./invoices.css']
 })
 export class InvoicesComponent {
-
-  invoiceNumber = 10; // change only this number
+  invoiceNumber = 10;
   today = new Date();
 
   invoice = {
-    items: [
-      { description: 'Digital Marketing 1 Month Plan + Ads', cost: 0 }
-    ],
+    items: [{ description: 'Digital Marketing 1 Month Plan + Ads', cost: 0 }],
     paid: 0
   };
 
-  // 🔒 FIXED BANK DETAILS
   bank = {
     name: 'State Bank of India',
     accountName: 'Mr. Krishna Prasad S M',
@@ -40,6 +39,8 @@ export class InvoicesComponent {
     ifsc: 'SBIN0070263',
     type: 'SAVINGS BANK ACCOUNT'
   };
+
+  constructor(private http: HttpClient) {}
 
   get invoiceId(): string {
     return `ORQ/2026/${this.invoiceNumber.toString().padStart(3, '0')}`;
@@ -63,29 +64,40 @@ export class InvoicesComponent {
       return;
     }
 
-    await this.downloadPDF();
+    // Mapping payload to match Backend Entity precisely
+    const payload = {
+      invoiceNumber: this.invoiceId,
+      date: this.today.toISOString().split('T')[0], // YYYY-MM-DD format
+      paid: Number(this.invoice.paid),
+      total: this.total,
+      remaining: this.remaining,
+      items: this.invoice.items.map(item => ({
+        description: item.description,
+        cost: Number(item.cost)
+      }))
+    };
+
+    // Sending POST to Backend
+    this.http.post('http://localhost:8080/api/invoices', payload).subscribe({
+      next: async (res) => {
+        console.log('Successfully saved to DB:', res);
+        await this.downloadPDF();
+      },
+      error: (err) => {
+        console.error('Network Error:', err);
+        alert('Backend Error: Check if endpoint /api/invoices is mapped in Spring Boot logs.');
+      }
+    });
   }
 
   async downloadPDF() {
     const element = document.getElementById('invoice');
     if (!element) return;
-
     const html2pdf = (await import('html2pdf.js')).default;
-
-    html2pdf()
-      .from(element)
-      .set({
-        filename: `${this.invoiceId}.pdf`,
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: {
-          unit: 'pt',
-          orientation: 'portrait'
-        }
-      })
-      .save();
+    html2pdf().from(element).set({
+      filename: `${this.invoiceId}.pdf`,
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'pt', orientation: 'portrait' }
+    }).save();
   }
 }
