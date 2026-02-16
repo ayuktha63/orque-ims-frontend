@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CredentialService, Credential } from './credential';
-
+import { environment } from '../../../environment/environment';
 describe('CredentialService', () => {
   let service: CredentialService;
   let httpMock: HttpTestingController;
-  const API_URL = 'http://localhost:8080/api/credentials';
+  const API_URL = `${environment.api}/api/credentials`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

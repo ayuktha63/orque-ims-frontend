@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PayrollEntry } from '../models/payroll.model'; // Correct path
-
+import { environment } from '../../../environment/environment';
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
-  private readonly API_URL = 'http://localhost:8080/api/payroll';
+  private readonly API_URL = `${environment.api}/api/payroll`;
   constructor(private http: HttpClient) {}
 
   list(): Observable<PayrollEntry[]> { return this.http.get<PayrollEntry[]>(this.API_URL); }

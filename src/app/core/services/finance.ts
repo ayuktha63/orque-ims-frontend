@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { FinanceEntry } from './models';
-
+import { environment } from '../../../environment/environment';
 @Injectable({ providedIn: 'root' })
 export class FinanceService {
-  private readonly API_URL = 'http://localhost:8080/api/finance';
+  private readonly API_URL = `${environment.api}/api/finance`;
 
   constructor(private http: HttpClient) {}
 

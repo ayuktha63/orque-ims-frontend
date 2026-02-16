@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environment/environment';
 /**
  * Matches your Spring Boot Duty entity response
  */
@@ -20,7 +20,7 @@ export interface Duty {
 @Injectable({ providedIn: 'root' })
 export class DutyService {
 
-  private readonly API = 'http://localhost:8080/api/duties';
+  private readonly API = `${environment.api}/api/duties`;
   private http = inject(HttpClient);
 
   // ===============================

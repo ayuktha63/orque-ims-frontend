@@ -2,7 +2,7 @@ import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-
+import { environment } from '../../../environment/environment';
 export interface AuthUser {
   id: number;
   role: string;
@@ -11,7 +11,7 @@ export interface AuthUser {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = `${environment.api}/api/auth`;
   private platformId = inject(PLATFORM_ID);
   private http = inject(HttpClient);
 

@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-
+import { environment } from '../../../../environment/environment';
 @Component({
   selector: 'app-invoices',
   standalone: true,
@@ -78,7 +78,7 @@ export class InvoicesComponent {
     };
 
     // Sending POST to Backend
-    this.http.post('http://localhost:8080/api/invoices', payload).subscribe({
+    this.http.post(`${environment.api}/api/invoices`, payload).subscribe({
       next: async (res) => {
         console.log('Successfully saved to DB:', res);
         await this.downloadPDF();

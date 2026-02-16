@@ -8,7 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatTableModule } from "@angular/material/table";
 import { MatTabsModule } from "@angular/material/tabs";
-
+import { environment } from "../../../../environment/environment";
 import { AuthService } from "../../../core/services/auth";
 
 @Component({
@@ -35,9 +35,8 @@ export class DutyDefectDialogComponent {
 
   displayedColumns = ["jobId", "issue", "status"];
 
-  private API = "http://localhost:8080/api/defects";
-  private JOB_API = "http://localhost:8080/api/duties";
-
+private API = `${environment.api}/api/defects`;
+private JOB_API = `${environment.api}/api/duties`;
   form!: FormGroup;
 
   constructor(
