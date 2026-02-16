@@ -1,4 +1,13 @@
 <mat-card>
+
+  <!-- 🔥 CREATE DUTY BUTTON -->
+  <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"
+       *ngIf="auth.isAdmin()">
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      + Create Duty
+    </button>
+  </div>
+
   <mat-tab-group (selectedTabChange)="onTabChange($event)">
     <mat-tab label="Pending"></mat-tab>
     <mat-tab label="Assigned"></mat-tab>
@@ -7,7 +16,7 @@
   </mat-tab-group>
 
   <table mat-table [dataSource]="(rows$ | async) ?? []" class="full">
-    
+
     <ng-container matColumnDef="jobId">
       <th mat-header-cell *matHeaderCellDef> Job </th>
       <td mat-cell *matCellDef="let row"> {{ row.jobId }} </td>
@@ -20,7 +29,9 @@
 
     <ng-container matColumnDef="employee">
       <th mat-header-cell *matHeaderCellDef> Employee </th>
-      <td mat-cell *matCellDef="let row"> {{ row.assignedTo?.name || '-' }} </td>
+      <td mat-cell *matCellDef="let row">
+        {{ row.assignedTo?.name || '-' }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="status">
@@ -31,21 +42,30 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let row">
+
         <button mat-flat-button color="primary"
                 *ngIf="row.status === 'PENDING_APPROVAL' && auth.isAdmin()"
-                (click)="update(row, 'ASSIGNED')">Approve</button>
+                (click)="update(row, 'ASSIGNED')">
+          Approve
+        </button>
 
         <button mat-stroked-button
                 *ngIf="row.status === 'ASSIGNED'"
-                (click)="update(row, 'ONGOING')">Start</button>
+                (click)="update(row, 'ONGOING')">
+          Start
+        </button>
 
         <button mat-stroked-button color="accent"
                 *ngIf="row.status === 'ONGOING'"
-                (click)="update(row, 'COMPLETED')">Finish</button>
+                (click)="update(row, 'COMPLETED')">
+          Finish
+        </button>
+
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
   </table>
 </mat-card>
