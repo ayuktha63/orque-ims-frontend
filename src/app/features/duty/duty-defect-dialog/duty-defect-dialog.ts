@@ -7,6 +7,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatTableModule } from "@angular/material/table";
+import { MatTabsModule } from "@angular/material/tabs";
 
 import { AuthService } from "../../../core/services/auth";
 
@@ -19,27 +20,30 @@ import { AuthService } from "../../../core/services/auth";
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
-    MatTableModule
+    MatTableModule,
+    MatTabsModule
   ],
   templateUrl: "./duty-defect-dialog.html",
   styleUrls: ["./duty-defect-dialog.css"]
 })
 export class DutyDefectDialogComponent {
 
-  defects: any[] = [];
+  // ⭐ THREE DATASETS NOW
+  myRaisedDefects: any[] = [];
+  myAssignedDefects: any[] = [];
   jobs: any[] = [];
 
-  displayedColumns = ["jobId", "issue", "priority", "status"];
+  displayedColumns = ["jobId", "issue", "status"];
 
   private API = "http://localhost:8080/api/defects";
-  private JOB_API = "http://localhost:8080/api/duties"; // ⭐ using duties
+  private JOB_API = "http://localhost:8080/api/duties";
 
   form!: FormGroup;
 
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
-    private cd: ChangeDetectorRef,   // ⭐ FIX FOR NG0100
+    private cd: ChangeDetectorRef,
     public auth: AuthService
   ) {
     this.form = this.fb.group({
@@ -52,37 +56,44 @@ export class DutyDefectDialogComponent {
 
   ngOnInit(): void {
     this.loadJobs();
-    this.loadDefects();
+    this.loadMyRaised();
+    this.loadAssigned();
   }
 
-  // ================= LOAD DUTIES =================
+  // ================= LOAD JOB DROPDOWN =================
   loadJobs(): void {
     this.http.get<any[]>(this.JOB_API).subscribe({
       next: (res) => {
         this.jobs = res;
-        this.cd.detectChanges(); // ⭐ PREVENT NG0100 ERROR
+        this.cd.detectChanges();
       },
-      error: (err) => console.error("Load duties failed", err)
+      error: (err) => console.error(err)
     });
   }
 
-  // ================= LOAD DEFECTS =================
-  loadDefects(): void {
-
-    const url = this.auth.canEdit()
-      ? `${this.API}`
-      : `${this.API}/my`;
-
-    this.http.get<any[]>(url).subscribe({
+  // ================= MY RAISED DEFECTS =================
+  loadMyRaised(): void {
+    this.http.get<any[]>(`${this.API}/my`).subscribe({
       next: (res) => {
-        this.defects = res;
-        this.cd.detectChanges(); // ⭐ SAFE UPDATE
+        this.myRaisedDefects = res;
+        this.cd.detectChanges();
       },
-      error: (err) => console.error("Load defects failed", err)
+      error: (err) => console.error(err)
     });
   }
 
-  // ================= SAVE DEFECT =================
+  // ================= ASSIGNED DEFECTS =================
+  loadAssigned(): void {
+    this.http.get<any[]>(`${this.API}/assigned`).subscribe({
+      next: (res) => {
+        this.myAssignedDefects = res;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  // ================= CREATE DEFECT =================
   save(): void {
 
     if (this.form.invalid) return;
@@ -94,9 +105,12 @@ export class DutyDefectDialogComponent {
             priority: "MEDIUM",
             status: "OPEN"
           });
-          this.loadDefects();
+
+          // reload both lists
+          this.loadMyRaised();
+          this.loadAssigned();
         },
-        error: (err) => console.error("Defect create failed", err)
+        error: (err) => console.error(err)
       });
   }
 }
