@@ -29,16 +29,35 @@
       <mat-icon class="icon">payments</mat-icon>
     </a>
 
-    <!-- ========== INVOICE (CLICK TO TOGGLE) ========== -->
+    <!-- ================= DUTY MODULE ================= -->
+
+    <!-- ADMIN: Add Duty / Manage -->
+    <a *ngIf="auth.canEdit()"
+       mat-list-item
+       class="item"
+       routerLink="/app/duties"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">assignment</mat-icon>
+    </a>
+
+    <!-- EMPLOYEE: My Work -->
+    <a *ngIf="!auth.canEdit()"
+       mat-list-item
+       class="item"
+       routerLink="/app/my-work"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">task_alt</mat-icon>
+    </a>
+
+    <!-- ================= INVOICE BLOCK ================= -->
+
     <div class="invoice-block">
 
-      <!-- Invoice main icon -->
       <div class="item invoice-main"
            (click)="toggleInvoice($event)">
         <mat-icon class="icon">receipt_long</mat-icon>
       </div>
 
-      <!-- Inline dropdown -->
       <div class="invoice-inline" *ngIf="invoiceOpen">
 
         <a mat-list-item class="item sub-item"

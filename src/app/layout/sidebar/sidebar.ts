@@ -5,6 +5,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { AuthService } from '../../core/services/auth'; // ✅ ADD THIS
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -19,6 +21,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent {
+
+  // ✅ REQUIRED for sidebar role checks (auth.canEdit())
+  constructor(public auth: AuthService) {}
 
   invoiceOpen = false;
 

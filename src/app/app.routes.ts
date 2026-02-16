@@ -13,75 +13,102 @@ import { ClientsComponent } from './features/clients/clients/clients';
 import { CredentialsComponent } from './features/credential/credentials/credentials';
 import { InvoiceListComponent } from './features/invoices/invoices/invoice-list/invoice-list';
 
+// ✅ ADD DUTY IMPORTS
+import { DutyListComponent } from './features/duty/duty-list/duty-list';
+import { MyWorkComponent } from './features/duty/my-work/my-work';
+
 export const routes: Routes = [
-  // 1. Root Redirect
+
+  // ================= ROOT REDIRECT =================
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 
-  // 2. Public Route
+  // ================= PUBLIC =================
   { path: 'login', component: LoginComponent },
 
-  // 3. Protected Shell Route
+  // ================= APP SHELL =================
   {
     path: 'app',
     component: AppShellComponent,
     canActivate: [authGuard],
-    data: { breadcrumb: 'Home' }, 
+    data: { breadcrumb: 'Home' },
     children: [
+
       // Default child redirect
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-      
-      // Feature Routes with Breadcrumb Labels
-      { 
-        path: 'dashboard', 
-        component: DashboardComponent, 
-        data: { breadcrumb: 'Dashboard' } 
+
+      // ================= CORE FEATURES =================
+
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        data: { breadcrumb: 'Dashboard' }
       },
-      { 
-        path: 'employees', 
-        component: EmployeeListComponent, 
-        data: { breadcrumb: 'Employees' } 
+      {
+        path: 'employees',
+        component: EmployeeListComponent,
+        data: { breadcrumb: 'Employees' }
       },
-      { 
-        path: 'finance', 
-        component: FinanceListComponent, 
-        data: { breadcrumb: 'Finance' } 
+      {
+        path: 'finance',
+        component: FinanceListComponent,
+        data: { breadcrumb: 'Finance' }
       },
-      { 
-        path: 'payroll', 
-        component: PayrollListComponent, 
-        data: { breadcrumb: 'Payroll' } 
+      {
+        path: 'payroll',
+        component: PayrollListComponent,
+        data: { breadcrumb: 'Payroll' }
       },
-      { 
+
+      // ================= DUTY MODULE (🔥 ADDED) =================
+
+      {
+        path: 'duties',
+        component: DutyListComponent,
+        data: { breadcrumb: 'Duties' }
+      },
+      {
+        path: 'my-work',
+        component: MyWorkComponent,
+        data: { breadcrumb: 'My Work' }
+      },
+
+      // ================= INVOICES =================
+
+      {
         path: 'invoices',
-        data:{breadcrumb: 'Invoices'},
+        data: { breadcrumb: 'Invoices' },
         children: [
+          {
+            path: '',
+            component: InvoicesComponent,
+            data: { breadcrumb: 'Create' }
+          },
+          {
+            path: 'list',
+            component: InvoiceListComponent,
+            data: { breadcrumb: 'Search' }
+          }
+        ]
+      },
+
+      // ================= OTHER FEATURES =================
+
       {
-        path: '',
-        component: InvoicesComponent,
-        data:{ breadcrumb : 'Create' }   // Create Invoice (default)
+        path: 'clients',
+        component: ClientsComponent,
+        data: { breadcrumb: 'Clients' }
       },
+
+      // Admin Only
       {
-        path: 'list',
-        component: InvoiceListComponent, // Invoice List
-        data:{ breadcrumb : 'Search' }
+        path: 'credentials',
+        component: CredentialsComponent,
+        data: { breadcrumb: 'System Access' }
       }
-    ] 
-      },
-      { 
-        path: 'clients', 
-        component: ClientsComponent, 
-        data: { breadcrumb: 'Clients' } 
-      },
-      
-      // Admin Only Route
-      { 
-        path: 'credentials', 
-        component: CredentialsComponent, 
-        data: { breadcrumb: 'System Access' } 
-      }
+
     ]
   },
 
-  // 4. Wildcard Catch-all
+  // ================= WILDCARD =================
   { path: '**', redirectTo: 'login' }
 ];

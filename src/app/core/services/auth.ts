@@ -3,60 +3,91 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
+export interface AuthUser {
+  id: number;
+  role: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private readonly API_URL = 'http://localhost:8080/api/auth';
   private platformId = inject(PLATFORM_ID);
   private http = inject(HttpClient);
 
+  // ===============================
+  // LOGIN
+  // ===============================
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/login`, { username, password }).pipe(
-      tap(res => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('auth_token', res.token);
-          localStorage.setItem('user_role', res.role);
-          localStorage.setItem('user_id', res.userId.toString());
-        }
-      })
-    );
+    return this.http.post<any>(`${this.API_URL}/login`, { username, password })
+      .pipe(
+        tap(res => {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('auth_token', res.token);
+            localStorage.setItem('user_role', res.role);
+            localStorage.setItem('user_id', String(res.userId));
+          }
+        })
+      );
   }
 
-  // REQUIRED BY AUTH GUARD
+  // ===============================
+  // TOKEN
+  // ===============================
+  getToken(): string | null {
+    return isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('auth_token')
+      : null;
+  }
+
+  // ===============================
+  // 🔥 ADDED — REQUIRED BY GUARD
+  // ===============================
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  // REQUIRED BY INTERCEPTOR
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('auth_token');
-    }
-    return null;
+  // ===============================
+  // 🔥 ADDED — REQUIRED BY TOPBAR
+  // ===============================
+  getUser(): AuthUser | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+
+    const id = localStorage.getItem('user_id');
+    const role = localStorage.getItem('user_role');
+
+    if (!id || !role) return null;
+
+    return {
+      id: Number(id),
+      role
+    };
   }
 
-  // REQUIRED BY SIDEBAR
-  getUserRole(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('user_role') || 'USER';
-    }
-    return 'USER';
+  // ===============================
+  // ROLES
+  // ===============================
+  isAdmin(): boolean {
+    const role = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('user_role')
+      : '';
+    return role === 'ROLE_ADMIN' || role === 'ADMIN';
   }
 
-  // REQUIRED BY SIDEBAR & PERMISSIONS
   canEdit(): boolean {
-    return this.getUserRole() === 'ADMIN';
+    return this.isAdmin();
   }
 
-  // REQUIRED BY TOPBAR
-  getUser() {
-    if (isPlatformBrowser(this.platformId)) {
-      const role = this.getUserRole();
-      const token = this.getToken();
-      return token ? { role } : null;
-    }
-    return null;
+  employeeId(): number {
+    const id = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('user_id')
+      : null;
+    return id ? Number(id) : 0;
   }
 
+  // ===============================
+  // LOGOUT
+  // ===============================
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.clear();

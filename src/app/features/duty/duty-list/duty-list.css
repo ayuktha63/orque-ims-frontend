@@ -1,0 +1,4 @@
+.card { padding:14px; }
+.header { display:flex; justify-content:space-between; align-items:center; }
+.full { width:100%; margin-top:10px; }
+.actions { display:flex; gap:8px; }

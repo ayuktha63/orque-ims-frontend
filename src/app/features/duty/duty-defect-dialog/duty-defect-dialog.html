@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Raise Defect / Issue</h2>
+
+<div mat-dialog-content [formGroup]="form" class="content">
+
+  <!-- Job ID (readonly) -->
+  <mat-form-field class="full">
+    <mat-label>Job ID</mat-label>
+    <input matInput formControlName="jobId" readonly>
+  </mat-form-field>
+
+  <!-- Issue Description -->
+  <mat-form-field class="full">
+    <mat-label>Issue Description</mat-label>
+    <textarea matInput rows="4" formControlName="issue"></textarea>
+  </mat-form-field>
+
+  <!-- Priority -->
+  <mat-form-field class="full">
+    <mat-label>Priority</mat-label>
+    <mat-select formControlName="priority">
+      <mat-option value="LOW">Low</mat-option>
+      <mat-option value="MEDIUM">Medium</mat-option>
+      <mat-option value="HIGH">High</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Status -->
+  <mat-form-field class="full">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option value="OPEN">OPEN</mat-option>
+      <mat-option value="CLOSED">CLOSED</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</div>
+
+<div mat-dialog-actions align="end">
+
+  <button mat-stroked-button mat-dialog-close>
+    Cancel
+  </button>
+
+  <button mat-raised-button color="primary" (click)="save()">
+    Submit Defect
+  </button>
+
+</div>
