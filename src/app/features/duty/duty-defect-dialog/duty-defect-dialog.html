@@ -1,20 +1,17 @@
-<h2 mat-dialog-title>Raise Defect / Issue</h2>
+<h2 class="title">Raise Defect / Issue</h2>
 
-<div mat-dialog-content [formGroup]="form" class="content">
+<div class="content" [formGroup]="form">
 
-  <!-- Job ID (readonly) -->
   <mat-form-field class="full">
     <mat-label>Job ID</mat-label>
-    <input matInput formControlName="jobId" readonly>
+    <input matInput formControlName="jobId">
   </mat-form-field>
 
-  <!-- Issue Description -->
   <mat-form-field class="full">
     <mat-label>Issue Description</mat-label>
     <textarea matInput rows="4" formControlName="issue"></textarea>
   </mat-form-field>
 
-  <!-- Priority -->
   <mat-form-field class="full">
     <mat-label>Priority</mat-label>
     <mat-select formControlName="priority">
@@ -24,7 +21,6 @@
     </mat-select>
   </mat-form-field>
 
-  <!-- Status -->
   <mat-form-field class="full">
     <mat-label>Status</mat-label>
     <mat-select formControlName="status">
@@ -33,16 +29,37 @@
     </mat-select>
   </mat-form-field>
 
-</div>
-
-<div mat-dialog-actions align="end">
-
-  <button mat-stroked-button mat-dialog-close>
-    Cancel
-  </button>
-
   <button mat-raised-button color="primary" (click)="save()">
     Submit Defect
   </button>
 
 </div>
+
+<h3 class="list-title">Defects</h3>
+
+<table mat-table [dataSource]="defects" class="full-table">
+
+  <ng-container matColumnDef="jobId">
+    <th mat-header-cell *matHeaderCellDef>Job ID</th>
+    <td mat-cell *matCellDef="let d">{{d.jobId}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="issue">
+    <th mat-header-cell *matHeaderCellDef>Issue</th>
+    <td mat-cell *matCellDef="let d">{{d.issue}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="priority">
+    <th mat-header-cell *matHeaderCellDef>Priority</th>
+    <td mat-cell *matCellDef="let d">{{d.priority}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let d">{{d.status}}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>

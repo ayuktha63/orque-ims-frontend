@@ -3,7 +3,7 @@ import { LoginComponent } from './auth/login/login';
 import { AppShellComponent } from './layout/app-shell/app-shell';
 import { authGuard } from './core/guards/auth-guard';
 
-// Feature Components
+// Core Features
 import { DashboardComponent } from './features/dashboard/dashboard';
 import { EmployeeListComponent } from './features/employees/employee-list/employee-list';
 import { FinanceListComponent } from './features/finance/finance-list/finance-list';
@@ -13,9 +13,12 @@ import { ClientsComponent } from './features/clients/clients/clients';
 import { CredentialsComponent } from './features/credential/credentials/credentials';
 import { InvoiceListComponent } from './features/invoices/invoices/invoice-list/invoice-list';
 
-// ✅ ADD DUTY IMPORTS
+// DUTY MODULE
 import { DutyListComponent } from './features/duty/duty-list/duty-list';
 import { MyWorkComponent } from './features/duty/my-work/my-work';
+
+// ✅ ADD DEFECT PAGE IMPORT
+import { DutyDefectDialogComponent } from './features/duty/duty-defect-dialog/duty-defect-dialog';
 
 export const routes: Routes = [
 
@@ -59,7 +62,7 @@ export const routes: Routes = [
         data: { breadcrumb: 'Payroll' }
       },
 
-      // ================= DUTY MODULE (🔥 ADDED) =================
+      // ================= DUTY MODULE =================
 
       {
         path: 'duties',
@@ -70,6 +73,13 @@ export const routes: Routes = [
         path: 'my-work',
         component: MyWorkComponent,
         data: { breadcrumb: 'My Work' }
+      },
+
+      // ✅ NEW DEFECT PAGE ROUTE
+      {
+        path: 'defects',
+        component: DutyDefectDialogComponent,
+        data: { breadcrumb: 'Defects' }
       },
 
       // ================= INVOICES =================
@@ -98,8 +108,6 @@ export const routes: Routes = [
         component: ClientsComponent,
         data: { breadcrumb: 'Clients' }
       },
-
-      // Admin Only
       {
         path: 'credentials',
         component: CredentialsComponent,

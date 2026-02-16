@@ -1,7 +1,7 @@
 <nav class="sidebar">
   <mat-nav-list class="nav">
 
-    <!-- Dashboard -->
+    <!-- ================= DASHBOARD ================= -->
     <a mat-list-item class="item"
        routerLink="/app/dashboard"
        (click)="closeInvoice()">
@@ -31,7 +31,7 @@
 
     <!-- ================= DUTY MODULE ================= -->
 
-    <!-- ADMIN: Add Duty / Manage -->
+    <!-- ADMIN: Manage Duties -->
     <a *ngIf="auth.canEdit()"
        mat-list-item
        class="item"
@@ -49,6 +49,14 @@
       <mat-icon class="icon">task_alt</mat-icon>
     </a>
 
+    <!-- ✅ NEW DEFECTS PAGE -->
+    <a mat-list-item
+       class="item"
+       routerLink="/app/defects"
+       (click)="closeInvoice()">
+      <mat-icon class="icon">bug_report</mat-icon>
+    </a>
+
     <!-- ================= INVOICE BLOCK ================= -->
 
     <div class="invoice-block">
@@ -60,22 +68,26 @@
 
       <div class="invoice-inline" *ngIf="invoiceOpen">
 
-        <a mat-list-item class="item sub-item"
+        <a mat-list-item
+           class="item sub-item"
            routerLink="/app/invoices"
            (click)="closeInvoice()">
           <mat-icon class="sub-icon">add</mat-icon>
         </a>
 
-        <a mat-list-item class="item sub-item"
+        <a mat-list-item
+           class="item sub-item"
            routerLink="/app/invoices/list"
            (click)="closeInvoice()">
           <mat-icon class="sub-icon">visibility</mat-icon>
         </a>
 
       </div>
+
     </div>
 
-    <!-- Clients -->
+    <!-- ================= CLIENTS ================= -->
+
     <a mat-list-item class="item"
        routerLink="/app/clients"
        (click)="closeInvoice()">

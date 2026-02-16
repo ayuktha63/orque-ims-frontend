@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { AuthService } from '../../core/services/auth'; // ✅ ADD THIS
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,10 +23,9 @@ import { AuthService } from '../../core/services/auth'; // ✅ ADD THIS
 })
 export class SidebarComponent {
 
-  // ✅ REQUIRED for sidebar role checks (auth.canEdit())
-  constructor(public auth: AuthService) {}
-
   invoiceOpen = false;
+
+  constructor(public auth: AuthService) {}
 
   toggleInvoice(event: MouseEvent) {
     event.stopPropagation();
