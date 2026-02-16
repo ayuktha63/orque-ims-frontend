@@ -2,9 +2,16 @@
 
 <div class="content" [formGroup]="form">
 
+  <!-- ⭐ JOB ID DROPDOWN -->
   <mat-form-field class="full">
     <mat-label>Job ID</mat-label>
-    <input matInput formControlName="jobId">
+
+    <mat-select formControlName="jobId">
+      <mat-option *ngFor="let j of jobs" [value]="j.jobId">
+        {{ j.jobId }}
+      </mat-option>
+    </mat-select>
+
   </mat-form-field>
 
   <mat-form-field class="full">
