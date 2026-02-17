@@ -1,4 +1,10 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { ChartComponent } from 'ng-apexcharts';
@@ -6,12 +12,8 @@ import { ChartComponent } from 'ng-apexcharts';
 import { FinanceService } from '../../core/services/finance';
 import { FinanceEntry } from '../../core/services/models';
 
-interface Task {
-  title: string;
-  assignedTo: string;
-  dueDate: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'DONE';
-}
+import { DutyService, Duty } from '../../core/services/duty';
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,38 +37,32 @@ export class DashboardComponent implements OnInit {
   incomeExpenseChart: any;
   categoryChart: any;
 
-  // ✅ FRONTEND-ONLY TASK DATA
-  tasks: Task[] = [
-    {
-      title: 'Prepare Invoice UI',
-      assignedTo: 'Ashish',
-      dueDate: '2026-01-12',
-      status: 'IN_PROGRESS'
-    },
-    {
-      title: 'Dashboard Chart Fix',
-      assignedTo: 'Krishna',
-      dueDate: '2026-01-15',
-      status: 'TODO'
-    },
-    {
-      title: 'Client Follow-up',
-      assignedTo: 'Anas',
-      dueDate: '2026-01-10',
-      status: 'DONE'
-    }
-  ];
+  // ✅ LIVE ONGOING DUTIES
+  ongoingDuties: Duty[] = [];
 
-  constructor(private finance: FinanceService) {}
+  constructor(
+    private finance: FinanceService,
+    private dutyService: DutyService,
+    private auth: AuthService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.refresh();
+    // small delay ensures shell layout renders first
+    setTimeout(() => {
+      this.loadFinance();
+      this.loadOngoingDuties();
+    });
   }
 
-  refresh(): void {
+  // =========================
+  // LOAD FINANCE DATA
+  // =========================
+  loadFinance(): void {
 
     this.finance.summaryForMonth(this.month).subscribe(data => {
       this.summary = data;
+      this.cd.detectChanges();
     });
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
@@ -107,7 +103,7 @@ export class DashboardComponent implements OnInit {
         colors: ['#4caf50', '#f44336']
       };
 
-      // ---------- Category Donut Chart ----------
+      // ---------- Category Donut ----------
       const cat: Record<string, number> = {};
 
       for (const e of entries.filter(x => x.type === 'EXPENSE')) {
@@ -119,6 +115,28 @@ export class DashboardComponent implements OnInit {
         chart: { type: 'donut', height: 300 },
         labels: Object.keys(cat)
       };
+
+      // ⭐ FORCE UI UPDATE AFTER CHART BUILD
+      this.cd.detectChanges();
+    });
+  }
+
+  // =========================
+  // LOAD ONGOING DUTIES
+  // =========================
+  loadOngoingDuties(): void {
+
+    const source$ = this.auth.isAdmin()
+      ? this.dutyService.getAll()
+      : this.dutyService.myWork(this.auth.employeeId());
+
+    source$.subscribe(list => {
+      this.ongoingDuties = (list || []).filter(
+        d => d.status === 'ONGOING'
+      );
+
+      // ⭐ IMPORTANT FOR INITIAL LOAD
+      this.cd.detectChanges();
     });
   }
 }

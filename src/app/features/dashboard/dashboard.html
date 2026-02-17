@@ -9,7 +9,7 @@
   </mat-card>
 
   <!-- INCOME VS EXPENSE -->
-  <mat-card *ngIf="incomeExpenseChart">
+  <mat-card *ngIf="incomeExpenseChart?.series?.length">
     <apx-chart
       [series]="incomeExpenseChart.series"
       [chart]="incomeExpenseChart.chart"
@@ -19,7 +19,7 @@
   </mat-card>
 
   <!-- CATEGORY DONUT -->
-  <mat-card *ngIf="categoryChart">
+  <mat-card *ngIf="categoryChart?.series?.length">
     <apx-chart
       [series]="categoryChart.series"
       [chart]="categoryChart.chart"
@@ -27,26 +27,27 @@
     </apx-chart>
   </mat-card>
 
-  <!-- ✅ TASKS ASSIGNED (FRONTEND ONLY) -->
+  <!-- ✅ LIVE ONGOING DUTIES -->
   <mat-card class="task-card">
-    <h3>Tasks Assigned</h3>
+    <h3>Ongoing Duties</h3>
 
-    <div *ngIf="tasks.length === 0" class="empty">
-      No tasks assigned
+    <div *ngIf="ongoingDuties.length === 0" class="empty">
+      No ongoing duties
     </div>
 
-    <div class="task" *ngFor="let task of tasks">
+    <div class="task" *ngFor="let duty of ongoingDuties">
       <div>
-        <strong>{{ task.title }}</strong>
+        <strong>{{ duty.title }}</strong>
         <div class="meta">
-          {{ task.assignedTo }} · Due {{ task.dueDate }}
+          Job {{ duty.jobId }} · {{ duty.assignedTo?.name || '-' }}
         </div>
       </div>
 
-      <span class="status" [ngClass]="task.status.toLowerCase()">
-        {{ task.status }}
+      <span class="status ongoing">
+        ONGOING
       </span>
     </div>
+
   </mat-card>
 
 </div>
