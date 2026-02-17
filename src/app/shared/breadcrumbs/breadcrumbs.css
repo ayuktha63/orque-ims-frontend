@@ -1,12 +1,24 @@
+:host {
+  display: block;
+  position: sticky;
+  z-index: 100;
+  background: #fff;
+}
+
+/* ===== Breadcrumb container ===== */
 .crumbs {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  margin: 6px 0 14px;
+  padding: 8px 16px;
+  margin: 0;
   opacity: 0.9;
+
+  border-bottom: 1px solid #e5e5e5;
 }
 
+/* ===== Links ===== */
 .crumb {
   text-decoration: none;
 }
@@ -22,8 +34,4 @@
 .current {
   font-weight: 600;
   opacity: 0.9;
-}
-:host,
-.crumbs {
-  position: static !important;
 }
