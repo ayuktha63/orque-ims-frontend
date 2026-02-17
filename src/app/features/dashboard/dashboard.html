@@ -1,15 +1,59 @@
 <div class="dashboard-grid">
 
-  <!-- KPI CARD -->
-  <mat-card class="stat-card">
+  <!-- HEADER -->
+  <div class="dashboard-header">
+
+    <span class="title">Dashboard</span>
+
+    <!-- ✅ ICON BUTTON INSTEAD OF TEXT -->
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>tune</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+
+      <button mat-menu-item (click)="$event.stopPropagation()">
+        <mat-checkbox [(ngModel)]="dashboardConfig.profit"
+                      (change)="onConfigChange()">
+          Profit
+        </mat-checkbox>
+      </button>
+
+      <button mat-menu-item (click)="$event.stopPropagation()">
+        <mat-checkbox [(ngModel)]="dashboardConfig.incomeChart"
+                      (change)="onConfigChange()">
+          Income Chart
+        </mat-checkbox>
+      </button>
+
+      <button mat-menu-item (click)="$event.stopPropagation()">
+        <mat-checkbox [(ngModel)]="dashboardConfig.categoryChart"
+                      (change)="onConfigChange()">
+          Category Chart
+        </mat-checkbox>
+      </button>
+
+      <button mat-menu-item (click)="$event.stopPropagation()">
+        <mat-checkbox [(ngModel)]="dashboardConfig.duties"
+                      (change)="onConfigChange()">
+          Ongoing Duties
+        </mat-checkbox>
+      </button>
+
+    </mat-menu>
+
+  </div>
+
+  <!-- KPI -->
+  <mat-card class="stat-card" *ngIf="dashboardConfig.profit">
     <h3>Net Profit</h3>
     <p [ngClass]="summary.profit >= 0 ? 'pos' : 'neg'">
       ₹ {{ summary.profit }}
     </p>
   </mat-card>
 
-  <!-- INCOME VS EXPENSE -->
-  <mat-card *ngIf="incomeExpenseChart?.series?.length">
+  <!-- INCOME EXPENSE -->
+  <mat-card *ngIf="dashboardConfig.incomeChart && incomeExpenseChart?.series?.length">
     <apx-chart
       [series]="incomeExpenseChart.series"
       [chart]="incomeExpenseChart.chart"
@@ -18,8 +62,8 @@
     </apx-chart>
   </mat-card>
 
-  <!-- CATEGORY DONUT -->
-  <mat-card *ngIf="categoryChart?.series?.length">
+  <!-- CATEGORY -->
+  <mat-card *ngIf="dashboardConfig.categoryChart && categoryChart?.series?.length">
     <apx-chart
       [series]="categoryChart.series"
       [chart]="categoryChart.chart"
@@ -27,8 +71,8 @@
     </apx-chart>
   </mat-card>
 
-  <!-- ✅ LIVE ONGOING DUTIES -->
-  <mat-card class="task-card">
+  <!-- DUTIES -->
+  <mat-card class="task-card" *ngIf="dashboardConfig.duties">
     <h3>Ongoing Duties</h3>
 
     <div *ngIf="ongoingDuties.length === 0" class="empty">
@@ -43,9 +87,7 @@
         </div>
       </div>
 
-      <span class="status ongoing">
-        ONGOING
-      </span>
+      <span class="status ongoing">ONGOING</span>
     </div>
 
   </mat-card>

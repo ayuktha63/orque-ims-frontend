@@ -1,25 +1,36 @@
 import {
   Component,
   OnInit,
-  CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ChartComponent } from 'ng-apexcharts';
 
 import { FinanceService } from '../../core/services/finance';
 import { FinanceEntry } from '../../core/services/models';
-
 import { DutyService, Duty } from '../../core/services/duty';
 import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, ChartComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule,
+    ChartComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -36,9 +47,14 @@ export class DashboardComponent implements OnInit {
 
   incomeExpenseChart: any;
   categoryChart: any;
-
-  // ✅ LIVE ONGOING DUTIES
   ongoingDuties: Duty[] = [];
+
+  dashboardConfig = {
+    profit: true,
+    incomeChart: true,
+    categoryChart: true,
+    duties: true
+  };
 
   constructor(
     private finance: FinanceService,
@@ -47,16 +63,47 @@ export class DashboardComponent implements OnInit {
     private cd: ChangeDetectorRef
   ) {}
 
+  // =========================
+  // INIT
+  // =========================
   ngOnInit(): void {
-    // small delay ensures shell layout renders first
-    setTimeout(() => {
-      this.loadFinance();
-      this.loadOngoingDuties();
-    });
+    this.loadConfig();
+    this.refreshDashboard();   // ✅ load immediately
   }
 
   // =========================
-  // LOAD FINANCE DATA
+  // CONFIG STORAGE
+  // =========================
+  private storageKey(): string {
+    return `dashboard-config-${this.auth.employeeId()}`;
+  }
+
+  loadConfig(): void {
+    const saved = localStorage.getItem(this.storageKey());
+    if (saved) {
+      this.dashboardConfig = JSON.parse(saved);
+    }
+  }
+
+  onConfigChange(): void {
+    localStorage.setItem(
+      this.storageKey(),
+      JSON.stringify(this.dashboardConfig)
+    );
+
+    this.refreshDashboard();
+  }
+
+  // =========================
+  // REFRESH
+  // =========================
+  refreshDashboard(): void {
+    this.loadFinance();
+    this.loadOngoingDuties();
+  }
+
+  // =========================
+  // FINANCE
   // =========================
   loadFinance(): void {
 
@@ -71,7 +118,6 @@ export class DashboardComponent implements OnInit {
         e.date.startsWith(this.month)
       );
 
-      // ---------- Income / Expense Chart ----------
       const byDay: Record<string, { income: number; expense: number }> = {};
 
       for (const e of entries) {
@@ -92,18 +138,11 @@ export class DashboardComponent implements OnInit {
           { name: 'Income', data: days.map(d => byDay[d].income) },
           { name: 'Expense', data: days.map(d => byDay[d].expense) }
         ],
-        chart: {
-          type: 'bar',
-          height: 300,
-          toolbar: { show: false }
-        },
-        xaxis: {
-          categories: days.map(d => `${this.month}-${d}`)
-        },
+        chart: { type: 'bar', height: 300, toolbar: { show: false } },
+        xaxis: { categories: days.map(d => `${this.month}-${d}`) },
         colors: ['#4caf50', '#f44336']
       };
 
-      // ---------- Category Donut ----------
       const cat: Record<string, number> = {};
 
       for (const e of entries.filter(x => x.type === 'EXPENSE')) {
@@ -116,13 +155,13 @@ export class DashboardComponent implements OnInit {
         labels: Object.keys(cat)
       };
 
-      // ⭐ FORCE UI UPDATE AFTER CHART BUILD
+      // ✅ FORCE RENDER (MAIN FIX)
       this.cd.detectChanges();
     });
   }
 
   // =========================
-  // LOAD ONGOING DUTIES
+  // DUTIES
   // =========================
   loadOngoingDuties(): void {
 
@@ -135,7 +174,6 @@ export class DashboardComponent implements OnInit {
         d => d.status === 'ONGOING'
       );
 
-      // ⭐ IMPORTANT FOR INITIAL LOAD
       this.cd.detectChanges();
     });
   }

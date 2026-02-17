@@ -1,37 +1,102 @@
+/* ================================
+   DASHBOARD GRID LAYOUT
+================================ */
+
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
-.stat-card {
-  padding: 14px;
+/* Header row spans full width */
+.dashboard-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 4px;
 }
+
+.dashboard-header .title {
+  margin-right: auto;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+
+/* ================================
+   GENERIC CARD STYLE
+================================ */
+
+mat-card {
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 6px 16px rgba(0,0,0,0.06);
+  transition: transform .15s ease, box-shadow .15s ease;
+  background: #fff;
+}
+
+mat-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.08),
+    0 10px 28px rgba(0,0,0,0.06);
+}
+
+
+/* ================================
+   GRID POSITIONS (AUTO REFLOW)
+================================ */
+
+.stat-card {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.task-card {
+  grid-column: span 4;
+}
+
+.dashboard-grid mat-card:not(.stat-card):not(.task-card) {
+  grid-column: span 8;
+}
+
+
+/* ================================
+   PROFIT STYLING
+================================ */
 
 .pos {
   color: #2e7d32;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
+  margin-top: 6px;
 }
 
 .neg {
   color: #c62828;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
+  margin-top: 6px;
 }
 
-/* ---------- TASK STYLES ---------- */
 
-.task-card {
-  padding: 14px;
-}
+/* ================================
+   TASK LIST
+================================ */
 
 .task {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 .task:last-child {
@@ -40,14 +105,21 @@
 
 .meta {
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.65;
+  margin-top: 2px;
 }
 
+
+/* ================================
+   STATUS BADGES (PRO STYLE)
+================================ */
+
 .status {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: .3px;
 }
 
 .todo {
@@ -65,13 +137,51 @@
   color: #2e7d32;
 }
 
+.ongoing {
+  background: #ede7f6;
+  color: #5e35b1;
+}
+
+
+/* ================================
+   EMPTY STATE
+================================ */
+
 .empty {
   font-size: 13px;
-  opacity: 0.6;
+  opacity: 0.55;
+  padding: 6px 0;
+}
+
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 1200px) {
+
+  .stat-card {
+    grid-column: span 6;
+  }
+
+  .task-card {
+    grid-column: span 6;
+  }
+
+  .dashboard-grid mat-card:not(.stat-card):not(.task-card) {
+    grid-column: span 12;
+  }
 }
 
 @media (max-width: 900px) {
+
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .stat-card,
+  .task-card,
+  .dashboard-grid mat-card {
+    grid-column: span 1;
   }
 }
