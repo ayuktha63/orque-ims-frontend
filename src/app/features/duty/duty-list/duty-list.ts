@@ -22,8 +22,8 @@ import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dia
     MatTableModule,
     MatTabsModule,
     MatDatepickerModule,
-MatNativeDateModule,
-MatIconModule,
+    MatNativeDateModule,
+    MatIconModule,
     MatCardModule,
     MatButtonModule,
     MatDialogModule
@@ -33,7 +33,16 @@ MatIconModule,
 })
 export class DutyListComponent {
 
-  displayedColumns = ['jobId', 'title', 'employee', 'status', 'actions'];
+  // ✅ SHOW ALL COLUMNS
+  displayedColumns = [
+    'jobId',
+    'title',
+    'description',
+    'deadline',
+    'employee',
+    'status',
+    'actions'
+  ];
 
   private refresh$ = new BehaviorSubject<void>(undefined);
   private tabIndex$ = new BehaviorSubject<number>(0);
@@ -61,18 +70,14 @@ export class DutyListComponent {
     private dialog: MatDialog
   ) {}
 
-  // ✅ OPEN CREATE DUTY DIALOG
   openCreateDialog() {
     const ref = this.dialog.open(DutyUpsertDialogComponent, {
       width: '520px',
-      data: null   // creating new duty
+      data: null
     });
 
-    // refresh table after close
     ref.afterClosed().subscribe(result => {
-      if (result) {
-        this.refresh$.next();
-      }
+      if (result) this.refresh$.next();
     });
   }
 
