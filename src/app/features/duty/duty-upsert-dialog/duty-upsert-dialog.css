@@ -1,0 +1,81 @@
+/* ================================
+   DIALOG TITLE
+================================ */
+[mat-dialog-title] {
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+
+/* ================================
+   MAIN CONTENT AREA
+   Forces vertical professional layout
+================================ */
+[mat-dialog-content] {
+  display: flex;
+  flex-direction: column;   /* 🔥 down-by-down layout */
+  gap: 18px;                /* consistent spacing between fields */
+  padding-top: 20px;
+  min-width: 420px;         /* gives enterprise dialog width */
+}
+
+
+/* ================================
+   FORM FIELDS
+================================ */
+.full {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+
+/* Outline appearance spacing fix */
+mat-form-field.mat-mdc-form-field {
+  margin-bottom: 4px;
+}
+
+
+/* ================================
+   TEXTAREA PROFESSIONAL LOOK
+================================ */
+textarea[matInput] {
+  resize: vertical;
+  min-height: 80px;
+}
+
+
+/* ================================
+   ACTION BUTTON AREA
+================================ */
+[mat-dialog-actions] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+
+/* ================================
+   SAVE BUTTON (Primary Feel)
+================================ */
+button[mat-button] {
+  min-width: 100px;
+  font-weight: 500;
+}
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 420px;
+  padding-top: 12px;
+}
+
+.full {
+  width: 100%;
+}

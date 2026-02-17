@@ -8,24 +8,37 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { DutyService } from '../../../core/services/duty';
 import { EmployeeService } from '../../../core/services/employees';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
   selector: 'app-duty-upsert-dialog',
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatSelectModule
-  ],
-  templateUrl: './duty-upsert-dialog.html'
+imports: [
+  CommonModule,
+  MatDialogModule,
+  MatButtonModule,
+  ReactiveFormsModule,
+  MatInputModule,
+  MatSelectModule,
+
+  // ✅ REQUIRED FOR DATEPICKER
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatIconModule
+],
+
+  templateUrl: './duty-upsert-dialog.html',
+  styleUrl : './duty-upsert-dialog.css'
 })
 export class DutyUpsertDialogComponent implements OnInit {
 
   employees$!: any;
   form!: FormGroup;
+close(): void {
+  this.ref.close();
+}
 
   constructor(
     private fb: FormBuilder,

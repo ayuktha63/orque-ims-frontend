@@ -6,6 +6,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject, combineLatest, map, switchMap } from 'rxjs';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 import { DutyService, Duty } from '../../../core/services/duty';
 import { AuthService } from '../../../core/services/auth';
@@ -18,6 +21,9 @@ import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dia
     CommonModule,
     MatTableModule,
     MatTabsModule,
+    MatDatepickerModule,
+MatNativeDateModule,
+MatIconModule,
     MatCardModule,
     MatButtonModule,
     MatDialogModule
