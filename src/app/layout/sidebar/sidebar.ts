@@ -27,6 +27,15 @@ export class SidebarComponent {
 
   constructor(public auth: AuthService) {}
 
+  // ⭐ ADD THESE HELPERS
+  isAdmin(): boolean {
+    return this.auth.isAdmin();
+  }
+
+  isEmployee(): boolean {
+    return !this.auth.isAdmin();
+  }
+
   toggleInvoice(event: MouseEvent) {
     event.stopPropagation();
     this.invoiceOpen = !this.invoiceOpen;
@@ -36,3 +45,4 @@ export class SidebarComponent {
     this.invoiceOpen = false;
   }
 }
+

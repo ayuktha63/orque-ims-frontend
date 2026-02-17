@@ -16,16 +16,22 @@
     </a>
 
     <!-- Finance -->
-    <a mat-list-item class="item"
-       routerLink="/app/finance"
-       (click)="closeInvoice()">
+    <a *ngIf="isAdmin()"
+   mat-list-item
+   class="item"
+   routerLink="/app/finance"
+   (click)="closeInvoice()">
+
       <mat-icon class="icon">paid</mat-icon>
     </a>
 
     <!-- Payroll -->
-    <a mat-list-item class="item"
-       routerLink="/app/payroll"
-       (click)="closeInvoice()">
+    <a *ngIf="isAdmin()"
+   mat-list-item
+   class="item"
+   routerLink="/app/payroll"
+   (click)="closeInvoice()">
+
       <mat-icon class="icon">payments</mat-icon>
     </a>
 
@@ -95,9 +101,12 @@
     </a>
 
     <!-- Credentials -->
-    <a mat-list-item class="item"
-       routerLink="/app/credentials"
-       (click)="closeInvoice()">
+    <a *ngIf="isAdmin()"
+   mat-list-item
+   class="item"
+   routerLink="/app/credentials"
+   (click)="closeInvoice()">
+
       <mat-icon class="icon">admin_panel_settings</mat-icon>
     </a>
 

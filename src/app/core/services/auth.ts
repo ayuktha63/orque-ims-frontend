@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environment/environment';
+
 export interface AuthUser {
   id: number;
   role: string;
@@ -41,14 +42,22 @@ export class AuthService {
   }
 
   // ===============================
-  // 🔥 ADDED — REQUIRED BY GUARD
+  // LOGIN CHECK
   // ===============================
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
   // ===============================
-  // 🔥 ADDED — REQUIRED BY TOPBAR
+  // 🔥 NEW — ROLE GETTER (STEP 5 REQUIRED)
+  // ===============================
+  getRole(): string {
+    if (!isPlatformBrowser(this.platformId)) return '';
+    return localStorage.getItem('user_role') || '';
+  }
+
+  // ===============================
+  // USER OBJECT
   // ===============================
   getUser(): AuthUser | null {
     if (!isPlatformBrowser(this.platformId)) return null;
@@ -68,9 +77,7 @@ export class AuthService {
   // ROLES
   // ===============================
   isAdmin(): boolean {
-    const role = isPlatformBrowser(this.platformId)
-      ? localStorage.getItem('user_role')
-      : '';
+    const role = this.getRole();
     return role === 'ROLE_ADMIN' || role === 'ADMIN';
   }
 
