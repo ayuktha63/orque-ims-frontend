@@ -39,6 +39,9 @@ export class DashboardComponent implements OnInit {
   // ⭐ keep charts monthly but profit global
   month = new Date().toISOString().slice(0, 7);
 
+  // ✅ ADMIN FLAG (for template role check)
+  isAdmin = false;
+
   summary = {
     income: 0,
     expense: 0,
@@ -68,6 +71,9 @@ export class DashboardComponent implements OnInit {
   // INIT
   // =========================
   ngOnInit(): void {
+    // ✅ set admin flag once (avoid repeated function calls in template)
+    this.isAdmin = this.auth.isAdmin();
+
     this.loadConfig();
     this.refreshDashboard();
   }
@@ -112,10 +118,9 @@ export class DashboardComponent implements OnInit {
     this.categoryChart = undefined;
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
+
       console.log('FINANCE DATA RECEIVED:', allEntries);
-      // =========================
-      // ✅ GLOBAL NET PROFIT
-      // =========================
+
       let income = 0;
       let expense = 0;
 
@@ -131,14 +136,13 @@ export class DashboardComponent implements OnInit {
 
       const profit = income - expense;
 
-// ⭐ round to 2 decimals safely
-this.summary = {
-  income: +income.toFixed(2),
-  expense: +expense.toFixed(2),
-  profit: +profit.toFixed(2),
-  count: allEntries.length
-};
-
+      // ⭐ round to 2 decimals safely
+      this.summary = {
+        income: +income.toFixed(2),
+        expense: +expense.toFixed(2),
+        profit: +profit.toFixed(2),
+        count: allEntries.length
+      };
 
       // =========================
       // 📊 MONTHLY CHART DATA
@@ -197,7 +201,7 @@ this.summary = {
   // =========================
   loadOngoingDuties(): void {
 
-    const source$ = this.auth.isAdmin()
+    const source$ = this.isAdmin
       ? this.dutyService.getAll()
       : this.dutyService.myWork(this.auth.employeeId());
 

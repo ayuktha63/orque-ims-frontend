@@ -5,55 +5,67 @@
 
     <span class="title">Dashboard</span>
 
-    <!-- ✅ ICON BUTTON INSTEAD OF TEXT -->
+    <!-- CUSTOMISE BUTTON -->
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>tune</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
 
-      <button mat-menu-item (click)="$event.stopPropagation()">
-        <mat-checkbox [(ngModel)]="dashboardConfig.profit"
-                      (change)="onConfigChange()">
-          Profit
-        </mat-checkbox>
-      </button>
+      <!-- ================= ADMIN OPTIONS ================= -->
+      <ng-container *ngIf="isAdmin">
 
-      <button mat-menu-item (click)="$event.stopPropagation()">
-        <mat-checkbox [(ngModel)]="dashboardConfig.incomeChart"
-                      (change)="onConfigChange()">
-          Income Chart
-        </mat-checkbox>
-      </button>
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.profit"
+                        (change)="onConfigChange()">
+            Profit
+          </mat-checkbox>
+        </button>
 
-      <button mat-menu-item (click)="$event.stopPropagation()">
-        <mat-checkbox [(ngModel)]="dashboardConfig.categoryChart"
-                      (change)="onConfigChange()">
-          Category Chart
-        </mat-checkbox>
-      </button>
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.incomeChart"
+                        (change)="onConfigChange()">
+            Income Chart
+          </mat-checkbox>
+        </button>
 
-      <button mat-menu-item (click)="$event.stopPropagation()">
-        <mat-checkbox [(ngModel)]="dashboardConfig.duties"
-                      (change)="onConfigChange()">
-          Ongoing Duties
-        </mat-checkbox>
-      </button>
+
+
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.duties"
+                        (change)="onConfigChange()">
+            Ongoing Duties
+          </mat-checkbox>
+        </button>
+
+      </ng-container>
+
+      <!-- ================= NORMAL USER OPTIONS ================= -->
+      <ng-container *ngIf="!isAdmin">
+
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.duties"
+                        (change)="onConfigChange()">
+            Ongoing Duties
+          </mat-checkbox>
+        </button>
+
+      </ng-container>
 
     </mat-menu>
 
   </div>
 
-  <!-- KPI -->
-  <mat-card class="stat-card" *ngIf="dashboardConfig.profit">
+  <!-- KPI (ADMIN ONLY) -->
+  <mat-card class="stat-card" *ngIf="dashboardConfig.profit && isAdmin">
     <h3>Net Profit</h3>
     <p [ngClass]="summary.profit >= 0 ? 'pos' : 'neg'">
       ₹ {{ summary.profit }}
     </p>
   </mat-card>
 
-  <!-- INCOME EXPENSE -->
-  <mat-card *ngIf="dashboardConfig.incomeChart && incomeExpenseChart?.series?.length">
+  <!-- INCOME EXPENSE (ADMIN ONLY) -->
+  <mat-card *ngIf="isAdmin && dashboardConfig.incomeChart && incomeExpenseChart?.series?.length">
     <apx-chart
       [series]="incomeExpenseChart.series"
       [chart]="incomeExpenseChart.chart"
@@ -62,8 +74,8 @@
     </apx-chart>
   </mat-card>
 
-  <!-- CATEGORY -->
-  <mat-card *ngIf="dashboardConfig.categoryChart && categoryChart?.series?.length">
+  <!-- CATEGORY (ADMIN ONLY) -->
+  <mat-card *ngIf="isAdmin && dashboardConfig.categoryChart && categoryChart?.series?.length">
     <apx-chart
       [series]="categoryChart.series"
       [chart]="categoryChart.chart"
@@ -71,7 +83,7 @@
     </apx-chart>
   </mat-card>
 
-  <!-- DUTIES -->
+  <!-- DUTIES (ALL USERS) -->
   <mat-card class="task-card" *ngIf="dashboardConfig.duties">
     <h3>Ongoing Duties</h3>
 
