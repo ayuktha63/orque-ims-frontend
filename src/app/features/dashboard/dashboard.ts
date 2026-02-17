@@ -36,7 +36,8 @@ import { AuthService } from '../../core/services/auth';
 })
 export class DashboardComponent implements OnInit {
 
-  month = '2026-01';
+  // ⭐ keep charts monthly but profit global
+  month = new Date().toISOString().slice(0, 7);
 
   summary = {
     income: 0,
@@ -68,7 +69,7 @@ export class DashboardComponent implements OnInit {
   // =========================
   ngOnInit(): void {
     this.loadConfig();
-    this.refreshDashboard();   // ✅ load immediately
+    this.refreshDashboard();
   }
 
   // =========================
@@ -90,7 +91,6 @@ export class DashboardComponent implements OnInit {
       this.storageKey(),
       JSON.stringify(this.dashboardConfig)
     );
-
     this.refreshDashboard();
   }
 
@@ -103,31 +103,59 @@ export class DashboardComponent implements OnInit {
   }
 
   // =========================
-  // FINANCE
+  // FINANCE (GLOBAL PROFIT)
   // =========================
   loadFinance(): void {
 
-    this.finance.summaryForMonth(this.month).subscribe(data => {
-      this.summary = data;
-      this.cd.detectChanges();
-    });
+    // reset charts to avoid stale rendering
+    this.incomeExpenseChart = undefined;
+    this.categoryChart = undefined;
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
 
+      // =========================
+      // ✅ GLOBAL NET PROFIT
+      // =========================
+      let income = 0;
+      let expense = 0;
+
+      for (const e of allEntries) {
+        const amount = Number(e.amount) || 0;
+
+        if (e.type === 'INCOME') {
+          income += amount;
+        } else {
+          expense += amount;
+        }
+      }
+
+      this.summary = {
+        income,
+        expense,
+        profit: income - expense,
+        count: allEntries.length
+      };
+
+      // =========================
+      // 📊 MONTHLY CHART DATA
+      // =========================
       const entries = allEntries.filter(e =>
-        e.date.startsWith(this.month)
+        e.date?.startsWith(this.month)
       );
 
       const byDay: Record<string, { income: number; expense: number }> = {};
 
       for (const e of entries) {
+
+        const amount = Number(e.amount) || 0;
         const day = e.date.slice(8, 10);
+
         byDay[day] = byDay[day] ?? { income: 0, expense: 0 };
 
         if (e.type === 'INCOME') {
-          byDay[day].income += e.amount;
+          byDay[day].income += amount;
         } else {
-          byDay[day].expense += e.amount;
+          byDay[day].expense += amount;
         }
       }
 
@@ -146,7 +174,8 @@ export class DashboardComponent implements OnInit {
       const cat: Record<string, number> = {};
 
       for (const e of entries.filter(x => x.type === 'EXPENSE')) {
-        cat[e.category] = (cat[e.category] ?? 0) + e.amount;
+        const amount = Number(e.amount) || 0;
+        cat[e.category] = (cat[e.category] ?? 0) + amount;
       }
 
       this.categoryChart = {
@@ -155,7 +184,6 @@ export class DashboardComponent implements OnInit {
         labels: Object.keys(cat)
       };
 
-      // ✅ FORCE RENDER (MAIN FIX)
       this.cd.detectChanges();
     });
   }
