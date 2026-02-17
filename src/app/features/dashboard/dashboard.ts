@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit {
     this.categoryChart = undefined;
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
-
+      console.log('FINANCE DATA RECEIVED:', allEntries);
       // =========================
       // ✅ GLOBAL NET PROFIT
       // =========================
