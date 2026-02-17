@@ -129,12 +129,16 @@ export class DashboardComponent implements OnInit {
         }
       }
 
-      this.summary = {
-        income,
-        expense,
-        profit: income - expense,
-        count: allEntries.length
-      };
+      const profit = income - expense;
+
+// ⭐ round to 2 decimals safely
+this.summary = {
+  income: +income.toFixed(2),
+  expense: +expense.toFixed(2),
+  profit: +profit.toFixed(2),
+  count: allEntries.length
+};
+
 
       // =========================
       // 📊 MONTHLY CHART DATA
