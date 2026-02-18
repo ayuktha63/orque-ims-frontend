@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { DutyService, Duty } from '../../../core/services/duty';
 import { AuthService } from '../../../core/services/auth';
 import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dialog';
+import { ConfirmDialogComponent } from '../my-work/confirm-dialog'; // ✅ reuse same dialog
 
 @Component({
   standalone: true,
@@ -33,7 +34,6 @@ import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dia
 })
 export class DutyListComponent {
 
-  // ✅ SHOW ALL COLUMNS
   displayedColumns = [
     'jobId',
     'title',
@@ -70,6 +70,9 @@ export class DutyListComponent {
     private dialog: MatDialog
   ) {}
 
+  // ==============================
+  // CREATE DUTY
+  // ==============================
   openCreateDialog() {
     const ref = this.dialog.open(DutyUpsertDialogComponent, {
       width: '520px',
@@ -85,9 +88,42 @@ export class DutyListComponent {
     this.tabIndex$.next(event.index);
   }
 
-  update(row: Duty, status: string) {
+  // ==============================
+  // ✅ GLOBAL CONFIRMATION HANDLER
+  // ==============================
+  private confirmAndUpdate(row: Duty, status: string, message: string) {
+
     if (!row.id) return;
-    this.service.changeStatus(row.id, status)
-      .subscribe(() => this.refresh$.next());
+
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      data: { message }
+    });
+
+    ref.afterClosed().subscribe(ok => {
+      if (!ok) return;
+
+      this.service.changeStatus(row.id!, status)
+        .subscribe(() => this.refresh$.next());
+    });
   }
+
+  // ==============================
+  // ACTION WRAPPER (USED IN HTML)
+  // ==============================
+  update(row: Duty, status: string) {
+
+    if (status === 'ASSIGNED') {
+      this.confirmAndUpdate(row, status, `Approve duty ${row.jobId}?`);
+    }
+
+    else if (status === 'ONGOING') {
+      this.confirmAndUpdate(row, status, `Start duty ${row.jobId}?`);
+    }
+
+    else if (status === 'COMPLETED') {
+      this.confirmAndUpdate(row, status, `Finish duty ${row.jobId}?`);
+    }
+  }
+
 }
