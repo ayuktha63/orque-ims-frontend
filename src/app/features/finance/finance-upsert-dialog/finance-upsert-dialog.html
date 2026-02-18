@@ -1,4 +1,21 @@
-<h2>{{ isEdit ? 'Edit Entry' : 'Add Entry' }}</h2>
+<!-- HEADER BAR -->
+<div class="dialog-header">
+  <h2>{{ isEdit ? 'Edit Entry' : 'Add Entry' }}</h2>
+
+  <div class="header-actions">
+
+    <!-- MINIMIZE BUTTON -->
+    <button mat-icon-button (click)="minimize()">
+      <mat-icon>remove</mat-icon>
+    </button>
+
+    <!-- CLOSE BUTTON -->
+    <button mat-icon-button color="warn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+</div>
 
 <form [formGroup]="form" class="grid">
   <mat-form-field appearance="outline">

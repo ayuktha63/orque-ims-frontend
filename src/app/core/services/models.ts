@@ -8,7 +8,7 @@ export interface AuthUser {
 }
 
 export interface FinanceEntry {
-  id: string;
+  id: number;
   type: 'INCOME' | 'EXPENSE';
   category: string;
   amount: number;

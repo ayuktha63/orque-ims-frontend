@@ -9,6 +9,42 @@
 .full { width: 100%; margin-top: 10px; }
 
 h2 { margin: 0; }
+.finance-wrapper{
+  display:flex;
+  gap:16px;
+}
+
+.card{
+  flex:1;
+}
+
+.draft-sidebar{
+  width:260px;
+  background:#fafafa;
+  border-left:1px solid #eee;
+  padding:12px;
+  border-radius:8px;
+}
+
+.draft-card{
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:8px;
+  padding:8px;
+  margin-top:8px;
+}
+
+.draft-info{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+
+.draft-actions{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+}
 
 /* actions column layout */
 .actions {

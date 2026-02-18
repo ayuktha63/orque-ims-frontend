@@ -9,17 +9,21 @@ import { BehaviorSubject, switchMap } from 'rxjs';
 import { FinanceService } from '../../../core/services/finance';
 import { FinanceEntry } from '../../../core/services/models';
 import { FinanceUpsertDialogComponent } from '../finance-upsert-dialog/finance-upsert-dialog';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-finance-list',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatDialogModule, MatIcon],
   templateUrl: './finance-list.html',
   styleUrls: ['./finance-list.css']
 })
 export class FinanceListComponent implements OnInit {
-  displayedColumns = ['date', 'type', 'category', 'amount', 'paymentMode', 'description', 'actions'];
-  
+
+  displayedColumns = ['date','type','category','amount','paymentMode','description','actions'];
+
+  minimizedDrafts:any[] = [];
+
   private refresh$ = new BehaviorSubject<void>(undefined);
   rows$ = this.refresh$.pipe(switchMap(() => this.finance.list()));
 
@@ -31,41 +35,56 @@ export class FinanceListComponent implements OnInit {
     this.refresh$.next();
   }
 
-  private openDrawer(data: FinanceEntry | null): void {
-    const ref = this.dialog.open(FinanceUpsertDialogComponent, {
+  private openDrawer(data:any): void {
+
+    const ref = this.dialog.open(FinanceUpsertDialogComponent,{
       data,
-      panelClass: 'right-drawer-dialog',
-      position: { right: '0', top: '0' },
-      height: '100vh',
-      width: '50vw',
-      autoFocus: false
+      panelClass:'right-drawer-dialog',
+      position:{right:'0',top:'0'},
+      height:'100vh',
+      width:'50vw',
+      autoFocus:false
     });
 
-    ref.afterClosed().subscribe(didSave => {
-      if (didSave) this.fetchData();
+    ref.afterClosed().subscribe(res=>{
+
+      if(res === true){
+        this.fetchData();
+      }
+
+      // ⭐ HANDLE MINIMIZED DRAFT
+      if (res?.minimized) {
+  setTimeout(() => {
+    this.minimizedDrafts = [...this.minimizedDrafts, res.draft];
+  });
+}
+
+
     });
   }
 
-  add(): void {
+  add():void{
     this.openDrawer(null);
   }
 
-  edit(row: FinanceEntry): void {
+  edit(row:FinanceEntry):void{
     this.openDrawer(row);
   }
 
-  // FIXED METHOD
-  remove(row: FinanceEntry): void {
-    if (!row.id) return;
+  restoreDraft(draft:any,index:number){
+    this.minimizedDrafts.splice(index,1);
+    this.openDrawer(draft);
+  }
 
-    if (confirm(`Delete entry for ${row.category}?`)) {
-      // Force the type to number to satisfy the compiler
-      const idToDelete = Number(row.id); 
-      
-      this.finance.remove(idToDelete).subscribe({
-        next: () => this.fetchData(),
-        error: (err) => console.error('Delete failed', err)
-      });
+  discardDraft(index:number){
+    this.minimizedDrafts.splice(index,1);
+  }
+
+  remove(row:FinanceEntry):void{
+    if(!row.id) return;
+
+    if(confirm(`Delete entry for ${row.category}?`)){
+      this.finance.remove(Number(row.id)).subscribe(()=>this.fetchData());
     }
   }
 }

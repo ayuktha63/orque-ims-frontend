@@ -11,6 +11,16 @@
   gap: 12px;
   margin-top: 12px;
 }
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-actions {
+  display: flex;
+  gap: 4px;
+}
 
 .span2 { grid-column: span 2; }
 
