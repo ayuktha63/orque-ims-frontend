@@ -15,30 +15,24 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   standalone: true,
   selector: 'app-duty-upsert-dialog',
-imports: [
-  CommonModule,
-  MatDialogModule,
-  MatButtonModule,
-  ReactiveFormsModule,
-  MatInputModule,
-  MatSelectModule,
-
-  // ✅ REQUIRED FOR DATEPICKER
-  MatDatepickerModule,
-  MatNativeDateModule,
-  MatIconModule
-],
-
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule
+  ],
   templateUrl: './duty-upsert-dialog.html',
-  styleUrl : './duty-upsert-dialog.css'
+  styleUrl: './duty-upsert-dialog.css'
 })
 export class DutyUpsertDialogComponent implements OnInit {
 
   employees$!: any;
   form!: FormGroup;
-close(): void {
-  this.ref.close();
-}
 
   constructor(
     private fb: FormBuilder,
@@ -48,11 +42,10 @@ close(): void {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
 
-    // ✅ CREATE FORM HERE (fb already injected)
     this.form = this.fb.group({
       title: ['', Validators.required],
       description: [''],
-      deadline: [''],
+      deadline: [null], // must be Date object from picker
       employeeId: [null, Validators.required]
     });
   }
@@ -61,13 +54,43 @@ close(): void {
     this.employees$ = this.empService.list();
   }
 
+  close(): void {
+    this.ref.close();
+  }
+
+  // ============================================
+  // ✅ CONVERT DATE → YYYY-MM-DD (NO TIMEZONE)
+  // ============================================
+  private toDateOnly(date: Date | null): string | null {
+
+    if (!date) return null;
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+
+    return `${y}-${m}-${d}`;
+  }
+
+  // ============================================
+  // SAVE DUTY
+  // ============================================
   save(): void {
 
     if (this.form.invalid) return;
 
-    this.service.create(this.form.value).subscribe({
+    const v = this.form.value;
+
+    // ✅ IMPORTANT FIX
+    const payload = {
+      ...v,
+      deadline: this.toDateOnly(v.deadline)
+    };
+
+    this.service.create(payload).subscribe({
       next: () => this.ref.close(true),
       error: err => console.error('Duty create failed', err)
     });
   }
+
 }
