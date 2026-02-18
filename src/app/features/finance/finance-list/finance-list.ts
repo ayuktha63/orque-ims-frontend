@@ -1,35 +1,50 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject, switchMap } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 import { FinanceService } from '../../../core/services/finance';
 import { FinanceEntry } from '../../../core/services/models';
 import { FinanceUpsertDialogComponent } from '../finance-upsert-dialog/finance-upsert-dialog';
-import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-finance-list',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatDialogModule, MatIcon],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule
+  ],
   templateUrl: './finance-list.html',
   styleUrls: ['./finance-list.css']
 })
-export class FinanceListComponent implements OnInit {
+export class FinanceListComponent {
 
-  displayedColumns = ['date','type','category','amount','paymentMode','description','actions'];
+  displayedColumns = [
+    'date','type','category','amount','paymentMode','description','actions'
+  ];
 
-  minimizedDrafts:any[] = [];
+  // ✅ REACTIVE DRAFT STORE (FIXES NG0100)
+  private draftsSubject = new BehaviorSubject<any[]>([]);
+  minimizedDrafts$ = this.draftsSubject.asObservable();
 
   private refresh$ = new BehaviorSubject<void>(undefined);
-  rows$ = this.refresh$.pipe(switchMap(() => this.finance.list()));
 
-  constructor(private finance: FinanceService, private dialog: MatDialog) {}
+  rows$ = this.refresh$.pipe(
+    switchMap(() => this.finance.list())
+  );
 
-  ngOnInit(): void {}
+  constructor(
+    private finance: FinanceService,
+    private dialog: MatDialog
+  ) {}
 
   fetchData(): void {
     this.refresh$.next();
@@ -48,17 +63,22 @@ export class FinanceListComponent implements OnInit {
 
     ref.afterClosed().subscribe(res=>{
 
+      // SAVE SUCCESS
       if(res === true){
         this.fetchData();
+        return;
       }
 
-      // ⭐ HANDLE MINIMIZED DRAFT
-      if (res?.minimized) {
-  setTimeout(() => {
-    this.minimizedDrafts = [...this.minimizedDrafts, res.draft];
-  });
-}
+      // ✅ MINIMIZED DRAFT (NO NG0100)
+      if(res?.minimized){
 
+        const current = this.draftsSubject.value;
+
+        this.draftsSubject.next([
+          ...current,
+          res.draft
+        ]);
+      }
 
     });
   }
@@ -72,19 +92,30 @@ export class FinanceListComponent implements OnInit {
   }
 
   restoreDraft(draft:any,index:number){
-    this.minimizedDrafts.splice(index,1);
+
+    const updated = [...this.draftsSubject.value];
+    updated.splice(index,1);
+
+    this.draftsSubject.next(updated);
+
     this.openDrawer(draft);
   }
 
   discardDraft(index:number){
-    this.minimizedDrafts.splice(index,1);
+
+    const updated = [...this.draftsSubject.value];
+    updated.splice(index,1);
+
+    this.draftsSubject.next(updated);
   }
 
   remove(row:FinanceEntry):void{
+
     if(!row.id) return;
 
     if(confirm(`Delete entry for ${row.category}?`)){
-      this.finance.remove(Number(row.id)).subscribe(()=>this.fetchData());
+      this.finance.remove(Number(row.id))
+        .subscribe(()=>this.fetchData());
     }
   }
 }
