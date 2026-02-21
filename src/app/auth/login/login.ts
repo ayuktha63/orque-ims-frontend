@@ -9,50 +9,81 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
 import { AuthService } from '../../core/services/auth';
+import { ToastService } from '../../core/services/toast.service'; // ✅ ADD
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    MatCardModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatButtonModule
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-  // Use inject() to ensure these are available for property initialization
+
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private toast = inject(ToastService); // ✅ INJECT
 
-  // Now 'this.fb' is defined and safe to use here
   form = this.fb.group({
-    username: ['', [Validators.required]], 
+    username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
-  // Constructor is no longer needed for injection
-  constructor() {}
-
+  // ==========================================
+  // LOGIN SUBMIT
+  // ==========================================
   submit(): void {
-    if (this.form.invalid) return;
+
+    // ✅ FORM VALIDATION TOASTS
+    if (!this.form.value.username) {
+      this.toast.warning('Username is required');
+      return;
+    }
+
+    if (!this.form.value.password) {
+      this.toast.warning('Password is required');
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.toast.warning('Please enter valid credentials');
+      return;
+    }
 
     const { username, password } = this.form.value;
 
-    // username! and password! tell TS these won't be null due to Validators.required
     this.auth.login(username!, password!).subscribe({
-      next: () => {
+
+      next: (res:any) => {
+
+        // ✅ SUCCESS TOAST
+        this.toast.success(res?.message || 'Login successful');
+
+        // navigate after toast
         this.router.navigateByUrl('/app/dashboard');
       },
+
       error: (err) => {
-        alert('Access Denied: Please check your username or password.');
+
+        const msg =
+          err?.error?.message ||
+          err?.message ||
+          'Invalid username or password';
+
+        // ❌ REMOVE ALERT — use toast
+        this.toast.error(msg);
+
         console.error('Login error', err);
       }
+
     });
   }
 }
