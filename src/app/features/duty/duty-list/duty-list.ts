@@ -12,8 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { DutyService, Duty } from '../../../core/services/duty';
 import { AuthService } from '../../../core/services/auth';
+import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
+
 import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dialog';
-import { ConfirmDialogComponent } from '../my-work/confirm-dialog'; // ✅ reuse same dialog
+import { ConfirmDialogComponent } from '../my-work/confirm-dialog';
 
 @Component({
   standalone: true,
@@ -67,7 +69,8 @@ export class DutyListComponent {
   constructor(
     private service: DutyService,
     public auth: AuthService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toast: ToastService   // ✅ INJECT
   ) {}
 
   // ==============================
@@ -79,9 +82,6 @@ export class DutyListComponent {
       data: null
     });
 
-    ref.afterClosed().subscribe(result => {
-      if (result) this.refresh$.next();
-    });
   }
 
   onTabChange(event: MatTabChangeEvent) {
@@ -89,7 +89,7 @@ export class DutyListComponent {
   }
 
   // ==============================
-  // ✅ GLOBAL CONFIRMATION HANDLER
+  // GLOBAL CONFIRMATION HANDLER
   // ==============================
   private confirmAndUpdate(row: Duty, status: string, message: string) {
 
@@ -101,15 +101,51 @@ export class DutyListComponent {
     });
 
     ref.afterClosed().subscribe(ok => {
-      if (!ok) return;
+
+      if (!ok) {
+        this.toast.info('Action cancelled');   // ✅ OPTIONAL UX
+        return;
+      }
 
       this.service.changeStatus(row.id!, status)
-        .subscribe(() => this.refresh$.next());
+        .subscribe({
+
+          next: (res: any) => {
+
+            // ==========================
+            // SUCCESS MESSAGE HANDLING
+            // ==========================
+            if (status === 'ASSIGNED') {
+              this.toast.success(res?.message || 'Duty approved');
+            }
+
+            else if (status === 'ONGOING') {
+              this.toast.info(res?.message || 'Duty started');
+            }
+
+            else if (status === 'COMPLETED') {
+              this.toast.success(res?.message || 'Duty completed');
+            }
+
+            this.refresh$.next();
+          },
+
+          error: (err) => {
+
+            const msg =
+              err?.error?.message ||
+              err?.message ||
+              'Failed to update duty';
+
+            this.toast.error(msg);   // ✅ ERROR TOAST
+          }
+
+        });
     });
   }
 
   // ==============================
-  // ACTION WRAPPER (USED IN HTML)
+  // ACTION WRAPPER
   // ==============================
   update(row: Duty, status: string) {
 

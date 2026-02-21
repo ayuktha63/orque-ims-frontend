@@ -8,6 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { DutyService } from '../../../core/services/duty';
 import { EmployeeService } from '../../../core/services/employees';
+import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
+
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,13 +41,14 @@ export class DutyUpsertDialogComponent implements OnInit {
     private service: DutyService,
     private empService: EmployeeService,
     private ref: MatDialogRef<DutyUpsertDialogComponent>,
+    private toast: ToastService, // ✅ INJECT
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
 
     this.form = this.fb.group({
       title: ['', Validators.required],
       description: [''],
-      deadline: [null], // must be Date object from picker
+      deadline: [null],
       employeeId: [null, Validators.required]
     });
   }
@@ -59,7 +62,7 @@ export class DutyUpsertDialogComponent implements OnInit {
   }
 
   // ============================================
-  // ✅ CONVERT DATE → YYYY-MM-DD (NO TIMEZONE)
+  // DATE → YYYY-MM-DD
   // ============================================
   private toDateOnly(date: Date | null): string | null {
 
@@ -77,19 +80,41 @@ export class DutyUpsertDialogComponent implements OnInit {
   // ============================================
   save(): void {
 
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.toast.info('Please fill all required fields'); // ✅ INFO
+      return;
+    }
 
     const v = this.form.value;
 
-    // ✅ IMPORTANT FIX
     const payload = {
       ...v,
       deadline: this.toDateOnly(v.deadline)
     };
 
     this.service.create(payload).subscribe({
-      next: () => this.ref.close(true),
-      error: err => console.error('Duty create failed', err)
+      next: (res: any) => {
+
+        // ✅ SUCCESS TOAST
+        this.toast.success(
+          res?.message || 'Duty created successfully'
+        );
+
+        this.ref.close(true);
+      },
+
+      error: (err) => {
+
+        // ✅ SHOW BACKEND MESSAGE IF EXISTS
+        const msg =
+          err?.error?.message ||
+          err?.message ||
+          'Duty creation failed';
+
+        this.toast.error(msg);
+
+        console.error('Duty create failed', err);
+      }
     });
   }
 

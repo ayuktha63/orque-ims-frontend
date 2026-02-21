@@ -1,0 +1,122 @@
+.toast-wrapper {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 340px;
+}
+
+/* =========================
+   TOAST BOX
+========================= */
+.toast-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f4f6f8;
+  border-radius: 6px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  animation: slideIn .25s ease;
+  overflow: hidden;
+}
+
+/* =========================
+   ICON
+========================= */
+.icon {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-right: 12px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.content {
+  flex: 1;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.message {
+  font-size: 13px;
+  color: #444;
+}
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+.close {
+  cursor: pointer;
+  font-size: 14px;
+  color: #777;
+  padding-left: 10px;
+}
+
+/* =========================
+   PROGRESS BAR
+========================= */
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  animation: progressAnim linear forwards;
+}
+
+/* =========================
+   TYPES (COLORS)
+========================= */
+
+/* SUCCESS */
+.success .icon { background:#22c55e; }
+.success .progress { background:#22c55e; }
+
+/* ERROR */
+.error .icon { background:#ef4444; }
+.error .progress { background:#ef4444; }
+
+/* WARNING */
+.warning .icon { background:#f59e0b; }
+.warning .progress { background:#f59e0b; }
+
+/* INFO */
+.info .icon { background:#3b82f6; }
+.info .progress { background:#3b82f6; }
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity:0;
+  }
+  to {
+    transform: translateX(0);
+    opacity:1;
+  }
+}
+
+@keyframes progressAnim {
+  from { width:100%; }
+  to { width:0%; }
+}

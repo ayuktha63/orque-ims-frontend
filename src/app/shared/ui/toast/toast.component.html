@@ -1,0 +1,37 @@
+<div class="toast-wrapper">
+
+  <div *ngFor="let t of toasts"
+       class="toast-box"
+       [ngClass]="t.type">
+
+    <!-- LEFT ICON -->
+    <div class="icon">
+      <span *ngIf="t.type==='success'">✔</span>
+      <span *ngIf="t.type==='error'">✖</span>
+      <span *ngIf="t.type==='warning'">⚠</span>
+      <span *ngIf="t.type==='info'">ℹ</span>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="title">
+        {{ t.type | titlecase }}
+      </div>
+
+      <div class="message">
+        {{ t.message }}
+      </div>
+    </div>
+
+    <!-- CLOSE BUTTON -->
+<div class="close"
+     (click)="onClose($event, t.id)">
+  ✕
+</div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress"></div>
+
+  </div>
+
+</div>

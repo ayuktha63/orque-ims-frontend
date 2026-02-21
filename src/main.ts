@@ -5,7 +5,6 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { ErrorHandler, importProvidersFrom } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app';
 import { GlobalErrorHandler } from './app/core/error/global-error-handler';
