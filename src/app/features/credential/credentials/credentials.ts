@@ -6,18 +6,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, switchMap } from 'rxjs';
+
 import { CredentialService } from '../../../core/services/credential';
 import { CredentialUpsertDialogComponent } from '../credential-upsert-dialog/credential-upsert-dialog';
 
 @Component({
   selector: 'app-credentials',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatDialogModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule
+  ],
   templateUrl: './credentials.html',
   styleUrls: ['./credentials.css']
 })
 export class CredentialsComponent implements OnInit {
+
   displayedColumns = ['employeeCode', 'name', 'username', 'password', 'role', 'actions'];
+
   private refresh$ = new BehaviorSubject<void>(undefined);
 
   authorizedEmployees$ = this.refresh$.pipe(
@@ -25,7 +35,7 @@ export class CredentialsComponent implements OnInit {
   );
 
   constructor(
-    private credentialService: CredentialService, 
+    private credentialService: CredentialService,
     private dialog: MatDialog
   ) {}
 
@@ -38,6 +48,7 @@ export class CredentialsComponent implements OnInit {
   }
 
   manageCredentials(employee: any): void {
+
     const dialogRef = this.dialog.open(CredentialUpsertDialogComponent, {
       data: { employee },
       panelClass: 'right-drawer-dialog',
@@ -48,8 +59,9 @@ export class CredentialsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      // result is 'true' if the dialog saved successfully
-      if (result) this.fetchData();
+      if (result) {
+        this.fetchData(); // dialog already handled toast
+      }
     });
   }
 }
