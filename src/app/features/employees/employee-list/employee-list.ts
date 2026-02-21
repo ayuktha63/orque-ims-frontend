@@ -8,27 +8,36 @@ import { BehaviorSubject, switchMap } from 'rxjs';
 
 import { EmployeeService } from '../../../core/services/employees';
 import { Employee } from '../../../core/models/employee.model';
-import { AuthService } from '../../../core/services/auth'; // 1. Import Auth
+import { AuthService } from '../../../core/services/auth';
+import { ToastService } from '../../../core/services/toast.service'; // ✅
+
 import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employee-upsert-dialog';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatDialogModule
+  ],
   templateUrl: './employee-list.html',
   styleUrls: ['./employee-list.css']
 })
 export class EmployeeListComponent implements OnInit {
+
   displayedColumns = ['employeeCode', 'name', 'department', 'role', 'status', 'actions'];
-  
-  // 2. Use a BehaviorSubject trigger for more robust data refreshing
+
   private refresh$ = new BehaviorSubject<void>(undefined);
   rows$ = this.refresh$.pipe(switchMap(() => this.service.list()));
 
   constructor(
     private dialog: MatDialog,
     private service: EmployeeService,
-    public auth: AuthService // 3. Inject as public for HTML access
+    private toast: ToastService, // ✅ inject
+    public auth: AuthService
   ) {}
 
   ngOnInit(): void {}
@@ -38,6 +47,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   private openDrawer(data: Employee | null): void {
+
     const ref = this.dialog.open(EmployeeUpsertDialogComponent, {
       data,
       panelClass: 'right-drawer-dialog',
@@ -49,30 +59,69 @@ export class EmployeeListComponent implements OnInit {
 
     ref.afterClosed().subscribe((didSave: boolean) => {
       if (didSave) {
-        this.fetchData(); 
+        this.fetchData();
       }
     });
   }
 
   add(): void {
-    // 4. Guard the Add action
     if (this.auth.canEdit()) {
       this.openDrawer(null);
     }
   }
 
   edit(row: Employee): void {
-    // Admins "Edit", Employees "View" - the same dialog handles both
     this.openDrawer(row);
   }
 
+  // ======================================================
+  // ✅ SAFE DELETE WITH ADMIN PROTECTION
+  // ======================================================
   remove(row: Employee): void {
-    // 5. Strictly guard the Delete action
-    if (this.auth.canEdit() && confirm(`Are you sure you want to delete ${row.name}?`) && row.id) {
-      this.service.delete(row.id).subscribe({
-        next: () => this.fetchData(),
-        error: (err) => console.error('Delete failed', err)
-      });
+
+    // Guard: only editors
+    if (!this.auth.canEdit()) {
+      this.toast.warning('You do not have permission to delete employees');
+      return;
     }
+
+    // 🚨 NEW RULE:
+    // ADMIN cannot delete ADMIN
+    if (row.role === 'ADMIN') {
+      this.toast.warning('Admins cannot delete another Admin');
+      return;
+    }
+
+    if (!row.id) return;
+
+    if (!confirm(`Are you sure you want to delete ${row.name}?`)) {
+      this.toast.info('Delete cancelled');
+      return;
+    }
+
+    this.service.delete(row.id).subscribe({
+
+      next: () => {
+        this.toast.success('Employee deleted successfully');
+        this.fetchData();
+      },
+
+      error: (err) => {
+
+        // handle auth/session errors nicely
+        if (err.status === 401) {
+          this.toast.error('Session expired or unauthorized action');
+          return;
+        }
+
+        const msg =
+          err?.error?.message ||
+          err?.message ||
+          'Delete failed';
+
+        this.toast.error(msg);
+      }
+
+    });
   }
 }

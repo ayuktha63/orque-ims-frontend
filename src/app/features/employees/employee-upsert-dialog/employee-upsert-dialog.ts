@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { EmployeeService } from '../../../core/services/employees';
 import { Employee } from '../../../core/models/employee.model';
+import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
 
 @Component({
   selector: 'app-employee-upsert-dialog',
@@ -26,62 +27,82 @@ import { Employee } from '../../../core/models/employee.model';
   styleUrls: ['./employee-upsert-dialog.css']
 })
 export class EmployeeUpsertDialogComponent {
+
   isEdit: boolean;
   form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private service: EmployeeService,
+    private toast: ToastService,   // ✅ INJECT
     private ref: MatDialogRef<EmployeeUpsertDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Employee | null
   ) {
+
     this.isEdit = !!this.data;
 
-    // Initialize form with existing data or defaults
     this.form = this.fb.group({
       name: [this.data?.name ?? '', [Validators.required]],
       department: [this.data?.department ?? ''],
       role: [this.data?.role ?? ''],
-      // Standardizes the date to YYYY-MM-DD for the HTML date input
       joinDate: [this.data?.joinDate ?? new Date().toISOString().split('T')[0], [Validators.required]],
       status: [this.data?.status ?? 'ACTIVE', [Validators.required]]
     });
   }
 
   save(): void {
-    if (this.form.invalid) return;
 
-    // The form value is combined with the original ID if editing
+    if (this.form.invalid) {
+      this.toast.info('Please fill all required fields');
+      return;
+    }
+
     const payload: Employee = this.form.value;
 
     if (this.isEdit && this.data?.id) {
-      // Logic for PUT (Update)
+
       this.service.update(this.data.id, payload).subscribe({
-        next: () => {
-          // Send 'true' to trigger refresh in the list component
+
+        next: (res: any) => {
+          this.toast.success(res?.message || 'Employee updated successfully');
           this.ref.close(true);
         },
+
         error: (err) => {
-          console.error('Update failed:', err);
-          // You could add a snackbar/toast error message here
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Update failed';
+
+          this.toast.error(msg);
         }
+
       });
+
     } else {
-      // Logic for POST (Create)
+
       this.service.create(payload).subscribe({
-        next: () => {
-          // Send 'true' to trigger refresh in the list component
+
+        next: (res: any) => {
+          this.toast.success(res?.message || 'Employee created successfully');
           this.ref.close(true);
         },
+
         error: (err) => {
-          console.error('Creation failed:', err);
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Creation failed';
+
+          this.toast.error(msg);
         }
+
       });
+
     }
   }
 
   close(): void {
-    // Send 'false' so the list component knows NOT to trigger a refresh
     this.ref.close(false);
   }
 }
