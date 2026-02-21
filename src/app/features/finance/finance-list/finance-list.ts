@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { FinanceService } from '../../../core/services/finance';
 import { FinanceEntry } from '../../../core/services/models';
+import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
 import { FinanceUpsertDialogComponent } from '../finance-upsert-dialog/finance-upsert-dialog';
 
 @Component({
@@ -31,7 +32,6 @@ export class FinanceListComponent {
     'date','type','category','amount','paymentMode','description','actions'
   ];
 
-  // ✅ REACTIVE DRAFT STORE (FIXES NG0100)
   private draftsSubject = new BehaviorSubject<any[]>([]);
   minimizedDrafts$ = this.draftsSubject.asObservable();
 
@@ -43,6 +43,7 @@ export class FinanceListComponent {
 
   constructor(
     private finance: FinanceService,
+    private toast: ToastService, // ✅ INJECT
     private dialog: MatDialog
   ) {}
 
@@ -63,13 +64,11 @@ export class FinanceListComponent {
 
     ref.afterClosed().subscribe(res=>{
 
-      // SAVE SUCCESS
       if(res === true){
-        this.fetchData();
+        this.fetchData(); // dialog already showed toast
         return;
       }
 
-      // ✅ MINIMIZED DRAFT (NO NG0100)
       if(res?.minimized){
 
         const current = this.draftsSubject.value;
@@ -113,9 +112,29 @@ export class FinanceListComponent {
 
     if(!row.id) return;
 
-    if(confirm(`Delete entry for ${row.category}?`)){
-      this.finance.remove(Number(row.id))
-        .subscribe(()=>this.fetchData());
+    if(!confirm(`Delete entry for ${row.category}?`)){
+      this.toast.info('Delete cancelled');
+      return;
     }
+
+    this.finance.remove(Number(row.id))
+      .subscribe({
+
+        next:()=>{
+          this.toast.success('Finance entry deleted');
+          this.fetchData();
+        },
+
+        error:(err)=>{
+
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Delete failed';
+
+          this.toast.error(msg);
+        }
+
+      });
   }
 }

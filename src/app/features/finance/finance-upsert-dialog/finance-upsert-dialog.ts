@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { FinanceEntry } from '../../../core/services/models';
 import { FinanceService } from '../../../core/services/finance';
+import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
 
 @Component({
   selector: 'app-finance-upsert-dialog',
@@ -35,9 +36,11 @@ export class FinanceUpsertDialogComponent {
   constructor(
     private fb: FormBuilder,
     private finance: FinanceService,
+    private toast: ToastService, // ✅ INJECT
     private ref: MatDialogRef<FinanceUpsertDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FinanceEntry | null
   ) {
+
     this.isEdit = !!this.data;
 
     this.form = this.fb.group({
@@ -51,14 +54,54 @@ export class FinanceUpsertDialogComponent {
   }
 
   save(): void {
-    if (this.form.invalid) return;
+
+    if (this.form.invalid) {
+      this.toast.info('Please fill all required fields');
+      return;
+    }
 
     const v = this.form.value;
 
     if (this.isEdit && this.data?.id) {
-      this.finance.update(this.data.id, v).subscribe(() => this.ref.close(true));
+
+      this.finance.update(this.data.id, v).subscribe({
+
+        next: (res:any) => {
+          this.toast.success(res?.message || 'Finance entry updated');
+          this.ref.close(true);
+        },
+
+        error: (err) => {
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Update failed';
+
+          this.toast.error(msg);
+        }
+
+      });
+
     } else {
-      this.finance.add(v).subscribe(() => this.ref.close(true));
+
+      this.finance.add(v).subscribe({
+
+        next: (res:any) => {
+          this.toast.success(res?.message || 'Finance entry added');
+          this.ref.close(true);
+        },
+
+        error: (err) => {
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Creation failed';
+
+          this.toast.error(msg);
+        }
+
+      });
+
     }
   }
 
@@ -66,7 +109,6 @@ export class FinanceUpsertDialogComponent {
     this.ref.close(false);
   }
 
-  // ⭐ MINIMIZE
   minimize(): void {
     this.ref.close({
       minimized: true,
