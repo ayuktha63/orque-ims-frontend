@@ -9,7 +9,7 @@ import { BehaviorSubject, switchMap } from 'rxjs';
 import { EmployeeService } from '../../../core/services/employees';
 import { Employee } from '../../../core/models/employee.model';
 import { AuthService } from '../../../core/services/auth';
-import { ToastService } from '../../../core/services/toast.service'; // ✅
+import { ToastService } from '../../../core/services/toast.service';
 
 import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employee-upsert-dialog';
 
@@ -28,7 +28,16 @@ import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employe
 })
 export class EmployeeListComponent implements OnInit {
 
-  displayedColumns = ['employeeCode', 'name', 'department', 'role', 'status', 'actions'];
+  // ✅ Added email column
+  displayedColumns = [
+    'employeeCode',
+    'name',
+    'email',          // NEW COLUMN
+    'department',
+    'role',
+    'status',
+    'actions'
+  ];
 
   private refresh$ = new BehaviorSubject<void>(undefined);
   rows$ = this.refresh$.pipe(switchMap(() => this.service.list()));
@@ -36,7 +45,7 @@ export class EmployeeListComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private service: EmployeeService,
-    private toast: ToastService, // ✅ inject
+    private toast: ToastService,
     public auth: AuthService
   ) {}
 
@@ -74,19 +83,13 @@ export class EmployeeListComponent implements OnInit {
     this.openDrawer(row);
   }
 
-  // ======================================================
-  // ✅ SAFE DELETE WITH ADMIN PROTECTION
-  // ======================================================
   remove(row: Employee): void {
 
-    // Guard: only editors
     if (!this.auth.canEdit()) {
       this.toast.warning('You do not have permission to delete employees');
       return;
     }
 
-    // 🚨 NEW RULE:
-    // ADMIN cannot delete ADMIN
     if (row.role === 'ADMIN') {
       this.toast.warning('Admins cannot delete another Admin');
       return;
@@ -108,7 +111,6 @@ export class EmployeeListComponent implements OnInit {
 
       error: (err) => {
 
-        // handle auth/session errors nicely
         if (err.status === 401) {
           this.toast.error('Session expired or unauthorized action');
           return;
@@ -121,7 +123,6 @@ export class EmployeeListComponent implements OnInit {
 
         this.toast.error(msg);
       }
-
     });
   }
 }
