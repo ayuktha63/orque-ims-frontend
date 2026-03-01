@@ -8,12 +8,10 @@
 
   <table mat-table [dataSource]="(rows$ | async) || []" class="full">
 
-    <!-- SELECT CHECKBOX -->
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let r">
-        <mat-checkbox
-          (change)="toggleRow(r, $event.checked)">
+        <mat-checkbox (change)="toggleRow(r, $event.checked)">
         </mat-checkbox>
       </td>
     </ng-container>
@@ -56,31 +54,36 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let r" class="actions">
+
         <button mat-stroked-button color="primary" (click)="edit(r)">
           Edit
         </button>
+
         <button mat-stroked-button class="delete-btn" (click)="remove(r)">
           Delete
         </button>
+
+        <button mat-stroked-button color="accent"
+                [disabled]="sendingEmailId === r.id"
+                (click)="sendPayslipEmail(r)">
+          {{ sendingEmailId === r.id ? 'Sending...' : 'Email' }}
+        </button>
+
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
   </table>
 </mat-card>
 
-<!-- FOOTER POPUP -->
 <div class="footer-popup" *ngIf="selectedRows.length > 0">
-
-  <button mat-button color="warn"
-          (click)="clearSelection()">
+  <button mat-button color="warn" (click)="clearSelection()">
     ✕ Close
   </button>
 
-  <button mat-raised-button color="primary"
-          (click)="generatePdf()">
+  <button mat-raised-button color="primary" (click)="generatePdf()">
     Generate Payroll
   </button>
-
 </div>
