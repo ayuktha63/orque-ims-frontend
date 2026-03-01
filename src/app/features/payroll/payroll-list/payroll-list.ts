@@ -131,76 +131,159 @@ export class PayrollListComponent implements OnInit {
   // YOUR ORIGINAL PDF GENERATION CODE (UNCHANGED)
   // =====================================================
 
-  generatePdf() {
+generatePdf() {
 
-    if (this.selectedRows.length === 0) return;
+  if (this.selectedRows.length === 0) return;
 
-    this.selectedRows.forEach((row) => {
+  this.selectedRows.forEach((row) => {
 
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 14;
+    const doc = new jsPDF();
 
-      const currency = 'Rs';
+    const logo = new Image();
+    logo.src = 'assets/logos.png';
+
+    logo.onload = () => {
+
+      const logoWidth = 45;
+      const logoHeight = (logo.height * logoWidth) / logo.width;
+
+      doc.addImage(logo, 'PNG', 14, 12, logoWidth, logoHeight);
+
+      // =============================
+      // FORMAT MONTH
+      // =============================
 
       const [year, month] = row.month.split('-');
       const monthName = new Date(Number(year), Number(month) - 1)
         .toLocaleString('default', { month: 'long' });
 
-      const logoWidth = 50;
-      const logoHeight = 18;
-      const logoX = margin;
-      const logoY = 15;
+      const currency = 'Rs';
 
-      doc.addImage('assets/logos.png', 'PNG', logoX, logoY, logoWidth, logoHeight);
-
-      const headerStartY = logoY + logoHeight + 8;
-
+      // HEADER
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
-      doc.text('Orque Innovations LLP', pageWidth / 2, headerStartY, { align: 'center' });
+      doc.text('Orque Innovations LLP', 65, 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
-      doc.text('Safa Towers, Kamaleshwaram, Manacaud,',
-        pageWidth / 2, headerStartY + 7, { align: 'center' });
-
-      doc.text('Thiruvananthapuram, Kerala - 695009',
-        pageWidth / 2, headerStartY + 12, { align: 'center' });
+      doc.text(
+        'Safa Towers, TC 69/55(4), Kamaleshwaram, Manacaud,',
+        65,
+        27
+      );
+      doc.text(
+        'Thiruvananthapuram, Kerala - 695009',
+        65,
+        32
+      );
+      doc.text('Finance Team', 65, 37);
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text(`Payslip: ${monthName} ${year}`,
-        pageWidth - margin, logoY + 5, { align: 'right' });
+      doc.text(`Payslip: ${monthName} ${year}`, 150, 20);
 
-      doc.line(margin, headerStartY + 18, pageWidth - margin, headerStartY + 18);
+      doc.line(14, 45, 196, 45);
 
-      const contentStartY = headerStartY + 30;
+      // NET PAY
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Net Pay', 14, 60);
 
+      doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
-      doc.setTextColor(0, 128, 0);
-      doc.text(`${currency} ${row.netPay}`, margin, contentStartY + 12);
-      doc.setTextColor(0, 0, 0);
+      doc.text(`${currency} ${row.netPay}`, 14, 72);
 
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `Gross Pay (A): ${currency} ${Number(row.basic) + Number(row.allowances)}`,
+        110,
+        62
+      );
+      doc.text(
+        `Deductions (B): ${currency} ${row.deductions}`,
+        110,
+        69
+      );
+
+      doc.line(14, 85, 196, 85);
+
+      // EMPLOYEE DETAILS
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text('Employee Details', 14, 100);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Payslip No: ${row.payrollCode}`, 14, 110);
+      doc.text(`Employee Name: ${row.employeeName}`, 14, 117);
+      doc.text(`Month: ${monthName} ${year}`, 14, 124);
+
+      // EARNINGS TABLE
       autoTable(doc, {
-        startY: contentStartY + 35,
-        head: [['Description', 'Amount']],
+        startY: 135,
+        head: [['Earnings', 'Amount']],
         body: [
           ['Basic Salary', `${currency} ${row.basic}`],
           ['Allowances', `${currency} ${row.allowances}`],
-          ['Deductions', `${currency} ${row.deductions}`],
-          ['Net Pay', `${currency} ${row.netPay}`]
+          [
+            'Gross Pay (A)',
+            `${currency} ${Number(row.basic) + Number(row.allowances)}`
+          ]
         ],
-        theme: 'grid',
-        margin: { left: margin, right: margin }
+        theme: 'grid'
       });
 
-      doc.save(`Payslip-${row.employeeName}-${monthName}-${year}.pdf`);
-    });
+      const afterGross = (doc as any).lastAutoTable.finalY + 10;
 
-    this.clearSelection();
-  }
+      autoTable(doc, {
+        startY: afterGross,
+        head: [['Deductions', 'Amount']],
+        body: [
+          ['Total Deductions (B)', `${currency} ${row.deductions}`]
+        ],
+        theme: 'grid'
+      });
+
+      const afterDeduction = (doc as any).lastAutoTable.finalY + 15;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(0, 128, 0);
+      doc.text(
+        `Net Salary Credited: ${currency} ${row.netPay}`,
+        14,
+        afterDeduction
+      );
+
+      doc.setTextColor(0, 0, 0);
+
+      const today = new Date().toLocaleDateString('en-GB');
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+
+      doc.text('Digitally signed by', 140, 260);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Orque Finance Team', 140, 267);
+
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Date: ${today}`, 140, 274);
+
+      doc.setFontSize(9);
+      doc.text(
+        'This is a computer generated payslip and does not require a signature.',
+        14,
+        292
+      );
+
+      doc.save(`Payslip-${row.employeeName}-${monthName}-${year}.pdf`);
+    };
+
+  });
+
+  this.clearSelection();
+}
 
   private openDrawer(data: PayrollEntry | null): void {
     const ref = this.dialog.open(PayrollUpsertDialogComponent, {
