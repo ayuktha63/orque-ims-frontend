@@ -1,10 +1,22 @@
 <mat-card class="card">
   <div class="header">
     <h2>Payroll Management</h2>
-    <button mat-raised-button color="primary" (click)="add()">Add Payroll</button>
+    <button mat-raised-button color="primary" (click)="add()">
+      Add Payroll
+    </button>
   </div>
 
   <table mat-table [dataSource]="(rows$ | async) || []" class="full">
+
+    <!-- SELECT CHECKBOX -->
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let r">
+        <mat-checkbox
+          (change)="toggleRow(r, $event.checked)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
 
     <ng-container matColumnDef="payrollCode">
       <th mat-header-cell *matHeaderCellDef>Code</th>
@@ -44,8 +56,12 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let r" class="actions">
-        <button mat-stroked-button color="primary" (click)="edit(r)">Edit</button>
-        <button mat-stroked-button class="delete-btn" (click)="remove(r)">Delete</button>
+        <button mat-stroked-button color="primary" (click)="edit(r)">
+          Edit
+        </button>
+        <button mat-stroked-button class="delete-btn" (click)="remove(r)">
+          Delete
+        </button>
       </td>
     </ng-container>
 
@@ -53,3 +69,18 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </mat-card>
+
+<!-- FOOTER POPUP -->
+<div class="footer-popup" *ngIf="selectedRows.length > 0">
+
+  <button mat-button color="warn"
+          (click)="clearSelection()">
+    ✕ Close
+  </button>
+
+  <button mat-raised-button color="primary"
+          (click)="generatePdf()">
+    Generate Payroll
+  </button>
+
+</div>
