@@ -23,18 +23,16 @@ export interface Duty {
   standalone: true,
   selector: 'app-my-work',
   imports: [
-  CommonModule,
-  MatTableModule,
-  MatCardModule,
-  MatButtonModule,
-  MatDialogModule
-],
-
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatButtonModule,
+    MatDialogModule
+  ],
   templateUrl: './my-work.html'
 })
 export class MyWorkComponent {
 
-  // ✅ MUST MATCH HTML matColumnDef EXACTLY
   displayedColumns: string[] = [
     'jobId',
     'title',
@@ -46,55 +44,73 @@ export class MyWorkComponent {
 
   private refresh$ = new BehaviorSubject<void>(undefined);
 
+  // ==============================
+  // ROLE CHECK
+  // ==============================
+  private canViewAll(): boolean {
+    const role = this.auth.getRole();
+    return role === 'SYSTEM_ADMIN' ||
+           role === 'MANAGER' ||
+           role === 'HR';
+  }
+
+  // ==============================
+  // DATA SOURCE
+  // ==============================
   rows$ = this.refresh$.pipe(
-    switchMap(() => {
-      if (this.auth.isAdmin()) {
-        return this.service.getAll();
-      }
-      return this.service.myWork(this.auth.employeeId());
-    })
+    switchMap(() =>
+      this.canViewAll()
+        ? this.service.getAll()
+        : this.service.myWork(this.auth.employeeId())
+    )
   );
 
   constructor(
-  private service: DutyService,
-  public auth: AuthService,
-  private dialog: MatDialog
-) {}
-
+    private service: DutyService,
+    public auth: AuthService,
+    private dialog: MatDialog
+  ) {}
 
   trackById(_: number, row: Duty) {
     return row.id;
   }
 
+  // ==============================
+  // START WORK
+  // ==============================
   ack(row: Duty) {
 
-  const ref = this.dialog.open(ConfirmDialogComponent, {
-    width: '320px',
-    data: { message: `Start work for ${row.jobId}?` }
-  });
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      data: { message: `Start work for ${row.jobId}?` }
+    });
 
-  ref.afterClosed().subscribe(ok => {
-    if(!ok) return;
+    ref.afterClosed().subscribe(ok => {
 
-    this.service.changeStatus(row.id,'ONGOING')
-      .subscribe(() => this.refresh$.next());
-  });
-}
+      if (!ok) return;
 
+      this.service.changeStatus(row.id, 'ONGOING')
+        .subscribe(() => this.refresh$.next());
+    });
+  }
 
+  // ==============================
+  // FINISH WORK
+  // ==============================
   finish(row: Duty) {
 
-  const ref = this.dialog.open(ConfirmDialogComponent, {
-    width: '320px',
-    data: { message: `Mark ${row.jobId} as completed?` }
-  });
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      data: { message: `Mark ${row.jobId} as completed?` }
+    });
 
-  ref.afterClosed().subscribe(ok => {
-    if(!ok) return;
+    ref.afterClosed().subscribe(ok => {
 
-    this.service.changeStatus(row.id,'COMPLETED')
-      .subscribe(() => this.refresh$.next());
-  });
-}
+      if (!ok) return;
+
+      this.service.changeStatus(row.id, 'COMPLETED')
+        .subscribe(() => this.refresh$.next());
+    });
+  }
 
 }

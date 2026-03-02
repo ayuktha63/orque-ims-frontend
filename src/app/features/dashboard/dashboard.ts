@@ -36,11 +36,12 @@ import { AuthService } from '../../core/services/auth';
 })
 export class DashboardComponent implements OnInit {
 
-  // ⭐ keep charts monthly but profit global
   month = new Date().toISOString().slice(0, 7);
 
-  // ✅ ADMIN FLAG (for template role check)
-  isAdmin = false;
+  // ✅ ROLE FLAGS (Aligned with Backend)
+  isSystemAdmin = false;
+  isFinance = false;
+  canViewFinanceDashboard = false;
 
   summary = {
     income: 0,
@@ -71,8 +72,12 @@ export class DashboardComponent implements OnInit {
   // INIT
   // =========================
   ngOnInit(): void {
-    // ✅ set admin flag once (avoid repeated function calls in template)
-    this.isAdmin = this.auth.isAdmin();
+
+    const role = this.auth.getRole();
+
+    this.isSystemAdmin = role === 'SYSTEM_ADMIN';
+    this.isFinance = role === 'FINANCE';
+    this.canViewFinanceDashboard = this.isSystemAdmin || this.isFinance;
 
     this.loadConfig();
     this.refreshDashboard();
@@ -104,22 +109,23 @@ export class DashboardComponent implements OnInit {
   // REFRESH
   // =========================
   refreshDashboard(): void {
-    this.loadFinance();
+
+    if (this.canViewFinanceDashboard) {
+      this.loadFinance();
+    }
+
     this.loadOngoingDuties();
   }
 
   // =========================
-  // FINANCE (GLOBAL PROFIT)
+  // FINANCE (Only for FINANCE + SYSTEM_ADMIN)
   // =========================
   loadFinance(): void {
 
-    // reset charts to avoid stale rendering
     this.incomeExpenseChart = undefined;
     this.categoryChart = undefined;
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
-
-      console.log('FINANCE DATA RECEIVED:', allEntries);
 
       let income = 0;
       let expense = 0;
@@ -127,16 +133,12 @@ export class DashboardComponent implements OnInit {
       for (const e of allEntries) {
         const amount = Number(e.amount) || 0;
 
-        if (e.type === 'INCOME') {
-          income += amount;
-        } else {
-          expense += amount;
-        }
+        if (e.type === 'INCOME') income += amount;
+        else expense += amount;
       }
 
       const profit = income - expense;
 
-      // ⭐ round to 2 decimals safely
       this.summary = {
         income: +income.toFixed(2),
         expense: +expense.toFixed(2),
@@ -144,9 +146,7 @@ export class DashboardComponent implements OnInit {
         count: allEntries.length
       };
 
-      // =========================
-      // 📊 MONTHLY CHART DATA
-      // =========================
+      // Monthly Chart
       const entries = allEntries.filter(e =>
         e.date?.startsWith(this.month)
       );
@@ -197,13 +197,16 @@ export class DashboardComponent implements OnInit {
   }
 
   // =========================
-  // DUTIES
+  // DUTIES (ALL USERS)
   // =========================
   loadOngoingDuties(): void {
 
-    const source$ = this.isAdmin
-      ? this.dutyService.getAll()
-      : this.dutyService.myWork(this.auth.employeeId());
+    const role = this.auth.getRole();
+
+    const source$ =
+      role === 'SYSTEM_ADMIN' || role === 'MANAGER' || role === 'HR'
+        ? this.dutyService.getAll()
+        : this.dutyService.myWork(this.auth.employeeId());
 
     source$.subscribe(list => {
       this.ongoingDuties = (list || []).filter(

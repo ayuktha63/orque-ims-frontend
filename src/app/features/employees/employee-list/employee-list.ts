@@ -28,11 +28,10 @@ import { EmployeeUpsertDialogComponent } from '../employee-upsert-dialog/employe
 })
 export class EmployeeListComponent implements OnInit {
 
-  // ✅ Added email column
   displayedColumns = [
     'employeeCode',
     'name',
-    'email',          // NEW COLUMN
+    'email',
     'department',
     'role',
     'status',
@@ -40,7 +39,9 @@ export class EmployeeListComponent implements OnInit {
   ];
 
   private refresh$ = new BehaviorSubject<void>(undefined);
-  rows$ = this.refresh$.pipe(switchMap(() => this.service.list()));
+  rows$ = this.refresh$.pipe(
+    switchMap(() => this.service.list())
+  );
 
   constructor(
     private dialog: MatDialog,
@@ -51,11 +52,24 @@ export class EmployeeListComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // ✅ PUBLIC (Template safe)
+  canManageEmployees(): boolean {
+    const role = this.auth.getRole();
+    return role === 'SYSTEM_ADMIN' ||
+           role === 'MANAGER' ||
+           role === 'HR';
+  }
+
   fetchData(): void {
     this.refresh$.next();
   }
 
   private openDrawer(data: Employee | null): void {
+
+    if (!this.canManageEmployees()) {
+      this.toast.warning('Permission denied');
+      return;
+    }
 
     const ref = this.dialog.open(EmployeeUpsertDialogComponent, {
       data,
@@ -74,9 +88,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   add(): void {
-    if (this.auth.canEdit()) {
-      this.openDrawer(null);
-    }
+    this.openDrawer(null);
   }
 
   edit(row: Employee): void {
@@ -85,43 +97,31 @@ export class EmployeeListComponent implements OnInit {
 
   remove(row: Employee): void {
 
-    if (!this.auth.canEdit()) {
+    if (!this.canManageEmployees()) {
       this.toast.warning('You do not have permission to delete employees');
       return;
     }
 
-    if (row.role === 'ADMIN') {
-      this.toast.warning('Admins cannot delete another Admin');
+    if (row.role === 'SYSTEM_ADMIN' &&
+        this.auth.getRole() !== 'SYSTEM_ADMIN') {
+      this.toast.warning('Only System Admin can delete another System Admin');
       return;
     }
 
     if (!row.id) return;
 
-    if (!confirm(`Are you sure you want to delete ${row.name}?`)) {
+    if (!confirm(`Delete ${row.name}?`)) {
       this.toast.info('Delete cancelled');
       return;
     }
 
     this.service.delete(row.id).subscribe({
-
       next: () => {
         this.toast.success('Employee deleted successfully');
         this.fetchData();
       },
-
-      error: (err) => {
-
-        if (err.status === 401) {
-          this.toast.error('Session expired or unauthorized action');
-          return;
-        }
-
-        const msg =
-          err?.error?.message ||
-          err?.message ||
-          'Delete failed';
-
-        this.toast.error(msg);
+      error: () => {
+        this.toast.error('Delete failed');
       }
     });
   }

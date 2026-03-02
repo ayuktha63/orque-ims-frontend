@@ -2,7 +2,7 @@
 
   <!-- CREATE DUTY BUTTON -->
   <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"
-       *ngIf="auth.isAdmin()">
+       *ngIf="canManageDuties">
     <button mat-flat-button color="primary" (click)="openCreateDialog()">
       + Create Duty
     </button>
@@ -64,18 +64,21 @@
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let row">
 
+        <!-- APPROVE -->
         <button mat-flat-button color="primary"
-                *ngIf="row.status === 'PENDING_APPROVAL' && auth.isAdmin()"
+                *ngIf="row.status === 'PENDING_APPROVAL' && canManageDuties"
                 (click)="update(row, 'ASSIGNED')">
           Approve
         </button>
 
+        <!-- START -->
         <button mat-stroked-button
                 *ngIf="row.status === 'ASSIGNED'"
                 (click)="update(row, 'ONGOING')">
           Start
         </button>
 
+        <!-- FINISH -->
         <button mat-stroked-button color="accent"
                 *ngIf="row.status === 'ONGOING'"
                 (click)="update(row, 'COMPLETED')">

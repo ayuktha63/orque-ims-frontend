@@ -23,26 +23,65 @@ import { AuthService } from '../../core/services/auth';
 })
 export class SidebarComponent {
 
-  invoiceOpen = false;
-
   constructor(public auth: AuthService) {}
 
-  // ⭐ ADD THESE HELPERS
-  isAdmin(): boolean {
-    return this.auth.isAdmin();
+  // ===== ROLE CHECKS =====
+
+  private role(): string {
+    return this.auth.getRole();
   }
 
-  isEmployee(): boolean {
-    return !this.auth.isAdmin();
+  isSystemAdmin(): boolean {
+    return this.role() === 'SYSTEM_ADMIN';
   }
 
-  toggleInvoice(event: MouseEvent) {
-    event.stopPropagation();
-    this.invoiceOpen = !this.invoiceOpen;
+  isManager(): boolean {
+    return this.role() === 'MANAGER';
   }
 
-  closeInvoice() {
-    this.invoiceOpen = false;
+  isHR(): boolean {
+    return this.role() === 'HR';
   }
+
+  isFinance(): boolean {
+    return this.role() === 'FINANCE';
+  }
+
+  // ===== MENU VISIBILITY (FINAL LOGIC) =====
+
+  showDashboard(): boolean {
+    return true; // ALL roles
+  }
+
+  showMyTask(): boolean {
+    return true; // ALL roles
+  }
+
+  showEmployees(): boolean {
+    return this.isSystemAdmin() ||
+           this.isManager() ||
+           this.isHR();
+  }
+
+  showDuties(): boolean {
+    return this.isSystemAdmin() ||
+           this.isManager() ||
+           this.isHR();
+  }
+
+  showCredentials(): boolean {
+    return this.isSystemAdmin() ||
+           this.isHR();
+  }
+
+  showFinance(): boolean {
+    return this.isSystemAdmin() ||
+           this.isFinance();
+  }
+
+  showPayroll(): boolean {
+    return this.isSystemAdmin() ||
+           this.isFinance();
+  }
+
 }
-

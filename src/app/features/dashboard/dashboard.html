@@ -5,15 +5,14 @@
 
     <span class="title">Dashboards</span>
 
-    <!-- CUSTOMISE BUTTON -->
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>tune</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
 
-      <!-- ================= ADMIN OPTIONS ================= -->
-      <ng-container *ngIf="isAdmin">
+      <!-- FINANCE + SYSTEM_ADMIN OPTIONS -->
+      <ng-container *ngIf="canViewFinanceDashboard">
 
         <button mat-menu-item (click)="$event.stopPropagation()">
           <mat-checkbox [(ngModel)]="dashboardConfig.profit"
@@ -29,8 +28,6 @@
           </mat-checkbox>
         </button>
 
-
-
         <button mat-menu-item (click)="$event.stopPropagation()">
           <mat-checkbox [(ngModel)]="dashboardConfig.duties"
                         (change)="onConfigChange()">
@@ -40,8 +37,8 @@
 
       </ng-container>
 
-      <!-- ================= NORMAL USER OPTIONS ================= -->
-      <ng-container *ngIf="!isAdmin">
+      <!-- OTHER USERS -->
+      <ng-container *ngIf="!canViewFinanceDashboard">
 
         <button mat-menu-item (click)="$event.stopPropagation()">
           <mat-checkbox [(ngModel)]="dashboardConfig.duties"
@@ -56,16 +53,19 @@
 
   </div>
 
-  <!-- KPI (ADMIN ONLY) -->
-  <mat-card class="stat-card" *ngIf="dashboardConfig.profit && isAdmin">
+  <!-- KPI (SYSTEM_ADMIN + FINANCE) -->
+  <mat-card class="stat-card"
+            *ngIf="dashboardConfig.profit && canViewFinanceDashboard">
     <h3>Net Profit</h3>
     <p [ngClass]="summary.profit >= 0 ? 'pos' : 'neg'">
       ₹ {{ summary.profit }}
     </p>
   </mat-card>
 
-  <!-- INCOME EXPENSE (ADMIN ONLY) -->
-  <mat-card *ngIf="isAdmin && dashboardConfig.incomeChart && incomeExpenseChart?.series?.length">
+  <!-- INCOME EXPENSE CHART -->
+  <mat-card *ngIf="canViewFinanceDashboard &&
+                   dashboardConfig.incomeChart &&
+                   incomeExpenseChart?.series?.length">
     <apx-chart
       [series]="incomeExpenseChart.series"
       [chart]="incomeExpenseChart.chart"
@@ -74,8 +74,10 @@
     </apx-chart>
   </mat-card>
 
-  <!-- CATEGORY (ADMIN ONLY) -->
-  <mat-card *ngIf="isAdmin && dashboardConfig.categoryChart && categoryChart?.series?.length">
+  <!-- CATEGORY CHART -->
+  <mat-card *ngIf="canViewFinanceDashboard &&
+                   dashboardConfig.categoryChart &&
+                   categoryChart?.series?.length">
     <apx-chart
       [series]="categoryChart.series"
       [chart]="categoryChart.chart"
