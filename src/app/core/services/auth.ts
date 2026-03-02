@@ -4,6 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environment/environment';
 
+export interface LoginResponse {
+  token: string;
+  role: string;
+  userId: number;
+}
+
 export interface AuthUser {
   id: number;
   role: string;
@@ -19,8 +25,8 @@ export class AuthService {
   // ===============================
   // LOGIN
   // ===============================
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/login`, { username, password })
+  login(username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { username, password })
       .pipe(
         tap(res => {
           if (isPlatformBrowser(this.platformId)) {
@@ -49,7 +55,7 @@ export class AuthService {
   }
 
   // ===============================
-  // 🔥 NEW — ROLE GETTER (STEP 5 REQUIRED)
+  // ROLE GETTER
   // ===============================
   getRole(): string {
     if (!isPlatformBrowser(this.platformId)) return '';
@@ -74,21 +80,47 @@ export class AuthService {
   }
 
   // ===============================
-  // ROLES
+  // ROLE CHECKS
   // ===============================
-  isAdmin(): boolean {
-    const role = this.getRole();
-    return role === 'ROLE_ADMIN' || role === 'ADMIN';
+
+  isSystemAdmin(): boolean {
+    return this.getRole() === 'SYSTEM_ADMIN';
   }
 
+  isAdmin(): boolean {
+    const role = this.getRole();
+    return role === 'ADMIN' || role === 'SYSTEM_ADMIN';
+  }
+
+  isHR(): boolean {
+    return this.getRole() === 'HR';
+  }
+
+  isFinance(): boolean {
+    return this.getRole() === 'FINANCE';
+  }
+
+  isUser(): boolean {
+    return this.getRole() === 'USER';
+  }
+
+  // ===============================
+  // PERMISSION HELPERS
+  // ===============================
+
   canEdit(): boolean {
-    return this.isAdmin();
+    const role = this.getRole();
+    return role === 'SYSTEM_ADMIN' ||
+           role === 'ADMIN' ||
+           role === 'HR' ||
+           role === 'FINANCE';
   }
 
   employeeId(): number {
     const id = isPlatformBrowser(this.platformId)
       ? localStorage.getItem('user_id')
       : null;
+
     return id ? Number(id) : 0;
   }
 
@@ -97,7 +129,9 @@ export class AuthService {
   // ===============================
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.clear();
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_role');
+      localStorage.removeItem('user_id');
       window.location.href = '/login';
     }
   }
