@@ -43,19 +43,28 @@ export class SidebarComponent {
     return this.role() === 'HR';
   }
 
+  isEmployee(): boolean {
+    return this.role() === 'EMPLOYEE';
+  }
+
   isFinance(): boolean {
     return this.role() === 'FINANCE';
   }
-
+isIntern(): boolean {
+  return this.role() === 'INTERN';
+}
   // ===== MENU VISIBILITY (FINAL LOGIC) =====
 
   showDashboard(): boolean {
     return true; // ALL roles
   }
 
-  showMyTask(): boolean {
-    return true; // ALL roles
-  }
+showMyTask(): boolean {
+  return this.isIntern() ||
+         this.isFinance() ||
+         this.isHR() ||
+         this.isEmployee();
+}
 
   showEmployees(): boolean {
     return this.isSystemAdmin() ||
