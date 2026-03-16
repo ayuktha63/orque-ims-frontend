@@ -1,48 +1,49 @@
-<div class="login-wrapper">
-  <div class="login-container">
-    <div class="login-info">
-      <div class="brand">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="brand-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-        <span class="brand-name">Orque IMS</span>
+<div class="wrap">
+  <mat-card class="card">
+    <div class="login-header">
+      <h2>Login</h2>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Username</mat-label> 
+        <input matInput formControlName="username" />
+        <mat-error *ngIf="form.get('username')?.invalid">Username is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="form.get('password')?.invalid">Password is required (min 4 chars)</mat-error>
+      </mat-form-field>
+
+      <button 
+        mat-flat-button 
+        color="primary" 
+        class="full submit-btn" 
+        type="submit" 
+        [disabled]="form.invalid">
+        Sign in
+      </button>
+    </form>
+  </mat-card>
+
+  <div class="version-info">
+    Last updated: 2026-03-16 21:35 |
+    <span class="version-hover">
+      Version 2
+      <div class="tooltip-box">
+        <div class="tooltip-title">Features:</div>
+        <ul class="tooltip-list">
+          <li>Attendance</li>
+          <li>Credentials</li>
+          <li>Duty</li>
+          <li>Employee</li>
+          <li>Finance</li>
+          <li>Invoices</li>
+          <li>Payroll</li>
+        </ul>
       </div>
-      <h1 class="info-title">Inventory Management System</h1>
-      <p class="info-desc">Streamline your workforce operations, track duties securely, and manage employee credentials from a centralized enterprise platform.</p>
-    </div>
-
-    <div class="login-form-area">
-      <mat-card class="login-card">
-        <h2 class="auth-title">Sign In</h2>
-        <p class="auth-subtitle">Welcome back! Please enter your details.</p>
-
-        <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="full">
-              <mat-label>Username</mat-label> 
-              <input matInput formControlName="username" />
-              <mat-error *ngIf="form.get('username')?.invalid">Username is required</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="full">
-              <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password" />
-              <mat-error *ngIf="form.get('password')?.invalid">Password is required (min 4 chars)</mat-error>
-            </mat-form-field>
-          </div>
-
-          <button 
-            mat-flat-button 
-            color="primary" 
-            class="submit-btn full" 
-            type="submit" 
-            [disabled]="form.invalid">
-            Sign in to Account
-          </button>
-        </form>
-      </mat-card>
-    </div>
+    </span>
   </div>
 </div>
