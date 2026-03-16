@@ -142,6 +142,11 @@ mat-card:hover {
   color: #5e35b1;
 }
 
+.leave-status {
+  background: #fff3e0;
+  color: #e65100;
+}
+
 
 /* ================================
    EMPTY STATE

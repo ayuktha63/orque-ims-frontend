@@ -20,6 +20,9 @@ import { MyWorkComponent } from './features/duty/my-work/my-work';
 // ✅ ADD DEFECT PAGE IMPORT
 import { DutyDefectDialogComponent } from './features/duty/duty-defect-dialog/duty-defect-dialog';
 
+// ATTENDANCE MODULE
+import { AttendanceComponent } from './features/attendance/attendance';
+
 export const routes: Routes = [
 
   // ================= ROOT REDIRECT =================
@@ -80,6 +83,13 @@ export const routes: Routes = [
         path: 'defects',
         component: DutyDefectDialogComponent,
         data: { breadcrumb: 'Defects' }
+      },
+
+      // ================= ATTENDANCE =================
+      {
+        path: 'attendance',
+        component: AttendanceComponent,
+        data: { breadcrumb: 'Attendance' }
       },
 
       // ================= INVOICES =================

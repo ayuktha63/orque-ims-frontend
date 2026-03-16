@@ -35,6 +35,13 @@
           </mat-checkbox>
         </button>
 
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.upcomingLeaves"
+                        (change)="onConfigChange()">
+            Upcoming Leaves
+          </mat-checkbox>
+        </button>
+
       </ng-container>
 
       <!-- OTHER USERS -->
@@ -44,6 +51,13 @@
           <mat-checkbox [(ngModel)]="dashboardConfig.duties"
                         (change)="onConfigChange()">
             Ongoing Duties
+          </mat-checkbox>
+        </button>
+
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.upcomingLeaves"
+                        (change)="onConfigChange()">
+            Upcoming Leaves
           </mat-checkbox>
         </button>
 
@@ -102,6 +116,27 @@
       </div>
 
       <span class="status ongoing">ONGOING</span>
+    </div>
+
+  </mat-card>
+
+  <!-- UPCOMING LEAVES (ALL USERS) -->
+  <mat-card class="task-card" *ngIf="dashboardConfig.upcomingLeaves">
+    <h3>Upcoming Leaves (Next 4 Days)</h3>
+
+    <div *ngIf="upcomingLeaves.length === 0" class="empty">
+      No upcoming leaves
+    </div>
+
+    <div class="task" *ngFor="let leave of upcomingLeaves">
+      <div>
+        <strong>{{ leave.employeeName }}</strong>
+        <div class="meta">
+          {{ leave.date | date:'mediumDate' }}
+        </div>
+      </div>
+
+      <span class="status leave-status">ON LEAVE</span>
     </div>
 
   </mat-card>

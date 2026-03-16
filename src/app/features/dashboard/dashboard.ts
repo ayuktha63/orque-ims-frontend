@@ -17,6 +17,7 @@ import { FinanceService } from '../../core/services/finance';
 import { FinanceEntry } from '../../core/services/models';
 import { DutyService, Duty } from '../../core/services/duty';
 import { AuthService } from '../../core/services/auth';
+import { AttendanceService, AttendanceRecord } from '../../core/services/attendance';
 
 @Component({
   selector: 'app-dashboard',
@@ -58,13 +59,15 @@ export class DashboardComponent implements OnInit {
     profit: true,
     incomeChart: true,
     categoryChart: true,
-    duties: true
+    duties: true,
+    upcomingLeaves: true
   };
 
   constructor(
     private finance: FinanceService,
     private dutyService: DutyService,
     private auth: AuthService,
+    private attendanceService: AttendanceService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -115,6 +118,7 @@ export class DashboardComponent implements OnInit {
     }
 
     this.loadOngoingDuties();
+    this.loadUpcomingLeaves();
   }
 
   // =========================
@@ -212,6 +216,36 @@ export class DashboardComponent implements OnInit {
       this.ongoingDuties = (list || []).filter(
         d => d.status === 'ONGOING'
       );
+
+      this.cd.detectChanges();
+    });
+  }
+
+  // =========================
+  // ATTENDANCE (Upcoming leaves for next 4 days)
+  // =========================
+  upcomingLeaves: AttendanceRecord[] = [];
+
+  loadUpcomingLeaves(): void {
+    // Force a fresh fetch from the server
+    this.attendanceService.fetchRecords().subscribe();
+
+    this.attendanceService.getRecords().subscribe(records => {
+      // Find leaves in the next 4 days
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const next4Days = new Date(today);
+      next4Days.setDate(today.getDate() + 4);
+
+      this.upcomingLeaves = records.filter(r => {
+        if (r.status !== 'Leave') return false;
+        
+        const recordDate = new Date(r.date);
+        recordDate.setHours(0, 0, 0, 0);
+        
+        return recordDate >= today && recordDate <= next4Days;
+      }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       this.cd.detectChanges();
     });

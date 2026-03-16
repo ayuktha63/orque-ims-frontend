@@ -49,6 +49,16 @@
       <mat-icon class="icon">task_alt</mat-icon>
     </a>
 
+    <!-- ================= ATTENDANCE (SYSTEM_ADMIN + MANAGER + HR) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showAttendance()"
+       routerLink="/app/attendance"
+       matTooltip="Attendance"
+       matTooltipPosition="right">
+      <mat-icon class="icon">calendar_month</mat-icon>
+    </a>
+
     <!-- ================= CREDENTIALS (SYSTEM_ADMIN + HR) ================= -->
     <a mat-list-item
        class="item"

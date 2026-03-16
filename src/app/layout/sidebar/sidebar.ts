@@ -83,6 +83,12 @@ showMyTask(): boolean {
            this.isHR();
   }
 
+  showAttendance(): boolean {
+    return this.isSystemAdmin() ||
+           this.isHR() ||
+           this.isManager();
+  }
+
   showFinance(): boolean {
     return this.isSystemAdmin() ||
            this.isFinance();
