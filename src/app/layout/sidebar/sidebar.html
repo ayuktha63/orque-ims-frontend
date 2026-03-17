@@ -59,6 +59,16 @@
       <mat-icon class="icon">calendar_month</mat-icon>
     </a>
 
+    <!-- ================= CLIENTS (MINI CRM) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showClients()"
+       routerLink="/app/clients"
+       matTooltip="Clients"
+       matTooltipPosition="right">
+      <mat-icon class="icon">business_center</mat-icon>
+    </a>
+
     <!-- ================= CREDENTIALS (SYSTEM_ADMIN + HR) ================= -->
     <a mat-list-item
        class="item"

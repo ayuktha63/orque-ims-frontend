@@ -10,7 +10,6 @@ import { EmployeeListComponent } from './features/employees/employee-list/employ
 import { FinanceListComponent } from './features/finance/finance-list/finance-list';
 import { PayrollListComponent } from './features/payroll/payroll-list/payroll-list';
 import { InvoicesComponent } from './features/invoices/invoices/invoices';
-import { ClientsComponent } from './features/clients/clients/clients';
 import { CredentialsComponent } from './features/credential/credentials/credentials';
 import { InvoiceListComponent } from './features/invoices/invoices/invoice-list/invoice-list';
 
@@ -26,6 +25,8 @@ import { AttendanceComponent } from './features/attendance/attendance';
 
 // SETTINGS MODULE
 import { SettingsComponent } from './features/settings/settings';
+import { ClientsComponent } from './features/clients/clients/clients';
+import { ClientListComponent } from './features/clients/client-list/client-list.component';
 
 export const routes: Routes = [
 
@@ -125,10 +126,9 @@ export const routes: Routes = [
       },
 
       // ================= OTHER FEATURES =================
-
       {
         path: 'clients',
-        component: ClientsComponent,
+        component: ClientListComponent,
         canActivate: [roleGuard],
         data: { breadcrumb: 'Clients', screenId: 'clients' }
       },

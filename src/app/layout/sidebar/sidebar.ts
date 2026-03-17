@@ -79,5 +79,6 @@ export class SidebarComponent implements OnInit {
   showAttendance(): boolean { return this.hasAccess('attendance'); }
   showFinance(): boolean { return this.hasAccess('finance'); }
   showPayroll(): boolean { return this.hasAccess('payroll'); }
+  showClients(): boolean { return this.hasAccess('clients'); }
 
 }
