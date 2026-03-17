@@ -1,0 +1,145 @@
+<div class="settings-container fade-in">
+  <div class="page-header">
+    <div class="header-text">
+      <h2>Account Settings</h2>
+      <p class="subtitle">Customize your application experience and dashboard widgets.</p>
+    </div>
+    <div class="header-actions">
+      <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="isLoading || isSaving"
+        class="save-btn">
+        <mat-icon *ngIf="!isSaving">save</mat-icon>
+        <mat-icon *ngIf="isSaving" class="spin">sync</mat-icon>
+        {{ isSaving ? 'Saving...' : 'Save Settings' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-content" *ngIf="!isLoading">
+
+    <mat-card class="settings-card elevated-card">
+      <mat-card-header>
+        <div mat-card-avatar class="header-icon">
+          <mat-icon>dashboard</mat-icon>
+        </div>
+        <mat-card-title>Dashboard Preferences</mat-card-title>
+        <mat-card-subtitle>Toggle the widgets you want to see on your Dashboard</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content class="toggles-container">
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Finance Profit Summary</h4>
+            <span class="desc">Show total income, expenses, and profit calculation cards.</span>
+          </div>
+          <mat-slide-toggle [(ngModel)]="config.profit" color="primary"></mat-slide-toggle>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Income & Expense Chart</h4>
+            <span class="desc">Display the monthly bar chart comparing income versus expenses.</span>
+          </div>
+          <mat-slide-toggle [(ngModel)]="config.incomeChart" color="primary"></mat-slide-toggle>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Expense Categories Donut</h4>
+            <span class="desc">Show the breakdown chart for expense categories.</span>
+          </div>
+          <mat-slide-toggle [(ngModel)]="config.categoryChart" color="primary"></mat-slide-toggle>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>My Ongoing Duties</h4>
+            <span class="desc">Display the list of your currently ongoing tasks/duties.</span>
+          </div>
+          <mat-slide-toggle [(ngModel)]="config.duties" color="primary"></mat-slide-toggle>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Upcoming Leaves</h4>
+            <span class="desc">Show attendance records marking leaves in the next 4 days.</span>
+          </div>
+          <mat-slide-toggle [(ngModel)]="config.upcomingLeaves" color="primary"></mat-slide-toggle>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="settings-card elevated-card" *ngIf="isSystemAdmin" style="margin-top: 2rem;">
+      <mat-card-header>
+        <div mat-card-avatar class="header-icon" style="background: rgba(233, 30, 99, 0.1); color: #e91e63;">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <mat-card-title>Role Management (System Admin)</mat-card-title>
+        <mat-card-subtitle>Create dynamic roles and configure screen access permissions.</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content class="toggles-container" style="padding-top: 1.5rem;">
+        
+        <div class="role-creation-row" style="display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1rem;">
+          <mat-form-field appearance="outline" style="flex: 1;">
+            <mat-label>New Role Name</mat-label>
+            <input matInput [(ngModel)]="newRoleName" placeholder="e.g. INTERN, DATA_ENTRY" />
+          </mat-form-field>
+          <button mat-flat-button color="accent" (click)="saveNewRole()" [disabled]="!newRoleName.trim()" style="margin-bottom: 1.25rem; height: 50px;">
+            <mat-icon>add</mat-icon> Add Role
+          </button>
+        </div>
+
+        <div class="screens-grid" style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;" *ngIf="newRoleName.trim()">
+          <h4 style="margin-top: 0; margin-bottom: 1rem; color: #555;">Assign {{ newRoleName | uppercase }} Permissions:</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+            <mat-checkbox *ngFor="let screen of screensList" [(ngModel)]="selectedScreens[screen.id]" color="primary">
+              {{ screen.label }}
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <mat-divider style="margin: 2rem 0;"></mat-divider>
+
+        <h3 style="margin-bottom: 1rem; color: #333;">Existing Custom Roles</h3>
+        
+        <div class="loading-state" *ngIf="isRoleLoading" style="padding: 2rem 0;">
+          <mat-icon class="spin">refresh</mat-icon>
+          <span>Loading roles...</span>
+        </div>
+
+        <div *ngIf="!isRoleLoading && roles.length === 0" style="padding: 1rem; text-align: center; color: #666; font-style: italic;">
+          No custom roles defined yet.
+        </div>
+
+        <div class="setting-row" *ngFor="let role of roles" style="align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          <div class="setting-info">
+            <h4 style="color: #e91e63; margin: 0; font-size: 16px;">{{ role.roleName }}</h4>
+            <span class="desc" style="display: block; margin-top: 4px; font-family: monospace; font-size: 12px; color: #777;">
+              [ {{ role.accessConfigJson }} ]
+            </span>
+          </div>
+          <button mat-icon-button color="warn" (click)="role.id && deleteRole(role.id)" matTooltip="Delete Role">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <mat-icon class="spin">refresh</mat-icon>
+    <span>Loading settings...</span>
+  </div>
+</div>

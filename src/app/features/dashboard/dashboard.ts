@@ -18,6 +18,7 @@ import { FinanceEntry } from '../../core/services/models';
 import { DutyService, Duty } from '../../core/services/duty';
 import { AuthService } from '../../core/services/auth';
 import { AttendanceService, AttendanceRecord } from '../../core/services/attendance';
+import { SettingsService } from '../../core/services/settings';
 
 @Component({
   selector: 'app-dashboard',
@@ -68,6 +69,7 @@ export class DashboardComponent implements OnInit {
     private dutyService: DutyService,
     private auth: AuthService,
     private attendanceService: AttendanceService,
+    private settingsService: SettingsService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -89,23 +91,42 @@ export class DashboardComponent implements OnInit {
   // =========================
   // CONFIG STORAGE
   // =========================
-  private storageKey(): string {
-    return `dashboard-config-${this.auth.employeeId()}`;
-  }
 
   loadConfig(): void {
-    const saved = localStorage.getItem(this.storageKey());
-    if (saved) {
-      this.dashboardConfig = JSON.parse(saved);
-    }
+    const employeeId = this.auth.employeeId();
+    if (!employeeId) return;
+    const empIdStr = String(employeeId);
+
+    this.settingsService.getSettings(empIdStr).subscribe({
+      next: (settings) => {
+        if (settings && settings.configJson) {
+          try {
+            this.dashboardConfig = JSON.parse(settings.configJson);
+            this.refreshDashboard(); // Refresh after loading async config
+          } catch (e) {
+            console.error('Failed to parse settings JSON', e);
+          }
+        }
+      },
+      error: (err) => {
+        console.warn('Could not load settings from backend, using defaults', err);
+      }
+    });
   }
 
   onConfigChange(): void {
-    localStorage.setItem(
-      this.storageKey(),
-      JSON.stringify(this.dashboardConfig)
-    );
-    this.refreshDashboard();
+    const employeeId = this.auth.employeeId();
+    if (!employeeId) return;
+    const empIdStr = String(employeeId);
+
+    this.settingsService.saveSettings(empIdStr, JSON.stringify(this.dashboardConfig)).subscribe({
+      next: () => {
+        this.refreshDashboard();
+      },
+      error: (err) => {
+        console.error('Failed to save settings to backend', err);
+      }
+    });
   }
 
   // =========================

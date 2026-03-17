@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuthService } from '../../core/services/auth';
+import { RoleAccessService } from '../../core/services/role-access.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -21,82 +22,62 @@ import { AuthService } from '../../core/services/auth';
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
 
-  constructor(public auth: AuthService) {}
+  allowedScreens: string[] = [];
 
-  // ===== ROLE CHECKS =====
+  constructor(
+    public auth: AuthService,
+    private roleService: RoleAccessService,
+    private cd: ChangeDetectorRef
+  ) {}
 
-  private role(): string {
-    return this.auth.getRole();
+  ngOnInit(): void {
+    const userRole = this.auth.getRole();
+    
+    // System Admins inherently see everything
+    if (userRole === 'SYSTEM_ADMIN') {
+      setTimeout(() => {
+        this.allowedScreens = ['dashboard', 'myTask', 'employees', 'finance', 'duties', 'credentials', 'attendance', 'payroll', 'invoices', 'clients', 'defects'];
+        this.cd.detectChanges();
+      });
+      return;
+    }
+
+    // Dynamic Role Fetching
+    if (userRole) {
+      this.roleService.getRoleByName(userRole).subscribe({
+        next: (roleAccess) => {
+          if (roleAccess && roleAccess.accessConfigJson) {
+            try {
+              setTimeout(() => {
+                this.allowedScreens = JSON.parse(roleAccess.accessConfigJson);
+                this.cd.detectChanges();
+              });
+            } catch (e) {
+              console.error('Failed to parse role access', e);
+            }
+          }
+        },
+        error: (err) => console.warn('No custom role access defined for ' + userRole, err)
+      });
+    }
   }
 
-  isSystemAdmin(): boolean {
-    return this.role() === 'SYSTEM_ADMIN';
+  // ===== DYNAMIC MENU VISIBILITY =====
+  
+  hasAccess(screenId: string): boolean {
+    if (this.auth.getRole() === 'SYSTEM_ADMIN') return true;
+    return this.allowedScreens.includes(screenId);
   }
 
-  isManager(): boolean {
-    return this.role() === 'MANAGER';
-  }
-
-  isHR(): boolean {
-    return this.role() === 'HR';
-  }
-
-  isEmployee(): boolean {
-    return this.role() === 'EMPLOYEE';
-  }
-
-  isFinance(): boolean {
-    return this.role() === 'FINANCE';
-  }
-isIntern(): boolean {
-  return this.role() === 'INTERN';
-}
-  // ===== MENU VISIBILITY (FINAL LOGIC) =====
-
-  showDashboard(): boolean {
-    return true; // ALL roles
-  }
-
-showMyTask(): boolean {
-  return this.isIntern() ||
-         this.isFinance() ||
-         this.isHR() ||
-         this.isEmployee();
-}
-
-  showEmployees(): boolean {
-    return this.isSystemAdmin() ||
-           this.isManager() ||
-           this.isHR();
-  }
-
-  showDuties(): boolean {
-    return this.isSystemAdmin() ||
-           this.isManager() ||
-           this.isHR();
-  }
-
-  showCredentials(): boolean {
-    return this.isSystemAdmin() ||
-           this.isHR();
-  }
-
-  showAttendance(): boolean {
-    return this.isSystemAdmin() ||
-           this.isHR() ||
-           this.isManager();
-  }
-
-  showFinance(): boolean {
-    return this.isSystemAdmin() ||
-           this.isFinance();
-  }
-
-  showPayroll(): boolean {
-    return this.isSystemAdmin() ||
-           this.isFinance();
-  }
+  showDashboard(): boolean { return this.hasAccess('dashboard'); }
+  showMyTask(): boolean { return this.hasAccess('myTask'); }
+  showEmployees(): boolean { return this.hasAccess('employees'); }
+  showDuties(): boolean { return this.hasAccess('duties'); }
+  showCredentials(): boolean { return this.hasAccess('credentials'); }
+  showAttendance(): boolean { return this.hasAccess('attendance'); }
+  showFinance(): boolean { return this.hasAccess('finance'); }
+  showPayroll(): boolean { return this.hasAccess('payroll'); }
 
 }
