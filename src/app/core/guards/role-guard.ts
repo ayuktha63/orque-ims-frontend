@@ -22,6 +22,18 @@ export const roleGuard: CanActivateFn = async (route, state) => {
     return true;
   }
 
+  // Client Static Route Access
+  if (userRole === 'CLIENT') {
+    const clientAllowedScreens = ['dashboard', 'invoices'];
+    if (clientAllowedScreens.includes(reqScreenId)) {
+      return true;
+    } else {
+      console.warn(`Client attempted to access unauthorized screen: ${reqScreenId}`);
+      router.navigate(['/app/dashboard']);
+      return false;
+    }
+  }
+
   // If no specific screen restrictions assigned to this route
   if (!reqScreenId) {
     return true;

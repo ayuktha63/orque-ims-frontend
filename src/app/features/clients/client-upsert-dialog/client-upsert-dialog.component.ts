@@ -55,6 +55,8 @@ export class ClientUpsertDialogComponent implements OnInit {
     
     this.clientForm = this.fb.group({
       name: [this.data?.name || '', [Validators.required]],
+      username: [this.data?.username || ''],
+      password: [this.data?.password || ''],
       contactPerson: [this.data?.contactPerson || ''],
       email: [this.data?.email || '', [Validators.email]],
       phone: [this.data?.phone || ''],

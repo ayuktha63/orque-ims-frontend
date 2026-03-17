@@ -10,7 +10,8 @@ export type UserRole =
   | 'HR'
   | 'FINANCE'
   | 'EMPLOYEE'
-  | 'INTERN';
+  | 'INTERN'
+  | 'CLIENT';
 
 export interface LoginResponse {
   token: string;
@@ -33,8 +34,8 @@ export class AuthService {
   // ===============================
   // LOGIN
   // ===============================
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { username, password })
+  login(userType: string, username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { userType, username, password })
       .pipe(
         tap(res => {
           if (isPlatformBrowser(this.platformId)) {

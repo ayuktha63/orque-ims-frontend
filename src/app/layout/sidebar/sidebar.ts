@@ -44,6 +44,15 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
+    // Clients see only portal-specific screens
+    if (userRole === 'CLIENT') {
+      setTimeout(() => {
+        this.allowedScreens = ['dashboard', 'invoices']; // They can only see dashboard and their own invoices
+        this.cd.detectChanges();
+      });
+      return;
+    }
+
     // Dynamic Role Fetching
     if (userRole) {
       this.roleService.getRoleByName(userRole).subscribe({

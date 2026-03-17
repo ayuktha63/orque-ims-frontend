@@ -10,7 +10,7 @@
 
   <mat-dialog-content class="dialog-content">
     <form [formGroup]="clientForm" class="client-form" (ngSubmit)="onSubmit()">
-      
+
       <!-- General Info Section -->
       <h3 class="section-title">Company / Client Info</h3>
       <div class="form-row">
@@ -40,7 +40,7 @@
           <input matInput formControlName="contactPerson" placeholder="e.g. Jane Doe">
           <mat-icon matPrefix>person</mat-icon>
         </mat-form-field>
-        
+
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Phone Number</mat-label>
           <input matInput formControlName="phone" placeholder="e.g. +1 555-1234">
@@ -65,13 +65,34 @@
         </mat-form-field>
       </div>
 
+      <!-- System Access Section -->
+      <mat-divider style="margin: 20px 0;"></mat-divider>
+      <h3 class="section-title">Client Portal Access</h3>
+      <p style="font-size: 13px; color: #666; margin-top: -12px; margin-bottom: 16px;">Set credentials for the client to
+        log in as a Business User.</p>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Portal Username</mat-label>
+          <input matInput formControlName="username" placeholder="e.g. acme_user" autocomplete="new-username">
+          <mat-icon matPrefix>badge</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Portal Password</mat-label>
+          <input matInput formControlName="password" type="password" placeholder="Set a password"
+            autocomplete="new-password">
+          <mat-icon matPrefix>lock</mat-icon>
+        </mat-form-field>
+      </div>
+
       <mat-divider style="margin: 20px 0;"></mat-divider>
 
       <!-- Notes Section -->
       <h3 class="section-title">Internal Notes</h3>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Notes (For CRM Use)</mat-label>
-        <textarea matInput formControlName="notes" rows="4" placeholder="Add any background context, meetings, or preferences here..."></textarea>
+        <textarea matInput formControlName="notes" rows="4"
+          placeholder="Add any background context, meetings, or preferences here..."></textarea>
       </mat-form-field>
 
     </form>
