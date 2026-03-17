@@ -10,10 +10,16 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { SettingsService } from '../../core/services/settings';
 import { AuthService } from '../../core/services/auth';
 import { RoleAccessService, RoleAccess } from '../../core/services/role-access.service';
+
+interface RoleAccessUI extends RoleAccess {
+  parsedScreens: string[];
+}
 
 @Component({
   selector: 'app-settings',
@@ -29,7 +35,9 @@ import { RoleAccessService, RoleAccess } from '../../core/services/role-access.s
     MatSnackBarModule,
     MatInputModule,
     MatFormFieldModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatChipsModule,
+    MatExpansionModule
   ],
   templateUrl: './settings.html',
   styleUrls: ['./settings.css']
@@ -49,7 +57,7 @@ export class SettingsComponent implements OnInit {
   isSaving = false;
 
   // Role Management
-  roles: RoleAccess[] = [];
+  roles: RoleAccessUI[] = [];
   newRoleName = '';
   screensList = [
     { id: 'dashboard', label: 'Dashboard' },
@@ -92,7 +100,25 @@ export class SettingsComponent implements OnInit {
     });
     this.roleService.getAllRoles().subscribe({
       next: (res) => {
-        this.roles = res;
+        this.roles = res.map(role => {
+          let parsed: string[] = [];
+          try {
+            if (role.accessConfigJson) {
+              const parsedJson = JSON.parse(role.accessConfigJson);
+              // Handle flat ["a","b"] or nested [["a","b"]] automatically
+              const flatArray = Array.isArray(parsedJson[0]) ? parsedJson.flat() : parsedJson;
+
+              parsed = flatArray.map((id: string) => {
+                const match = this.screensList.find(s => s.id === id);
+                return match ? match.label : id;
+              });
+            }
+          } catch (e) {
+            console.warn('Could not parse screens for role', role.roleName);
+          }
+          return { ...role, parsedScreens: parsed };
+        });
+
         this.isRoleLoading = false;
         this.cd.detectChanges();
       },
