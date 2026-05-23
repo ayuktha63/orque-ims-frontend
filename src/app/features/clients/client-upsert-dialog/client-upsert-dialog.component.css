@@ -1,0 +1,57 @@
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-header {
+  padding: 24px 24px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.dialog-content {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.section-title {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #3f51b5;
+  font-weight: 600;
+}
+
+.client-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.full-width {
+  flex: 1 1 100%;
+}
+
+.half-width {
+  flex: 1 1 50%;
+}
+
+.dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #eee;
+  margin-bottom: 0;
+  background-color: #fafafa;
+}
+
+mat-icon[matPrefix] {
+  margin-right: 8px;
+  color: #888;
+}

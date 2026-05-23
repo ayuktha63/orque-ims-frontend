@@ -3,17 +3,16 @@
   <!-- HEADER -->
   <div class="dashboard-header">
 
-    <span class="title">Dashboard</span>
+    <span class="title">Dashboards</span>
 
-    <!-- CUSTOMISE BUTTON -->
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>tune</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
 
-      <!-- ================= ADMIN OPTIONS ================= -->
-      <ng-container *ngIf="isAdmin">
+      <!-- FINANCE + SYSTEM_ADMIN OPTIONS -->
+      <ng-container *ngIf="canViewFinanceDashboard">
 
         <button mat-menu-item (click)="$event.stopPropagation()">
           <mat-checkbox [(ngModel)]="dashboardConfig.profit"
@@ -29,7 +28,24 @@
           </mat-checkbox>
         </button>
 
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.duties"
+                        (change)="onConfigChange()">
+            Ongoing Duties
+          </mat-checkbox>
+        </button>
 
+        <button mat-menu-item (click)="$event.stopPropagation()">
+          <mat-checkbox [(ngModel)]="dashboardConfig.upcomingLeaves"
+                        (change)="onConfigChange()">
+            Upcoming Leaves
+          </mat-checkbox>
+        </button>
+
+      </ng-container>
+
+      <!-- OTHER USERS -->
+      <ng-container *ngIf="!canViewFinanceDashboard">
 
         <button mat-menu-item (click)="$event.stopPropagation()">
           <mat-checkbox [(ngModel)]="dashboardConfig.duties"
@@ -38,15 +54,10 @@
           </mat-checkbox>
         </button>
 
-      </ng-container>
-
-      <!-- ================= NORMAL USER OPTIONS ================= -->
-      <ng-container *ngIf="!isAdmin">
-
         <button mat-menu-item (click)="$event.stopPropagation()">
-          <mat-checkbox [(ngModel)]="dashboardConfig.duties"
+          <mat-checkbox [(ngModel)]="dashboardConfig.upcomingLeaves"
                         (change)="onConfigChange()">
-            Ongoing Duties
+            Upcoming Leaves
           </mat-checkbox>
         </button>
 
@@ -56,16 +67,19 @@
 
   </div>
 
-  <!-- KPI (ADMIN ONLY) -->
-  <mat-card class="stat-card" *ngIf="dashboardConfig.profit && isAdmin">
+  <!-- KPI (SYSTEM_ADMIN + FINANCE) -->
+  <mat-card class="stat-card"
+            *ngIf="dashboardConfig.profit && canViewFinanceDashboard">
     <h3>Net Profit</h3>
     <p [ngClass]="summary.profit >= 0 ? 'pos' : 'neg'">
       ₹ {{ summary.profit }}
     </p>
   </mat-card>
 
-  <!-- INCOME EXPENSE (ADMIN ONLY) -->
-  <mat-card *ngIf="isAdmin && dashboardConfig.incomeChart && incomeExpenseChart?.series?.length">
+  <!-- INCOME EXPENSE CHART -->
+  <mat-card *ngIf="canViewFinanceDashboard &&
+                   dashboardConfig.incomeChart &&
+                   incomeExpenseChart?.series?.length">
     <apx-chart
       [series]="incomeExpenseChart.series"
       [chart]="incomeExpenseChart.chart"
@@ -74,8 +88,10 @@
     </apx-chart>
   </mat-card>
 
-  <!-- CATEGORY (ADMIN ONLY) -->
-  <mat-card *ngIf="isAdmin && dashboardConfig.categoryChart && categoryChart?.series?.length">
+  <!-- CATEGORY CHART -->
+  <mat-card *ngIf="canViewFinanceDashboard &&
+                   dashboardConfig.categoryChart &&
+                   categoryChart?.series?.length">
     <apx-chart
       [series]="categoryChart.series"
       [chart]="categoryChart.chart"
@@ -100,6 +116,27 @@
       </div>
 
       <span class="status ongoing">ONGOING</span>
+    </div>
+
+  </mat-card>
+
+  <!-- UPCOMING LEAVES (ALL USERS) -->
+  <mat-card class="task-card" *ngIf="dashboardConfig.upcomingLeaves">
+    <h3>Upcoming Leaves (Next 4 Days)</h3>
+
+    <div *ngIf="upcomingLeaves.length === 0" class="empty">
+      No upcoming leaves
+    </div>
+
+    <div class="task" *ngFor="let leave of upcomingLeaves">
+      <div>
+        <strong>{{ leave.employeeName }}</strong>
+        <div class="meta">
+          {{ leave.date | date:'mediumDate' }}
+        </div>
+      </div>
+
+      <span class="status leave-status">ON LEAVE</span>
     </div>
 
   </mat-card>

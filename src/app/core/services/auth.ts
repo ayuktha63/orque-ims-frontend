@@ -4,9 +4,24 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environment/environment';
 
+export type UserRole =
+  | 'SYSTEM_ADMIN'
+  | 'MANAGER'
+  | 'HR'
+  | 'FINANCE'
+  | 'EMPLOYEE'
+  | 'INTERN'
+  | 'CLIENT';
+
+export interface LoginResponse {
+  token: string;
+  role: UserRole;
+  userId: number;
+}
+
 export interface AuthUser {
   id: number;
-  role: string;
+  role: UserRole;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,8 +34,8 @@ export class AuthService {
   // ===============================
   // LOGIN
   // ===============================
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/login`, { username, password })
+  login(userType: string, username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { userType, username, password })
       .pipe(
         tap(res => {
           if (isPlatformBrowser(this.platformId)) {
@@ -49,11 +64,11 @@ export class AuthService {
   }
 
   // ===============================
-  // 🔥 NEW — ROLE GETTER (STEP 5 REQUIRED)
+  // ROLE GETTER
   // ===============================
-  getRole(): string {
+  getRole(): UserRole | '' {
     if (!isPlatformBrowser(this.platformId)) return '';
-    return localStorage.getItem('user_role') || '';
+    return (localStorage.getItem('user_role') as UserRole) || '';
   }
 
   // ===============================
@@ -63,7 +78,7 @@ export class AuthService {
     if (!isPlatformBrowser(this.platformId)) return null;
 
     const id = localStorage.getItem('user_id');
-    const role = localStorage.getItem('user_role');
+    const role = localStorage.getItem('user_role') as UserRole;
 
     if (!id || !role) return null;
 
@@ -74,21 +89,54 @@ export class AuthService {
   }
 
   // ===============================
-  // ROLES
+  // ROLE CHECKS (ALIGNED WITH BACKEND)
   // ===============================
-  isAdmin(): boolean {
-    const role = this.getRole();
-    return role === 'ROLE_ADMIN' || role === 'ADMIN';
+
+  isSystemAdmin(): boolean {
+    return this.getRole() === 'SYSTEM_ADMIN';
   }
 
-  canEdit(): boolean {
-    return this.isAdmin();
+  isManager(): boolean {
+    return this.getRole() === 'MANAGER';
+  }
+
+  isHR(): boolean {
+    return this.getRole() === 'HR';
+  }
+
+  isFinance(): boolean {
+    return this.getRole() === 'FINANCE';
+  }
+
+  isEmployee(): boolean {
+    return this.getRole() === 'EMPLOYEE';
+  }
+
+  isIntern(): boolean {
+    return this.getRole() === 'INTERN';
+  }
+
+  // ===============================
+  // PERMISSION HELPERS
+  // ===============================
+
+  canManageEmployees(): boolean {
+    return this.isSystemAdmin() || this.isManager() || this.isHR();
+  }
+
+  canManageFinance(): boolean {
+    return this.isSystemAdmin() || this.isFinance();
+  }
+
+  canAccessCredentials(): boolean {
+    return this.isSystemAdmin() || this.isHR();
   }
 
   employeeId(): number {
     const id = isPlatformBrowser(this.platformId)
       ? localStorage.getItem('user_id')
       : null;
+
     return id ? Number(id) : 0;
   }
 

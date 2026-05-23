@@ -1,8 +1,18 @@
 <div class="wrap">
   <mat-card class="card">
-    <h2>Login</h2>
+    <div class="login-header">
+      <h2>Login</h2>
+    </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="user-type-toggle">
+        <mat-button-toggle-group formControlName="userType" aria-label="User Type" color="primary" style="width: 100%; margin-bottom: 20px;">
+          <mat-button-toggle value="ORQUE" style="width: 50%;">Orque Internal</mat-button-toggle>
+          <mat-button-toggle value="BUSINESS" style="width: 50%;">Business User</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
       <mat-form-field appearance="outline" class="full">
         <mat-label>Username</mat-label> 
         <input matInput formControlName="username" />
@@ -16,13 +26,32 @@
       </mat-form-field>
 
       <button 
-        mat-raised-button 
+        mat-flat-button 
         color="primary" 
-        class="full" 
+        class="full submit-btn" 
         type="submit" 
         [disabled]="form.invalid">
         Sign in
       </button>
     </form>
   </mat-card>
+
+  <div class="version-info">
+    Last updated: 2026-03-16 21:35 |
+    <span class="version-hover">
+      Version 2
+      <div class="tooltip-box">
+        <div class="tooltip-title">Features:</div>
+        <ul class="tooltip-list">
+          <li>Attendance</li>
+          <li>Credentials</li>
+          <li>Duty</li>
+          <li>Employee</li>
+          <li>Finance</li>
+          <li>Invoices</li>
+          <li>Payroll</li>
+        </ul>
+      </div>
+    </span>
+  </div>
 </div>

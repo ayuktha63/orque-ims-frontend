@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast.service'; // ✅ ADD
@@ -20,7 +21,8 @@ import { ToastService } from '../../core/services/toast.service'; // ✅ ADD
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatButtonToggleModule
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
@@ -33,10 +35,10 @@ export class LoginComponent {
   private toast = inject(ToastService); // ✅ INJECT
 
   form = this.fb.group({
+    userType: ['ORQUE', [Validators.required]],
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
-
   // ==========================================
   // LOGIN SUBMIT
   // ==========================================
@@ -47,20 +49,22 @@ export class LoginComponent {
       this.toast.warning('Username is required');
       return;
     }
-
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(this.form.value.password || '')) {
+      this.toast.warning('Password must contain at least 1 special character');
+      return;
+    }
     if (!this.form.value.password) {
       this.toast.warning('Password is required');
       return;
     }
-
     if (this.form.invalid) {
       this.toast.warning('Please enter valid credentials');
       return;
     }
 
-    const { username, password } = this.form.value;
+    const { userType, username, password } = this.form.value;
 
-    this.auth.login(username!, password!).subscribe({
+    this.auth.login(userType!, username!, password!).subscribe({
 
       next: (res:any) => {
 

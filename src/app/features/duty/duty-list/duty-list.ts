@@ -6,31 +6,29 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject, combineLatest, map, switchMap } from 'rxjs';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
 
 import { DutyService, Duty } from '../../../core/services/duty';
 import { AuthService } from '../../../core/services/auth';
-import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
+import { ToastService } from '../../../core/services/toast.service';
 
 import { DutyUpsertDialogComponent } from '../duty-upsert-dialog/duty-upsert-dialog';
 import { ConfirmDialogComponent } from '../my-work/confirm-dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   standalone: true,
   selector: 'app-duty-list',
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatTabsModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatIconModule,
-    MatCardModule,
-    MatButtonModule,
-    MatDialogModule
-  ],
+imports: [
+  CommonModule,
+  MatTableModule,
+  MatTabsModule,
+  MatCardModule,
+  MatButtonModule,
+  MatDialogModule,
+  MatDatepickerModule,   // ✅ add
+  MatNativeDateModule    // ✅ add (THIS FIXES DateAdapter)
+],
   templateUrl: './duty-list.html',
   styles: [`.full { width: 100%; }`]
 })
@@ -49,10 +47,25 @@ export class DutyListComponent {
   private refresh$ = new BehaviorSubject<void>(undefined);
   private tabIndex$ = new BehaviorSubject<number>(0);
 
+  constructor(
+    private service: DutyService,
+    public auth: AuthService,
+    private dialog: MatDialog,
+    private toast: ToastService
+  ) {}
+
+  // ✅ PUBLIC (Template can access)
+  canManageDuties(): boolean {
+    const role = this.auth.getRole();
+    return role === 'SYSTEM_ADMIN' ||
+           role === 'MANAGER' ||
+           role === 'HR';
+  }
+
   rows$ = combineLatest([
     this.refresh$.pipe(
       switchMap(() =>
-        this.auth.isAdmin()
+        this.canManageDuties()
           ? this.service.getAll()
           : this.service.myWork(this.auth.employeeId())
       )
@@ -60,106 +73,51 @@ export class DutyListComponent {
     this.tabIndex$
   ]).pipe(
     map(([list, index]) => {
-      const statuses = ['PENDING_APPROVAL', 'ASSIGNED', 'ONGOING', 'COMPLETED'];
-      const targetStatus = statuses[index];
-      return (list || []).filter(d => d.status === targetStatus);
+      const statuses = [
+        'PENDING_APPROVAL',
+        'ASSIGNED',
+        'ONGOING',
+        'COMPLETED'
+      ];
+      return (list || []).filter(d => d.status === statuses[index]);
     })
   );
 
-  constructor(
-    private service: DutyService,
-    public auth: AuthService,
-    private dialog: MatDialog,
-    private toast: ToastService   // ✅ INJECT
-  ) {}
-
-  // ==============================
-  // CREATE DUTY
-  // ==============================
   openCreateDialog() {
-    const ref = this.dialog.open(DutyUpsertDialogComponent, {
+    if (!this.canManageDuties()) {
+      this.toast.error('Permission denied');
+      return;
+    }
+
+    this.dialog.open(DutyUpsertDialogComponent, {
       width: '520px',
       data: null
     });
-
   }
 
   onTabChange(event: MatTabChangeEvent) {
     this.tabIndex$.next(event.index);
   }
 
-  // ==============================
-  // GLOBAL CONFIRMATION HANDLER
-  // ==============================
-  private confirmAndUpdate(row: Duty, status: string, message: string) {
+  update(row: Duty, status: string) {
 
     if (!row.id) return;
 
+    if (status === 'ASSIGNED' && !this.canManageDuties()) {
+      this.toast.error('Permission denied');
+      return;
+    }
+
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '320px',
-      data: { message }
+      data: { message: `${status} duty ${row.jobId}?` }
     });
 
     ref.afterClosed().subscribe(ok => {
-
-      if (!ok) {
-        this.toast.info('Action cancelled');   // ✅ OPTIONAL UX
-        return;
-      }
+      if (!ok) return;
 
       this.service.changeStatus(row.id!, status)
-        .subscribe({
-
-          next: (res: any) => {
-
-            // ==========================
-            // SUCCESS MESSAGE HANDLING
-            // ==========================
-            if (status === 'ASSIGNED') {
-              this.toast.success(res?.message || 'Duty approved');
-            }
-
-            else if (status === 'ONGOING') {
-              this.toast.info(res?.message || 'Duty started');
-            }
-
-            else if (status === 'COMPLETED') {
-              this.toast.success(res?.message || 'Duty completed');
-            }
-
-            this.refresh$.next();
-          },
-
-          error: (err) => {
-
-            const msg =
-              err?.error?.message ||
-              err?.message ||
-              'Failed to update duty';
-
-            this.toast.error(msg);   // ✅ ERROR TOAST
-          }
-
-        });
+        .subscribe(() => this.refresh$.next());
     });
   }
-
-  // ==============================
-  // ACTION WRAPPER
-  // ==============================
-  update(row: Duty, status: string) {
-
-    if (status === 'ASSIGNED') {
-      this.confirmAndUpdate(row, status, `Approve duty ${row.jobId}?`);
-    }
-
-    else if (status === 'ONGOING') {
-      this.confirmAndUpdate(row, status, `Start duty ${row.jobId}?`);
-    }
-
-    else if (status === 'COMPLETED') {
-      this.confirmAndUpdate(row, status, `Finish duty ${row.jobId}?`);
-    }
-  }
-
 }

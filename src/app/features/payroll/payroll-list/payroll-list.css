@@ -10,8 +10,6 @@
 
 h2 { margin: 0; }
 
-.muted { opacity: 0.7; }
-
 .actions {
   white-space: nowrap;
   display: flex;
@@ -26,4 +24,19 @@ h2 { margin: 0; }
 
 .delete-btn:hover {
   background: rgba(211, 47, 47, 0.10) !important;
+}
+
+/* Footer Popup */
+.footer-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+  z-index: 1000;
 }

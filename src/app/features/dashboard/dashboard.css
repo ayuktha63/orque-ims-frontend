@@ -5,48 +5,62 @@
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  gap: 24px;
   align-items: stretch;
+  padding: 24px;
+  background-color: #f8fafc; /* light modern background */
+  border-radius: 20px;
 }
 
 /* Header row spans full width */
 .dashboard-header {
   grid-column: 1 / -1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; /* user had this before, reverting */
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  padding-bottom: 12px;
 }
 
 .dashboard-header .title {
   margin-right: auto;
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: 0.2px;
+  font-weight: 700;
+  font-size: 26px;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
-
 
 /* ================================
    GENERIC CARD STYLE
 ================================ */
 
 mat-card {
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow:
-    0 1px 2px rgba(0,0,0,0.06),
-    0 6px 16px rgba(0,0,0,0.06);
-  transition: transform .15s ease, box-shadow .15s ease;
-  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Soft, modern shadow */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
 mat-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 20px rgba(0,0,0,0.08),
-    0 10px 28px rgba(0,0,0,0.06);
+  /* No scaling, just a very subtle shadow enhancement to feel interactive */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  border-color: #cbd5e1;
 }
 
+/* Header inside cards */
+mat-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+}
 
 /* ================================
    GRID POSITIONS (AUTO REFLOW)
@@ -57,6 +71,31 @@ mat-card:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle decoration for stat card */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6); /* Modern gradient accent */
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+.stat-card h3 {
+  color: #64748b;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  padding-left: 8px;
 }
 
 .task-card {
@@ -65,6 +104,7 @@ mat-card:hover {
 
 .dashboard-grid mat-card:not(.stat-card):not(.task-card) {
   grid-column: span 8;
+  min-height: 320px;
 }
 
 
@@ -73,17 +113,21 @@ mat-card:hover {
 ================================ */
 
 .pos {
-  color: #2e7d32;
-  font-size: 26px;
+  color: #10b981;
+  font-size: 38px;
   font-weight: 700;
-  margin-top: 6px;
+  margin: 0;
+  padding-left: 8px;
+  letter-spacing: -1px;
 }
 
 .neg {
-  color: #c62828;
-  font-size: 26px;
+  color: #ef4444;
+  font-size: 38px;
   font-weight: 700;
-  margin-top: 6px;
+  margin: 0;
+  padding-left: 8px;
+  letter-spacing: -1px;
 }
 
 
@@ -95,51 +139,80 @@ mat-card:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f1f1f1;
+  padding: 16px 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: #f8fafc;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.task:hover {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .task:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Wrap content to align correctly */
+.task > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task strong {
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .meta {
-  font-size: 12px;
-  opacity: 0.65;
-  margin-top: 2px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 400;
 }
 
 
 /* ================================
-   STATUS BADGES (PRO STYLE)
+   STATUS BADGES (MODERN PILLS)
 ================================ */
 
 .status {
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 20px; /* Full pill shape */
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 .todo {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .in_progress {
-  background: #fff3e0;
-  color: #ef6c00;
+  background: #fef3c7;
+  color: #d97706;
 }
 
 .done {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #d1fae5;
+  color: #059669;
 }
 
 .ongoing {
-  background: #ede7f6;
-  color: #5e35b1;
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+
+.leave-status {
+  background: #ffedd5;
+  color: #ea580c;
 }
 
 
@@ -148,9 +221,13 @@ mat-card:hover {
 ================================ */
 
 .empty {
-  font-size: 13px;
-  opacity: 0.55;
-  padding: 6px 0;
+  font-size: 14px;
+  color: #94a3b8;
+  padding: 24px 0;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
 }
 
 
@@ -159,26 +236,23 @@ mat-card:hover {
 ================================ */
 
 @media (max-width: 1200px) {
-
   .stat-card {
     grid-column: span 6;
   }
-
   .task-card {
     grid-column: span 6;
   }
-
   .dashboard-grid mat-card:not(.stat-card):not(.task-card) {
     grid-column: span 12;
   }
 }
 
 @media (max-width: 900px) {
-
   .dashboard-grid {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px;
   }
-
   .stat-card,
   .task-card,
   .dashboard-grid mat-card {

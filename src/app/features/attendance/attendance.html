@@ -1,0 +1,87 @@
+<div class="attendance-container">
+  <div class="header-section">
+    <div class="title-area">
+      <h1>Attendance Management</h1>
+      <p class="subtitle">Track and update employee attendance</p>
+    </div>
+    
+    <div class="actions-area">
+      <button mat-flat-button color="primary" class="export-btn">
+        <mat-icon>download</mat-icon> Export Report
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content class="filter-content">
+      <div class="filters">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Department</mat-label>
+          <mat-select [(ngModel)]="selectedDepartment" (selectionChange)="applyFilters()">
+            <mat-option *ngFor="let dept of departments" [value]="dept">
+              {{dept}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Employee</mat-label>
+          <mat-select [(ngModel)]="selectedEmployeeId" (selectionChange)="applyFilters()">
+            <mat-option *ngFor="let emp of employees" [value]="emp.id?.toString()">
+              {{emp.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="calendar-nav">
+        <button mat-icon-button (click)="previousMonth()" matTooltip="Previous Month">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <div class="current-month" (click)="goToToday()">
+          {{ currentMonthName }} {{ currentYear }}
+        </div>
+        <button mat-icon-button (click)="nextMonth()" matTooltip="Next Month">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="calendar-card">
+    <div class="calendar-grid">
+      <!-- Days of week header -->
+      <div class="weekday-header" *ngFor="let day of weekDays">
+        {{ day }}
+      </div>
+
+      <!-- Calendar days -->
+      <div class="calendar-day" 
+           *ngFor="let day of daysInMonth" 
+           [class.other-month]="!day.isCurrentMonth"
+           [class.today]="isToday(day.date)"
+           (click)="openUpdateDialog(day)">
+        
+        <div class="day-number">{{ day.date.getDate() }}</div>
+        
+        <div class="records-container" *ngIf="day.records.length > 0">
+          <div class="record-badge" *ngFor="let record of day.records" [ngClass]="getStatusClass(record.status)">
+            {{ record.status }}
+          </div>
+        </div>
+        
+        <div class="hover-overlay" *ngIf="day.isCurrentMonth">
+          <mat-icon>edit</mat-icon>
+        </div>
+      </div>
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot present"></span> Present</div>
+      <div class="legend-item"><span class="legend-dot absent"></span> Absent</div>
+      <div class="legend-item"><span class="legend-dot half-day"></span> Half-day</div>
+      <div class="legend-item"><span class="legend-dot leave"></span> Leave</div>
+      <div class="legend-item"><span class="legend-dot holiday"></span> Holiday</div>
+    </div>
+  </mat-card>
+</div>

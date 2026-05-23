@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { EmployeeService } from '../../../core/services/employees';
 import { Employee } from '../../../core/models/employee.model';
-import { ToastService } from '../../../core/services/toast.service'; // ✅ ADD
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-employee-upsert-dialog',
@@ -34,7 +34,7 @@ export class EmployeeUpsertDialogComponent {
   constructor(
     private fb: FormBuilder,
     private service: EmployeeService,
-    private toast: ToastService,   // ✅ INJECT
+    private toast: ToastService,
     private ref: MatDialogRef<EmployeeUpsertDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Employee | null
   ) {
@@ -43,9 +43,16 @@ export class EmployeeUpsertDialogComponent {
 
     this.form = this.fb.group({
       name: [this.data?.name ?? '', [Validators.required]],
+      email: [
+        this.data?.email ?? '',
+        [Validators.required, Validators.email]
+      ],   // ✅ ADDED
       department: [this.data?.department ?? ''],
       role: [this.data?.role ?? ''],
-      joinDate: [this.data?.joinDate ?? new Date().toISOString().split('T')[0], [Validators.required]],
+      joinDate: [
+        this.data?.joinDate ?? new Date().toISOString().split('T')[0],
+        [Validators.required]
+      ],
       status: [this.data?.status ?? 'ACTIVE', [Validators.required]]
     });
   }
@@ -53,7 +60,7 @@ export class EmployeeUpsertDialogComponent {
   save(): void {
 
     if (this.form.invalid) {
-      this.toast.info('Please fill all required fields');
+      this.toast.info('Please fill all required fields correctly');
       return;
     }
 
@@ -76,7 +83,6 @@ export class EmployeeUpsertDialogComponent {
 
           this.toast.error(msg);
         }
-
       });
 
     } else {
@@ -96,9 +102,7 @@ export class EmployeeUpsertDialogComponent {
 
           this.toast.error(msg);
         }
-
       });
-
     }
   }
 

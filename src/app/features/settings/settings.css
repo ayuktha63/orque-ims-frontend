@@ -1,0 +1,153 @@
+.settings-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.save-btn {
+  border-radius: 8px;
+  padding: 0 24px;
+  height: 48px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3) !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.save-btn:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.4) !important;
+}
+
+.elevated-card {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+}
+
+.header-icon {
+  background-color: #e8eaf6;
+  color: #3f51b5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+mat-card-subtitle {
+  font-size: 13px;
+  color: #777;
+}
+
+.toggles-container {
+  padding-top: 16px !important;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  transition: background-color 0.2s;
+}
+
+.setting-row:hover {
+  background-color: #fcfcfc;
+}
+
+.setting-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.setting-info .desc {
+  font-size: 13px;
+  color: #888;
+}
+
+mat-divider {
+  margin: 0 -16px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+  color: #888;
+}
+
+.loading-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+  color: #3f51b5;
+}
+
+::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #f44336;
+  color: white;
+}

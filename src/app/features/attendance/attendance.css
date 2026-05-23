@@ -1,0 +1,303 @@
+.attendance-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title-area h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.export-btn {
+  border-radius: 8px;
+  padding: 0 20px;
+  height: 44px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2);
+}
+
+.filter-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.filter-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 8px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.filter-field {
+  width: 240px;
+}
+
+/* Override Mat form field styling to make it sleeker */
+::ng-deep .filter-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .filter-field .mdc-text-field--outlined {
+  border-radius: 8px;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8fafc;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.current-month {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  min-width: 160px;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.current-month:hover {
+  background: #e2e8f0;
+}
+
+.calendar-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 24px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.weekday-header {
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  padding: 12px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calendar-day {
+  min-height: 120px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-day:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+.calendar-day.other-month {
+  background: #f8fafc;
+  opacity: 0.6;
+}
+
+.calendar-day.other-month:hover {
+  transform: none;
+  box-shadow: none;
+  cursor: default;
+}
+
+.calendar-day.today {
+  border: 2px solid #3b82f6;
+  background: #eff6ff;
+}
+
+.day-number {
+  font-size: 16px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.today .day-number {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.records-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.record-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.status-present { background: #dcfce7; color: #166534; }
+.status-absent { background: #fee2e2; color: #991b1b; }
+.status-leave { background: #fef9c3; color: #854d0e; }
+.status-half-day { background: #e0e7ff; color: #3730a3; }
+.status-holiday { background: #f3e8ff; color: #6b21a8; }
+
+.hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 12px;
+  color: #3b82f6;
+}
+
+.calendar-day:hover .hover-overlay {
+  opacity: 1;
+}
+
+.other-month:hover .hover-overlay {
+  display: none;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.present { background: #22c55e; }
+.legend-dot.absent { background: #ef4444; }
+.legend-dot.half-day { background: #6366f1; }
+.legend-dot.leave { background: #eab308; }
+.legend-dot.holiday { background: #a855f7; }
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+  .calendar-day {
+    min-height: 100px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .filter-field {
+    width: 100%;
+  }
+  
+  .calendar-nav {
+    justify-content: space-between;
+  }
+  
+  .calendar-grid {
+    gap: 8px;
+  }
+  
+  .weekday-header {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+  
+  .calendar-day {
+    min-height: 80px;
+    padding: 4px;
+  }
+  
+  .record-badge {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  
+  .legend {
+    flex-wrap: wrap;
+  }
+}

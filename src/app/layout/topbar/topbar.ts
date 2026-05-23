@@ -18,6 +18,10 @@ export class TopbarComponent {
   public auth = inject(AuthService);
   private router = inject(Router);
 
+  goToSettings(): void {
+    this.router.navigateByUrl('/app/settings');
+  }
+
   logout(): void {
     // Clear local data via service
     this.auth.logout();

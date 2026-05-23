@@ -1,7 +1,142 @@
-.card { padding: 14px; }
-.header { display:flex; align-items:center; justify-content:space-between; }
-.full { width: 100%; margin-top: 10px; }
-.actions { white-space: nowrap; display:flex; gap:8px; align-items:center; }
-.delete-btn { color:#d32f2f !important; border-color:#d32f2f !important; }
-.delete-btn:hover { background: rgba(211,47,47,0.10) !important; }
-h2 { margin: 0; }
+/* ================================
+   MODERN CARD STYLING
+================================ */
+
+.card {
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Soft, modern shadow */
+  box-sizing: border-box;
+}
+
+/* ================================
+   HEADER SECTION
+================================ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header h2 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 24px;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+/* Add Button Styling Override (if material defaults) */
+.header button {
+  border-radius: 8px;
+  padding: 0 20px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* ================================
+   TABLE WRAPPER (RESPONSIVE)
+================================ */
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.full {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table overrides to remove default Material shadows and add spacing */
+::ng-deep .mat-elevation-z8,
+::ng-deep .mat-mdc-table {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* ================================
+   TABLE TYPOGRAPHY & ROWS
+================================ */
+
+th.mat-header-cell {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+td.mat-cell {
+  padding: 16px;
+  color: #334155;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+tr.mat-row {
+  transition: background-color 0.2s ease;
+}
+
+tr.mat-row:hover {
+  background-color: #f8fafc;
+}
+
+/* Make primary identifier (Code) bolder */
+.mat-column-employeeCode {
+  font-weight: 600;
+  color: #0f172a !important;
+}
+
+/* ================================
+   ACTIONS COLUMN
+================================ */
+
+.actions {
+  white-space: nowrap;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end; /* Push to the right edge */
+}
+
+/* Standard button styles in table */
+.actions button {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.delete-btn {
+  color: #ef4444 !important;
+  border-color: #fca5a5 !important;
+}
+
+.delete-btn:hover {
+  background: #fef2f2 !important;
+  border-color: #ef4444 !important;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.empty-state {
+  font-size: 14px;
+  color: #94a3b8;
+  padding: 40px 0;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-top: 16px;
+  border: 1px dashed #cbd5e1;
+}

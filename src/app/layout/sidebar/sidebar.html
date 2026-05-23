@@ -1,112 +1,79 @@
 <nav class="sidebar">
   <mat-nav-list class="nav">
 
-    <!-- ================= DASHBOARD ================= -->
-    <a mat-list-item class="item"
-       routerLink="/app/dashboard"
-       (click)="closeInvoice()">
+    <!-- ================= DASHBOARD (ALL) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showDashboard()"
+       routerLink="/app/dashboard">
       <mat-icon class="icon">dashboard</mat-icon>
     </a>
 
-    <!-- Employees -->
-    <a mat-list-item class="item"
-       routerLink="/app/employees"
-       (click)="closeInvoice()">
+    <!-- ================= EMPLOYEES (SYSTEM_ADMIN + MANAGER + HR) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showEmployees()"
+       routerLink="/app/employees">
       <mat-icon class="icon">people</mat-icon>
     </a>
 
-    <!-- Finance -->
-    <a *ngIf="isAdmin()"
-   mat-list-item
-   class="item"
-   routerLink="/app/finance"
-   (click)="closeInvoice()">
-
+    <!-- ================= FINANCE (SYSTEM_ADMIN + FINANCE) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showFinance()"
+       routerLink="/app/finance">
       <mat-icon class="icon">paid</mat-icon>
     </a>
 
-    <!-- Payroll -->
-    <a *ngIf="isAdmin()"
-   mat-list-item
-   class="item"
-   routerLink="/app/payroll"
-   (click)="closeInvoice()">
-
+    <!-- ================= PAYROLL (SYSTEM_ADMIN + FINANCE) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showPayroll()"
+       routerLink="/app/payroll">
       <mat-icon class="icon">payments</mat-icon>
     </a>
 
-    <!-- ================= DUTY MODULE ================= -->
-
-    <!-- ADMIN: Manage Duties -->
-    <a *ngIf="auth.canEdit()"
-       mat-list-item
+    <!-- ================= DUTIES (SYSTEM_ADMIN + MANAGER + HR) ================= -->
+    <a mat-list-item
        class="item"
-       routerLink="/app/duties"
-       (click)="closeInvoice()">
+       *ngIf="showDuties()"
+       routerLink="/app/duties">
       <mat-icon class="icon">assignment</mat-icon>
     </a>
 
-    <!-- EMPLOYEE: My Work -->
-    <a *ngIf="!auth.canEdit()"
-       mat-list-item
+    <!-- ================= MY TASK (ALL ROLES) ================= -->
+    <a mat-list-item
        class="item"
-       routerLink="/app/my-work"
-       (click)="closeInvoice()">
+       *ngIf="showMyTask()"
+       routerLink="/app/my-work">
       <mat-icon class="icon">task_alt</mat-icon>
     </a>
 
-    <!-- ✅ NEW DEFECTS PAGE -->
+    <!-- ================= ATTENDANCE (SYSTEM_ADMIN + MANAGER + HR) ================= -->
     <a mat-list-item
        class="item"
-       routerLink="/app/defects"
-       (click)="closeInvoice()">
-      <mat-icon class="icon">bug_report</mat-icon>
+       *ngIf="showAttendance()"
+       routerLink="/app/attendance"
+       matTooltip="Attendance"
+       matTooltipPosition="right">
+      <mat-icon class="icon">calendar_month</mat-icon>
     </a>
 
-    <!-- ================= INVOICE BLOCK ================= -->
-
-    <div class="invoice-block">
-
-      <div class="item invoice-main"
-           (click)="toggleInvoice($event)">
-        <mat-icon class="icon">receipt_long</mat-icon>
-      </div>
-
-      <div class="invoice-inline" *ngIf="invoiceOpen">
-
-        <a mat-list-item
-           class="item sub-item"
-           routerLink="/app/invoices"
-           (click)="closeInvoice()">
-          <mat-icon class="sub-icon">add</mat-icon>
-        </a>
-
-        <a mat-list-item
-           class="item sub-item"
-           routerLink="/app/invoices/list"
-           (click)="closeInvoice()">
-          <mat-icon class="sub-icon">visibility</mat-icon>
-        </a>
-
-      </div>
-
-    </div>
-
-    <!-- ================= CLIENTS ================= -->
-
-    <a mat-list-item class="item"
+    <!-- ================= CLIENTS (MINI CRM) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showClients()"
        routerLink="/app/clients"
-       (click)="closeInvoice()">
-      <mat-icon class="icon">groups</mat-icon>
+       matTooltip="Clients"
+       matTooltipPosition="right">
+      <mat-icon class="icon">business_center</mat-icon>
     </a>
 
-    <!-- Credentials -->
-    <a *ngIf="isAdmin()"
-   mat-list-item
-   class="item"
-   routerLink="/app/credentials"
-   (click)="closeInvoice()">
-
+    <!-- ================= CREDENTIALS (SYSTEM_ADMIN + HR) ================= -->
+    <a mat-list-item
+       class="item"
+       *ngIf="showCredentials()"
+       routerLink="/app/credentials">
       <mat-icon class="icon">admin_panel_settings</mat-icon>
     </a>
 

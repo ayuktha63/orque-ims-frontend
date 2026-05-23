@@ -17,6 +17,8 @@ import { FinanceService } from '../../core/services/finance';
 import { FinanceEntry } from '../../core/services/models';
 import { DutyService, Duty } from '../../core/services/duty';
 import { AuthService } from '../../core/services/auth';
+import { AttendanceService, AttendanceRecord } from '../../core/services/attendance';
+import { SettingsService } from '../../core/services/settings';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,11 +38,12 @@ import { AuthService } from '../../core/services/auth';
 })
 export class DashboardComponent implements OnInit {
 
-  // ⭐ keep charts monthly but profit global
   month = new Date().toISOString().slice(0, 7);
 
-  // ✅ ADMIN FLAG (for template role check)
-  isAdmin = false;
+  // ✅ ROLE FLAGS (Aligned with Backend)
+  isSystemAdmin = false;
+  isFinance = false;
+  canViewFinanceDashboard = false;
 
   summary = {
     income: 0,
@@ -57,13 +60,16 @@ export class DashboardComponent implements OnInit {
     profit: true,
     incomeChart: true,
     categoryChart: true,
-    duties: true
+    duties: true,
+    upcomingLeaves: true
   };
 
   constructor(
     private finance: FinanceService,
     private dutyService: DutyService,
     private auth: AuthService,
+    private attendanceService: AttendanceService,
+    private settingsService: SettingsService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -71,8 +77,12 @@ export class DashboardComponent implements OnInit {
   // INIT
   // =========================
   ngOnInit(): void {
-    // ✅ set admin flag once (avoid repeated function calls in template)
-    this.isAdmin = this.auth.isAdmin();
+
+    const role = this.auth.getRole();
+
+    this.isSystemAdmin = role === 'SYSTEM_ADMIN';
+    this.isFinance = role === 'FINANCE';
+    this.canViewFinanceDashboard = this.isSystemAdmin || this.isFinance;
 
     this.loadConfig();
     this.refreshDashboard();
@@ -81,45 +91,66 @@ export class DashboardComponent implements OnInit {
   // =========================
   // CONFIG STORAGE
   // =========================
-  private storageKey(): string {
-    return `dashboard-config-${this.auth.employeeId()}`;
-  }
 
   loadConfig(): void {
-    const saved = localStorage.getItem(this.storageKey());
-    if (saved) {
-      this.dashboardConfig = JSON.parse(saved);
-    }
+    const employeeId = this.auth.employeeId();
+    if (!employeeId) return;
+    const empIdStr = String(employeeId);
+
+    this.settingsService.getSettings(empIdStr).subscribe({
+      next: (settings) => {
+        if (settings && settings.configJson) {
+          try {
+            this.dashboardConfig = JSON.parse(settings.configJson);
+            this.refreshDashboard(); // Refresh after loading async config
+          } catch (e) {
+            console.error('Failed to parse settings JSON', e);
+          }
+        }
+      },
+      error: (err) => {
+        console.warn('Could not load settings from backend, using defaults', err);
+      }
+    });
   }
 
   onConfigChange(): void {
-    localStorage.setItem(
-      this.storageKey(),
-      JSON.stringify(this.dashboardConfig)
-    );
-    this.refreshDashboard();
+    const employeeId = this.auth.employeeId();
+    if (!employeeId) return;
+    const empIdStr = String(employeeId);
+
+    this.settingsService.saveSettings(empIdStr, JSON.stringify(this.dashboardConfig)).subscribe({
+      next: () => {
+        this.refreshDashboard();
+      },
+      error: (err) => {
+        console.error('Failed to save settings to backend', err);
+      }
+    });
   }
 
   // =========================
   // REFRESH
   // =========================
   refreshDashboard(): void {
-    this.loadFinance();
+
+    if (this.canViewFinanceDashboard) {
+      this.loadFinance();
+    }
+
     this.loadOngoingDuties();
+    this.loadUpcomingLeaves();
   }
 
   // =========================
-  // FINANCE (GLOBAL PROFIT)
+  // FINANCE (Only for FINANCE + SYSTEM_ADMIN)
   // =========================
   loadFinance(): void {
 
-    // reset charts to avoid stale rendering
     this.incomeExpenseChart = undefined;
     this.categoryChart = undefined;
 
     this.finance.list().subscribe((allEntries: FinanceEntry[]) => {
-
-      console.log('FINANCE DATA RECEIVED:', allEntries);
 
       let income = 0;
       let expense = 0;
@@ -127,16 +158,12 @@ export class DashboardComponent implements OnInit {
       for (const e of allEntries) {
         const amount = Number(e.amount) || 0;
 
-        if (e.type === 'INCOME') {
-          income += amount;
-        } else {
-          expense += amount;
-        }
+        if (e.type === 'INCOME') income += amount;
+        else expense += amount;
       }
 
       const profit = income - expense;
 
-      // ⭐ round to 2 decimals safely
       this.summary = {
         income: +income.toFixed(2),
         expense: +expense.toFixed(2),
@@ -144,9 +171,7 @@ export class DashboardComponent implements OnInit {
         count: allEntries.length
       };
 
-      // =========================
-      // 📊 MONTHLY CHART DATA
-      // =========================
+      // Monthly Chart
       const entries = allEntries.filter(e =>
         e.date?.startsWith(this.month)
       );
@@ -197,18 +222,51 @@ export class DashboardComponent implements OnInit {
   }
 
   // =========================
-  // DUTIES
+  // DUTIES (ALL USERS)
   // =========================
   loadOngoingDuties(): void {
 
-    const source$ = this.isAdmin
-      ? this.dutyService.getAll()
-      : this.dutyService.myWork(this.auth.employeeId());
+    const role = this.auth.getRole();
+
+    const source$ =
+      role === 'SYSTEM_ADMIN' || role === 'MANAGER' || role === 'HR'
+        ? this.dutyService.getAll()
+        : this.dutyService.myWork(this.auth.employeeId());
 
     source$.subscribe(list => {
       this.ongoingDuties = (list || []).filter(
         d => d.status === 'ONGOING'
       );
+
+      this.cd.detectChanges();
+    });
+  }
+
+  // =========================
+  // ATTENDANCE (Upcoming leaves for next 4 days)
+  // =========================
+  upcomingLeaves: AttendanceRecord[] = [];
+
+  loadUpcomingLeaves(): void {
+    // Force a fresh fetch from the server
+    this.attendanceService.fetchRecords().subscribe();
+
+    this.attendanceService.getRecords().subscribe(records => {
+      // Find leaves in the next 4 days
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const next4Days = new Date(today);
+      next4Days.setDate(today.getDate() + 4);
+
+      this.upcomingLeaves = records.filter(r => {
+        if (r.status !== 'Leave') return false;
+        
+        const recordDate = new Date(r.date);
+        recordDate.setHours(0, 0, 0, 0);
+        
+        return recordDate >= today && recordDate <= next4Days;
+      }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       this.cd.detectChanges();
     });
