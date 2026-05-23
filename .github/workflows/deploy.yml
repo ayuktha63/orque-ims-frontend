@@ -30,7 +30,7 @@ jobs:
           sudo rm -rf /var/www/orque-ims/*
           sudo cp -r dist/orque-ims-frontend/* /var/www/orque-ims/
 
-      - name: Restart IMS Stack
+      - name: Restart Frontend
         run: |
-          chmod +x ~/start-ims.sh
-          ~/start-ims.sh
+          chmod +x ~/restart-frontend.sh
+          ~/restart-frontend.sh
