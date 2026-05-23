@@ -1,0 +1,30 @@
+name: Deploy ORQUE IMS
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Latest Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Frontend Dependencies
+        run: npm install
+
+      - name: Build Angular SSR Frontend
+        run: npm run build
+
+      - name: Restart Complete IMS Stack
+        run: |
+          chmod +x ~/start-ims.sh
+          ~/start-ims.sh
