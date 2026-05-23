@@ -9,22 +9,28 @@ jobs:
   deploy:
     runs-on: self-hosted
 
+    defaults:
+      run:
+        working-directory: /home/ayuktha/orque-ims-frontend
+
     steps:
-      - name: Checkout Latest Code
-        uses: actions/checkout@v4
+      - name: Pull Latest Code
+        run: |
+          git fetch origin
+          git reset --hard origin/develop
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Frontend Dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build Angular SSR Frontend
+      - name: Build Angular SSR
         run: npm run build
 
-      - name: Restart Complete IMS Stack
+      - name: Move Build to Production Directory
+        run: |
+          sudo rm -rf /var/www/orque-ims/*
+          sudo cp -r dist/orque-ims-frontend/* /var/www/orque-ims/
+
+      - name: Restart IMS Stack
         run: |
           chmod +x ~/start-ims.sh
           ~/start-ims.sh
