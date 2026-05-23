@@ -39,7 +39,6 @@ export class LoginComponent {
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
-
   // ==========================================
   // LOGIN SUBMIT
   // ==========================================
@@ -50,12 +49,14 @@ export class LoginComponent {
       this.toast.warning('Username is required');
       return;
     }
-
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(this.form.value.password || '')) {
+      this.toast.warning('Password must contain at least 1 special character');
+      return;
+    }
     if (!this.form.value.password) {
       this.toast.warning('Password is required');
       return;
     }
-
     if (this.form.invalid) {
       this.toast.warning('Please enter valid credentials');
       return;
