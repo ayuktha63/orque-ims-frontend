@@ -1,4 +1,9 @@
-<div class="wrap">
+<div
+  class="wrap"
+  (copy)="blockAction($event, 'copy')"
+  (paste)="blockAction($event, 'paste')"
+  (cut)="blockAction($event, 'cut')"
+>
   <mat-card class="card">
     <div class="login-header">
       <h2>Login</h2>

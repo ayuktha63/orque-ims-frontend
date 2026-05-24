@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -41,6 +41,177 @@ export class LoginComponent {
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
+
+    // ==========================================
+  // BLOCK COPY / PASTE / CUT
+  // ==========================================
+  blockAction(
+    event: ClipboardEvent,
+    action: string
+  ): void {
+
+    event.preventDefault();
+
+    if (action === 'copy') {
+
+      this.toast.warning(
+        'Copy action is not allowed on the login page'
+      );
+    }
+
+    if (action === 'paste') {
+
+      this.toast.warning(
+        'Paste action is disabled for security reasons'
+      );
+    }
+
+    if (action === 'cut') {
+
+      this.toast.warning(
+        'Cut action is not permitted'
+      );
+    }
+  }
+
+
+  // ==========================================
+  // BLOCK KEYBOARD SHORTCUTS
+  // ==========================================
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+
+    const key = (event.key || '').toLowerCase();
+
+    // WINDOWS CTRL
+    const isCtrl =
+      event.ctrlKey;
+
+    // MAC COMMAND
+    const isCommand =
+      event.metaKey;
+
+    // ==========================================
+    // COPY
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 'c'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Copy action is disabled'
+      );
+    }
+
+    // ==========================================
+    // PASTE
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 'v'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Paste action is disabled'
+      );
+    }
+
+    // ==========================================
+    // CUT
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 'x'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Cut action is disabled'
+      );
+    }
+
+    // ==========================================
+    // SELECT ALL
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 'a'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Select all is disabled'
+      );
+    }
+
+    // ==========================================
+    // SAVE PAGE
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 's'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Save action is restricted'
+      );
+    }
+
+    // ==========================================
+    // VIEW SOURCE
+    // ==========================================
+    if (
+      (isCtrl || isCommand) &&
+      key === 'u'
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Viewing source is restricted'
+      );
+    }
+
+    // ==========================================
+    // DEVTOOLS
+    // ==========================================
+    if (
+      event.key === 'F12' ||
+
+      ((isCtrl || isCommand) &&
+        event.shiftKey &&
+        key === 'i')
+    ) {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Developer tools are restricted'
+      );
+    }
+
+    // ==========================================
+    // PRINT SCREEN
+    // ==========================================
+    if (event.key === 'PrintScreen') {
+
+      event.preventDefault();
+
+      this.toast.warning(
+        'Screenshots are restricted'
+      );
+    }
+  }
+  
   // ==========================================
   // LOGIN SUBMIT
   // ==========================================
