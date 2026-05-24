@@ -21,8 +21,31 @@
 
       <mat-form-field appearance="outline" class="full">
         <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password" />
-        <mat-error *ngIf="form.get('password')?.invalid">Password is required (min 4 chars)</mat-error>
+
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+        />
+
+        <!-- SHOW / HIDE PASSWORD -->
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
+        >
+
+          <mat-icon>
+            {{ hidePassword ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+
+        </button>
+
+        <mat-error *ngIf="form.get('password')?.invalid">
+          Password is required (min 4 chars)
+        </mat-error>
+
       </mat-form-field>
 
       <button 
