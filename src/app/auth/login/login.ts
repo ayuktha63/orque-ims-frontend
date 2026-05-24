@@ -77,6 +77,14 @@ export class LoginComponent {
       return;
     }
 
+    // Numerical validation
+    if (!/[0-9]/.test(password)) {
+      this.toast.warning(
+        'Password must contain at least 1 number'
+      );
+      return;
+    }
+
     // FORM INVALID
     if (this.form.invalid) {
       this.toast.warning('Please enter valid credentials');
