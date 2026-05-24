@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { AuthService } from '../../core/services/auth';
-import { ToastService } from '../../core/services/toast.service'; // ✅ ADD
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -44,34 +44,52 @@ export class LoginComponent {
   // ==========================================
   submit(): void {
 
-    // ✅ FORM VALIDATION TOASTS
-    if (!this.form.value.username) {
+    const username = this.form.value.username || '';
+    const password = this.form.value.password || '';
+
+    // USERNAME VALIDATION
+    if (!username.trim()) {
       this.toast.warning('Username is required');
       return;
     }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(this.form.value.password || '')) {
-      this.toast.warning('Password must contain at least 1 special character');
-      return;
-    }
-    if (!this.form.value.password) {
+
+    // PASSWORD REQUIRED
+    if (!password.trim()) {
       this.toast.warning('Password is required');
       return;
     }
+
+    // SPECIAL CHARACTER VALIDATION
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      this.toast.warning(
+        'Password must contain at least 1 special character'
+      );
+      return;
+    }
+
+    // UPPERCASE VALIDATION
+    if (!/[A-Z]/.test(password)) {
+      this.toast.warning(
+        'Password must contain at least 1 uppercase letter'
+      );
+      return;
+    }
+
+    // FORM INVALID
     if (this.form.invalid) {
       this.toast.warning('Please enter valid credentials');
       return;
     }
 
-    const { userType, username, password } = this.form.value;
+    const { userType } = this.form.value;
 
-    this.auth.login(userType!, username!, password!).subscribe({
+    this.auth.login(userType!, username, password).subscribe({
 
       next: (res:any) => {
 
         // ✅ SUCCESS TOAST
         this.toast.success(res?.message || 'Login successful');
 
-        // navigate after toast
         this.router.navigateByUrl('/app/dashboard');
       },
 
@@ -87,7 +105,32 @@ export class LoginComponent {
 
         console.error('Login error', err);
       }
-
     });
+  }
+
+  // ==========================================
+  // LIVE PASSWORD VALIDATION
+  // ==========================================
+  onPasswordInput(): void {
+
+    const password = this.form.value.password || '';
+
+    // SPECIAL CHARACTER CHECK
+    if (password.length > 0 &&
+        !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+
+      this.toast.warning(
+        'Password must contain at least 1 special character'
+      );
+    }
+
+    // UPPERCASE CHECK
+    if (password.length > 0 &&
+        !/[A-Z]/.test(password)) {
+
+      this.toast.warning(
+        'Password must contain at least 1 uppercase letter'
+      );
+    }
   }
 }
