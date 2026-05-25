@@ -275,12 +275,46 @@ export class LoginComponent {
      },
 
      error: (err) => {
+// 401 UNAUTHORIZED
+if (err.status === 401) {
 
-       // 401 UNAUTHORIZED
-       if (err.status === 401) {
-         this.toast.error('Invalid Username');
-         return;
-       }
+  const errorMessage =
+    err?.error?.message?.toLowerCase() || '';
+
+  // USER TYPE MISMATCH
+  if (
+    errorMessage.includes('user not found') ||
+    errorMessage.includes('not found')
+  ) {
+
+    this.toast.error('User Not Found');
+    return;
+  }
+
+  // INVALID USERNAME
+  if (
+    errorMessage.includes('invalid username') ||
+    errorMessage.includes('username')
+  ) {
+
+    this.toast.error('Invalid Username');
+    return;
+  }
+
+  // INVALID PASSWORD
+  if (
+    errorMessage.includes('invalid password') ||
+    errorMessage.includes('password')
+  ) {
+
+    this.toast.error('Invalid Password');
+    return;
+  }
+
+  // DEFAULT
+  this.toast.error('Invalid Credentials');
+  return;
+}
 
        // SERVER ERROR
        if (err.status === 500) {
