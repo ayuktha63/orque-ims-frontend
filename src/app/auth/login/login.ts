@@ -38,7 +38,7 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [Validators.required]],
+    username: ['', [Validators.required, Validators.maxLength(50)]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -223,6 +223,10 @@ export class LoginComponent {
     // USERNAME VALIDATION
     if (!username.trim()) {
       this.toast.warning('Username is required');
+      return;
+    } 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
       return;
     }
 
