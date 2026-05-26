@@ -225,7 +225,15 @@ export class LoginComponent {
       this.toast.warning('Username is required');
       return;
     }
+// USERNAME FORMAT VALIDATION
+if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
+  this.toast.warning(
+    'Invalid Username'
+  );
+
+  return;
+}
     // PASSWORD REQUIRED
     if (!password.trim()) {
       this.toast.warning('Password is required');
