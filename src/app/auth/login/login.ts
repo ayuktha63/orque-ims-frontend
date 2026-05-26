@@ -308,7 +308,16 @@ export class LoginComponent {
     }
     });
   }
+  // ==========================================
+  // LIVE USERNAME VALIDATION
+  // ==========================================
+  onUsernameInput(): void {
+    const username = this.form.value.username || '';
 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+    }
+  }
   // ==========================================
   // LIVE PASSWORD VALIDATION
   // ==========================================
