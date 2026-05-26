@@ -1,6 +1,6 @@
 import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast.service';
+
 
 @Component({
   selector: 'app-login',
@@ -38,7 +39,16 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [Validators.required]],
+    username: ['', [
+  Validators.required,
+  Validators.maxLength(50),
+  (control: AbstractControl) => {
+    const value = control.value || '';
+    return value.trim().length === 0 && value.length > 0
+      ? { whitespace: true }
+      : null;
+  }
+]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -222,7 +232,7 @@ export class LoginComponent {
 
     // USERNAME VALIDATION
     if (!username.trim()) {
-      this.toast.warning('Username is required');
+      this.toast.warning('Username cannot be blank or contain only spaces');
       return;
     }
 
