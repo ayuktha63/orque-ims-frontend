@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
+  production: true,
   api: "https://api.orque-ims.xyz"
 };
