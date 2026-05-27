@@ -39,14 +39,20 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [
+username: ['', [
   Validators.required,
   Validators.maxLength(50),
   (control: AbstractControl) => {
     const value = control.value || '';
-    return value.trim().length === 0 && value.length > 0
-      ? { whitespace: true }
-      : null;
+    // whitespace-only check
+    if (value.trim().length === 0 && value.length > 0) {
+      return { whitespace: true };
+    }
+    // spaces anywhere in username
+    if (/\s/.test(value)) {
+      return { noSpaces: true };
+    }
+    return null;
   }
 ]],
     password: ['', [Validators.required, Validators.minLength(4)]]
@@ -234,8 +240,25 @@ export class LoginComponent {
     if (!username.trim()) {
       this.toast.warning('Username cannot be blank or contain only spaces');
       return;
+    } 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+      return;
     }
+// USERNAME FORMAT VALIDATION
+if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
+  this.toast.warning(
+    'Invalid Username'
+  );
+
+  return;
+}
+    // NO SPACES IN USERNAME
+    if (/\s/.test(username)) {
+      this.toast.warning('Username cannot contain spaces');
+      return;
+    }
     // PASSWORD REQUIRED
     if (!password.trim()) {
       this.toast.warning('Password is required');
@@ -314,7 +337,16 @@ export class LoginComponent {
      }
    });
   }
+  // ==========================================
+  // LIVE USERNAME VALIDATION
+  // ==========================================
+  onUsernameInput(): void {
+    const username = this.form.value.username || '';
 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+    }
+  }
   // ==========================================
   // LIVE PASSWORD VALIDATION
   // ==========================================
