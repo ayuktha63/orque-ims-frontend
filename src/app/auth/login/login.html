@@ -20,8 +20,10 @@
 
       <mat-form-field appearance="outline" class="full">
         <mat-label>Username</mat-label> 
-        <input matInput formControlName="username" (input)="onUsernameInput()" />
-        <mat-error *ngIf="form.get('username')?.invalid">Username is required</mat-error>
+        <input matInput formControlName="username" (input)="onUsernameInput()"/>
+        <mat-error *ngIf="form.get('username')?.hasError('noSpaces')">
+  Username cannot contain spaces
+</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full">

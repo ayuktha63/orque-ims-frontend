@@ -1,6 +1,6 @@
 import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators , AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -38,7 +38,22 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [Validators.required, Validators.maxLength(50)]],
+username: ['', [
+  Validators.required,
+  Validators.maxLength(50),
+  (control: AbstractControl) => {
+    const value = control.value || '';
+    // whitespace-only check
+    if (value.trim().length === 0 && value.length > 0) {
+      return { whitespace: true };
+    }
+    // spaces anywhere in username
+    if (/\s/.test(value)) {
+      return { noSpaces: true };
+    }
+    return null;
+  }
+]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -230,6 +245,11 @@ export class LoginComponent {
       return;
     }
 
+    // NO SPACES IN USERNAME
+    if (/\s/.test(username)) {
+      this.toast.warning('Username cannot contain spaces');
+      return;
+    }
     // PASSWORD REQUIRED
     if (!password.trim()) {
       this.toast.warning('Password is required');
