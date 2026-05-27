@@ -239,6 +239,10 @@ username: ['', [
     if (!username.trim()) {
       this.toast.warning('Username is required');
       return;
+    } 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+      return;
     }
 
     // NO SPACES IN USERNAME
@@ -324,7 +328,16 @@ username: ['', [
      }
    });
   }
+  // ==========================================
+  // LIVE USERNAME VALIDATION
+  // ==========================================
+  onUsernameInput(): void {
+    const username = this.form.value.username || '';
 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+    }
+  }
   // ==========================================
   // LIVE PASSWORD VALIDATION
   // ==========================================
