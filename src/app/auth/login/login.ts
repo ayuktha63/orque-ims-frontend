@@ -244,7 +244,15 @@ username: ['', [
       this.toast.warning('Username must not exceed 50 characters');
       return;
     }
+// USERNAME FORMAT VALIDATION
+if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
+  this.toast.warning(
+    'Invalid Username'
+  );
+
+  return;
+}
     // NO SPACES IN USERNAME
     if (/\s/.test(username)) {
       this.toast.warning('Username cannot contain spaces');
