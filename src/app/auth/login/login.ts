@@ -280,7 +280,15 @@ if (!/^[A-Za-z0-9_]+$/.test(username)) {
       );
       return;
     }
+// LOWERCASE VALIDATION
+if (!/[a-z]/.test(password)) {
 
+  this.toast.warning(
+    'Password must contain at least 1 lowercase letter'
+  );
+
+  return;
+}
     // Numerical validation
     if (!/[0-9]/.test(password)) {
       this.toast.warning(
@@ -371,5 +379,15 @@ if (!/^[A-Za-z0-9_]+$/.test(username)) {
         'Password must contain at least 1 uppercase letter'
       );
     }
+    // LOWERCASE CHECK
+if (
+  password.length > 0 &&
+  !/[a-z]/.test(password)
+) {
+
+  this.toast.warning(
+    'Password must contain at least 1 lowercase letter'
+  );
+}
   }
 }
