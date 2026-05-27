@@ -1,6 +1,6 @@
 import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators , AbstractControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast.service';
+
 
 @Component({
   selector: 'app-login',
@@ -237,7 +238,7 @@ username: ['', [
 
     // USERNAME VALIDATION
     if (!username.trim()) {
-      this.toast.warning('Username is required');
+      this.toast.warning('Username cannot be blank or contain only spaces');
       return;
     } 
     if (username.length > 50) {
