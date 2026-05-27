@@ -319,7 +319,7 @@ if (!/[a-z]/.test(password)) {
 
        // 401 UNAUTHORIZED
        if (err.status === 401) {
-         this.toast.error('Invalid Username');
+         this.toast.error('Invalid Username or Password');
          return;
        }
 
