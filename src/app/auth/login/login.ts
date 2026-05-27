@@ -1,6 +1,6 @@
 import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators , AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -38,7 +38,22 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [Validators.required]],
+username: ['', [
+  Validators.required,
+  Validators.maxLength(50),
+  (control: AbstractControl) => {
+    const value = control.value || '';
+    // whitespace-only check
+    if (value.trim().length === 0 && value.length > 0) {
+      return { whitespace: true };
+    }
+    // spaces anywhere in username
+    if (/\s/.test(value)) {
+      return { noSpaces: true };
+    }
+    return null;
+  }
+]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -211,7 +226,7 @@ export class LoginComponent {
       );
     }
   }
-  
+
   // ==========================================
   // LOGIN SUBMIT
   // ==========================================
@@ -224,6 +239,10 @@ export class LoginComponent {
     if (!username.trim()) {
       this.toast.warning('Username is required');
       return;
+    } 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+      return;
     }
 // USERNAME FORMAT VALIDATION
 if (!/^[A-Za-z0-9_]+$/.test(username)) {
@@ -234,6 +253,11 @@ if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
   return;
 }
+    // NO SPACES IN USERNAME
+    if (/\s/.test(username)) {
+      this.toast.warning('Username cannot contain spaces');
+      return;
+    }
     // PASSWORD REQUIRED
     if (!password.trim()) {
       this.toast.warning('Password is required');
@@ -272,47 +296,56 @@ if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
     const { userType } = this.form.value;
 
-    this.auth.login(userType!, username, password).subscribe({
+   this.auth.login(userType!, username, password).subscribe({
 
-      next: (res:any) => {
+     next: (res:any) => {
 
-        // ✅ SUCCESS TOAST
-        this.toast.success(res?.message || 'Login successful');
+       // ✅ SUCCESS TOAST
+       this.toast.success(res?.message || 'Login successful');
 
-        this.router.navigateByUrl('/app/dashboard');
-      },
+       this.router.navigateByUrl('/app/dashboard');
+     },
 
-      error: (err) => {
+     error: (err) => {
 
-      // 401 UNAUTHORIZED
-      if (err.status === 401) {
-        this.toast.error('Invalid username or password');
-        return;
-      }
+       // 401 UNAUTHORIZED
+       if (err.status === 401) {
+         this.toast.error('Invalid Username');
+         return;
+       }
 
-      // SERVER ERROR
-      if (err.status === 500) {
-        this.toast.error('Server error occurred');
-        return;
-      }
+       // SERVER ERROR
+       if (err.status === 500) {
+         this.toast.error('Server error occurred');
+         return;
+       }
 
-      // NETWORK ERROR
-      if (err.status === 0) {
-        this.toast.error('Unable to connect to server');
-        return;
-      }
+       // NETWORK ERROR
+       if (err.status === 0) {
+         this.toast.error('Unable to connect to server');
+         return;
+       }
 
-      // DEFAULT ERROR
-      this.toast.error(
-        err?.error?.message ||
-        'Something went wrong'
-      );
+       // DEFAULT ERROR
+       this.toast.error(
+         err?.error?.message ||
+         'Something went wrong'
+       );
 
-      console.error('Login error', err);
-    }
-    });
+       console.error('Login error', err);
+     }
+   });
   }
+  // ==========================================
+  // LIVE USERNAME VALIDATION
+  // ==========================================
+  onUsernameInput(): void {
+    const username = this.form.value.username || '';
 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+    }
+  }
   // ==========================================
   // LIVE PASSWORD VALIDATION
   // ==========================================
