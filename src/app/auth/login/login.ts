@@ -1,6 +1,6 @@
 import { Component, inject ,HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast.service';
+
 
 @Component({
   selector: 'app-login',
@@ -38,7 +39,22 @@ export class LoginComponent {
 
   form = this.fb.group({
     userType: ['ORQUE', [Validators.required]],
-    username: ['', [Validators.required]],
+username: ['', [
+  Validators.required,
+  Validators.maxLength(50),
+  (control: AbstractControl) => {
+    const value = control.value || '';
+    // whitespace-only check
+    if (value.trim().length === 0 && value.length > 0) {
+      return { whitespace: true };
+    }
+    // spaces anywhere in username
+    if (/\s/.test(value)) {
+      return { noSpaces: true };
+    }
+    return null;
+  }
+]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -222,10 +238,27 @@ export class LoginComponent {
 
     // USERNAME VALIDATION
     if (!username.trim()) {
-      this.toast.warning('Username is required');
+      this.toast.warning('Username cannot be blank or contain only spaces');
+      return;
+    } 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
       return;
     }
+// USERNAME FORMAT VALIDATION
+if (!/^[A-Za-z0-9_]+$/.test(username)) {
 
+  this.toast.warning(
+    'Invalid Username'
+  );
+
+  return;
+}
+    // NO SPACES IN USERNAME
+    if (/\s/.test(username)) {
+      this.toast.warning('Username cannot contain spaces');
+      return;
+    }
     // PASSWORD REQUIRED
     if (!password.trim()) {
       this.toast.warning('Password is required');
@@ -247,7 +280,15 @@ export class LoginComponent {
       );
       return;
     }
+// LOWERCASE VALIDATION
+if (!/[a-z]/.test(password)) {
 
+  this.toast.warning(
+    'Password must contain at least 1 lowercase letter'
+  );
+
+  return;
+}
     // Numerical validation
     if (!/[0-9]/.test(password)) {
       this.toast.warning(
@@ -275,46 +316,12 @@ export class LoginComponent {
      },
 
      error: (err) => {
-// 401 UNAUTHORIZED
-if (err.status === 401) {
 
-  const errorMessage =
-    err?.error?.message?.toLowerCase() || '';
-
-  // USER TYPE MISMATCH
-  if (
-    errorMessage.includes('user not found') ||
-    errorMessage.includes('not found')
-  ) {
-
-    this.toast.error('User Not Found');
-    return;
-  }
-
-  // INVALID USERNAME
-  if (
-    errorMessage.includes('invalid username') ||
-    errorMessage.includes('username')
-  ) {
-
-    this.toast.error('Invalid Username');
-    return;
-  }
-
-  // INVALID PASSWORD
-  if (
-    errorMessage.includes('invalid password') ||
-    errorMessage.includes('password')
-  ) {
-
-    this.toast.error('Invalid Password');
-    return;
-  }
-
-  // DEFAULT
-  this.toast.error('Invalid Credentials');
-  return;
-}
+       // 401 UNAUTHORIZED
+       if (err.status === 401) {
+         this.toast.error('Invalid Username or Password');
+         return;
+       }
 
        // SERVER ERROR
        if (err.status === 500) {
@@ -338,7 +345,16 @@ if (err.status === 401) {
      }
    });
   }
+  // ==========================================
+  // LIVE USERNAME VALIDATION
+  // ==========================================
+  onUsernameInput(): void {
+    const username = this.form.value.username || '';
 
+    if (username.length > 50) {
+      this.toast.warning('Username must not exceed 50 characters');
+    }
+  }
   // ==========================================
   // LIVE PASSWORD VALIDATION
   // ==========================================
@@ -363,5 +379,15 @@ if (err.status === 401) {
         'Password must contain at least 1 uppercase letter'
       );
     }
+    // LOWERCASE CHECK
+if (
+  password.length > 0 &&
+  !/[a-z]/.test(password)
+) {
+
+  this.toast.warning(
+    'Password must contain at least 1 lowercase letter'
+  );
+}
   }
 }
